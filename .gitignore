@@ -1,0 +1,29 @@
+# Dependencies
+si-alhi/node_modules/
+si-alhi/.pnpm-store/
+
+# Build
+si-alhi/.next/
+si-alhi/out/
+
+# Database files
+si-alhi/dev.db
+si-alhi/dev.db-shm
+si-alhi/dev.db-wal
+si-alhi/prisma/*.db
+si-alhi/prisma/*.db-shm
+si-alhi/prisma/*.db-wal
+
+# Environment files
+si-alhi/.env
+si-alhi/.env.local
+
+# Generated
+si-alhi/src/generated/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

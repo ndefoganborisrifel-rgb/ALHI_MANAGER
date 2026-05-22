@@ -1,0 +1,461 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Role {
+  ADMIN
+  SCOLARITE
+  ENSEIGNANT
+  ETUDIANT
+  PARENT
+}
+
+enum StudentStatus {
+  PROSPECT
+  DOSSIER_RECU
+  ENTRETIEN
+  ACCEPTE
+  INSCRIT
+  ACTIF
+  SUSPENDU
+  DIPLOME
+}
+
+enum TeacherType {
+  PERMANENT
+  VACATAIRE
+}
+
+enum ParentRelation {
+  PERE
+  MERE
+  TUTEUR
+}
+
+enum PaymentStatus {
+  EN_ATTENTE
+  VALIDE
+  ANNULE
+}
+
+enum PaymentType {
+  INSCRIPTION
+  TRANCHE1
+  TRANCHE2
+  TRANCHE3
+  AUTRE
+}
+
+enum PaymentMethod {
+  ESPECES
+  VIREMENT
+  ORANGE_MONEY
+  MTN_MOMO
+  CHEQUE
+}
+
+enum DayOfWeek {
+  LUNDI
+  MARDI
+  MERCREDI
+  JEUDI
+  VENDREDI
+  SAMEDI
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  RETARD
+  EXCUSE
+}
+
+enum EquipmentStatus {
+  FONCTIONNEL
+  EN_PANNE
+  EN_MAINTENANCE
+  REFORME
+}
+
+enum InternshipStatus {
+  EN_RECHERCHE
+  CONVENTION_SIGNEE
+  EN_COURS
+  TERMINE
+  SOUTENU
+}
+
+enum TeacherPaymentStatus {
+  BROUILLON
+  VALIDE
+  PAYE
+}
+
+enum GradeSession {
+  NORMALE
+  RATTRAPAGE
+}
+
+enum ScheduleType {
+  COURS
+  TPE
+  EVALUATION
+  PAUSE
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  password           String
+  firstName          String
+  lastName           String
+  phone              String?
+  role               Role
+  avatar             String?
+  isActive           Boolean   @default(true)
+  mustChangePassword Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  student       Student?
+  teacher       Teacher?
+  parent        Parent?
+  notifications Notification[]
+}
+
+model AcademicYear {
+  id        String   @id @default(cuid())
+  label     String   @unique
+  startDate DateTime
+  endDate   DateTime
+  isCurrent Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Filiere {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  description   String?
+  duration      Int
+  level         String?
+  totalFees     Int
+  responsableId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  responsable Teacher?     @relation("FiliereResponsable", fields: [responsableId], references: [id])
+  students    Student[]
+  courses     Course[]
+  schedules   Schedule[]
+  ues         UE[]
+  tuitionFees TuitionFee[]
+}
+
+model UE {
+  id           String   @id @default(cuid())
+  code         String
+  name         String
+  filiereId    String
+  semester     Int
+  totalCredits Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  filiere Filiere  @relation(fields: [filiereId], references: [id])
+  courses Course[]
+
+  @@unique([code, filiereId])
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  credits     Int
+  totalHours  Int
+  filiereId   String
+  semester    Int
+  ueCode      String
+  ueName      String
+  ueId        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  filiere     Filiere           @relation(fields: [filiereId], references: [id])
+  ue          UE?               @relation(fields: [ueId], references: [id])
+  assignments CourseAssignment[]
+  grades      Grade[]
+}
+
+model Teacher {
+  id         String      @id @default(cuid())
+  userId     String      @unique
+  firstName  String
+  lastName   String
+  phone      String?
+  email      String?
+  speciality String?
+  type       TeacherType @default(VACATAIRE)
+  hourlyRate Int         @default(0)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  user           User              @relation(fields: [userId], references: [id])
+  assignments    CourseAssignment[]
+  payments       TeacherPayment[]
+  filiereManaged Filiere[]         @relation("FiliereResponsable")
+}
+
+model CourseAssignment {
+  id           String   @id @default(cuid())
+  courseId     String
+  teacherId    String
+  academicYear String
+  semester     Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  course    Course     @relation(fields: [courseId], references: [id])
+  teacher   Teacher    @relation(fields: [teacherId], references: [id])
+  schedules Schedule[]
+
+  @@unique([courseId, teacherId, academicYear, semester])
+}
+
+model Room {
+  id           String   @id @default(cuid())
+  code         String   @unique
+  name         String
+  capacity     Int
+  building     String?
+  floor        String?
+  hasProjector Boolean  @default(false)
+  hasComputers Boolean  @default(false)
+  isAvailable  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  schedules Schedule[]
+  equipment Equipment[]
+}
+
+model Schedule {
+  id                 String       @id @default(cuid())
+  courseAssignmentId String?
+  roomId             String?
+  dayOfWeek          DayOfWeek
+  startTime          String
+  endTime            String
+  academicYear       String
+  semester           Int
+  weekStart          DateTime?
+  filiereId          String
+  type               ScheduleType @default(COURS)
+  sessionNumber      Int?
+  totalSessions      Int?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  courseAssignment CourseAssignment? @relation(fields: [courseAssignmentId], references: [id])
+  room             Room?             @relation(fields: [roomId], references: [id])
+  filiere          Filiere           @relation(fields: [filiereId], references: [id])
+  attendances      Attendance[]
+}
+
+model Student {
+  id               String        @id @default(cuid())
+  userId           String?       @unique
+  matricule        String        @unique
+  firstName        String
+  lastName         String
+  dateOfBirth      DateTime?
+  gender           String?
+  phone            String?
+  email            String?
+  placeOfBirth     String?
+  address          String?
+  city             String?
+  emergencyContact String?
+  emergencyPhone   String?
+  filiereId        String
+  promotionYear    Int
+  level            Int           @default(1)
+  status           StudentStatus @default(PROSPECT)
+  parentId         String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  user        User?        @relation(fields: [userId], references: [id])
+  filiere     Filiere      @relation(fields: [filiereId], references: [id])
+  parent      Parent?      @relation(fields: [parentId], references: [id])
+  payments    Payment[]
+  grades      Grade[]
+  attendances Attendance[]
+  internships Internship[]
+}
+
+model Parent {
+  id         String         @id @default(cuid())
+  userId     String?        @unique
+  firstName  String
+  lastName   String
+  phone      String?
+  email      String?
+  profession String?
+  relation   ParentRelation @default(TUTEUR)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  user     User?     @relation(fields: [userId], references: [id])
+  students Student[]
+}
+
+model TuitionFee {
+  id           String   @id @default(cuid())
+  filiereId    String
+  academicYear String
+  totalAmount  Int
+  installments String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  filiere Filiere @relation(fields: [filiereId], references: [id])
+
+  @@unique([filiereId, academicYear])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  studentId     String
+  amount        Int
+  paymentDate   DateTime      @default(now())
+  paymentMethod PaymentMethod @default(ESPECES)
+  receiptNumber String        @unique
+  academicYear  String
+  description   String        @default("FRAIS SCOLARITE")
+  type          PaymentType   @default(TRANCHE1)
+  status        PaymentStatus @default(EN_ATTENTE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model Grade {
+  id              String       @id @default(cuid())
+  studentId       String
+  courseId        String
+  cc1             Float?
+  cc2             Float?
+  examScore       Float?
+  rattrapageScore Float?
+  noteFinal       Float?
+  session         GradeSession @default(NORMALE)
+  academicYear    String
+  semester        Int
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId, academicYear, semester, session])
+}
+
+model Attendance {
+  id            String           @id @default(cuid())
+  studentId     String
+  scheduleId    String
+  date          DateTime
+  status        AttendanceStatus @default(PRESENT)
+  signedAt      DateTime?
+  justification String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  student  Student  @relation(fields: [studentId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@unique([studentId, scheduleId, date])
+}
+
+model Equipment {
+  id                  String          @id @default(cuid())
+  code                String          @unique
+  name                String
+  category            String
+  brand               String?
+  serialNumber        String?
+  location            String?
+  roomId              String?
+  status              EquipmentStatus @default(FONCTIONNEL)
+  purchaseDate        DateTime?
+  purchasePrice       Int?
+  lastMaintenanceDate DateTime?
+  nextMaintenanceDate DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  room Room? @relation(fields: [roomId], references: [id])
+}
+
+model Internship {
+  id             String           @id @default(cuid())
+  studentId      String
+  companyName    String
+  companyAddress String?
+  companyPhone   String?
+  tutorName      String?
+  tutorEmail     String?
+  tutorPhone     String?
+  startDate      DateTime?
+  endDate        DateTime?
+  topic          String?
+  status         InternshipStatus @default(EN_RECHERCHE)
+  defenseDate    DateTime?
+  jury           String?
+  defenseNote    Float?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model TeacherPayment {
+  id             String               @id @default(cuid())
+  teacherId      String
+  month          Int
+  year           Int
+  hoursValidated Float                @default(0)
+  hourlyRate     Int
+  totalAmount    Int                  @default(0)
+  status         TeacherPaymentStatus @default(BROUILLON)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  @@unique([teacherId, month, year])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("INFO")
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
