@@ -18,8 +18,8 @@ si-alhi/prisma/*.db-wal
 si-alhi/.env
 si-alhi/.env.local
 
-# Generated
-si-alhi/src/generated/
+# Generated (intentionnellement commité pour que les types TypeScript soient disponibles)
+# si-alhi/src/generated/
 
 # OS
 .DS_Store
