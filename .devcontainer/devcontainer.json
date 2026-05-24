@@ -1,0 +1,33 @@
+{
+  "name": "SI-ALHI Dev",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20",
+      "nodeGypDependencies": false
+    }
+  },
+  "onCreateCommand": "npm install -g pnpm@latest",
+  "postCreateCommand": "cd si-alhi && pnpm install && cp .env.example .env && pnpm prisma db push && npx tsx prisma/seed.ts",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "SI-ALHI App",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Prisma.prisma",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  }
+}
