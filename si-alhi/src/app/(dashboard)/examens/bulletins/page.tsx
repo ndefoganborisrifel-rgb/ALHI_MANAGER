@@ -96,8 +96,8 @@ export default async function BulletinsPage({ searchParams }: PageProps) {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Link href={`/api/pdf/bulletin/${student.id}?semester=1&year=2025-2026`} target="_blank">
-                          <Button variant="outline" size="sm"><Download className="w-3 h-3 mr-1" />PDF</Button>
+                        <Link href={`/print/bulletin/${student.id}?semester=1&year=2025-2026`} target="_blank">
+                          <Button variant="outline" size="sm"><Download className="w-3 h-3 mr-1" />Imprimer</Button>
                         </Link>
                       </TableCell>
                     </TableRow>

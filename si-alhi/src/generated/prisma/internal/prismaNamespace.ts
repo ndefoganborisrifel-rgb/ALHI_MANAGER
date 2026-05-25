@@ -387,6 +387,7 @@ export const ModelName = {
   User: 'User',
   AcademicYear: 'AcademicYear',
   Filiere: 'Filiere',
+  Specialization: 'Specialization',
   UE: 'UE',
   Course: 'Course',
   Teacher: 'Teacher',
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "academicYear" | "filiere" | "uE" | "course" | "teacher" | "courseAssignment" | "room" | "schedule" | "student" | "parent" | "tuitionFee" | "payment" | "grade" | "attendance" | "equipment" | "internship" | "teacherPayment" | "notification"
+    modelProps: "user" | "academicYear" | "filiere" | "specialization" | "uE" | "course" | "teacher" | "courseAssignment" | "room" | "schedule" | "student" | "parent" | "tuitionFee" | "payment" | "grade" | "attendance" | "equipment" | "internship" | "teacherPayment" | "notification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -641,6 +642,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FiliereCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FiliereCountAggregateOutputType> | number
+        }
+      }
+    }
+    Specialization: {
+      payload: Prisma.$SpecializationPayload<ExtArgs>
+      fields: Prisma.SpecializationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SpecializationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SpecializationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>
+        }
+        findFirst: {
+          args: Prisma.SpecializationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SpecializationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>
+        }
+        findMany: {
+          args: Prisma.SpecializationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>[]
+        }
+        create: {
+          args: Prisma.SpecializationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>
+        }
+        createMany: {
+          args: Prisma.SpecializationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SpecializationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>[]
+        }
+        delete: {
+          args: Prisma.SpecializationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>
+        }
+        update: {
+          args: Prisma.SpecializationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>
+        }
+        deleteMany: {
+          args: Prisma.SpecializationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SpecializationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SpecializationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>[]
+        }
+        upsert: {
+          args: Prisma.SpecializationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecializationPayload>
+        }
+        aggregate: {
+          args: Prisma.SpecializationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSpecialization>
+        }
+        groupBy: {
+          args: Prisma.SpecializationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SpecializationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SpecializationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SpecializationCountAggregateOutputType> | number
         }
       }
     }
@@ -1911,6 +1986,17 @@ export const FiliereScalarFieldEnum = {
 export type FiliereScalarFieldEnum = (typeof FiliereScalarFieldEnum)[keyof typeof FiliereScalarFieldEnum]
 
 
+export const SpecializationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  filiereId: 'filiereId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpecializationScalarFieldEnum = (typeof SpecializationScalarFieldEnum)[keyof typeof SpecializationScalarFieldEnum]
+
+
 export const UEScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -2028,6 +2114,7 @@ export const StudentScalarFieldEnum = {
   emergencyContact: 'emergencyContact',
   emergencyPhone: 'emergencyPhone',
   filiereId: 'filiereId',
+  specializationId: 'specializationId',
   promotionYear: 'promotionYear',
   level: 'level',
   status: 'status',
@@ -2462,6 +2549,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   academicYear?: Prisma.AcademicYearOmit
   filiere?: Prisma.FiliereOmit
+  specialization?: Prisma.SpecializationOmit
   uE?: Prisma.UEOmit
   course?: Prisma.CourseOmit
   teacher?: Prisma.TeacherOmit

@@ -92,7 +92,7 @@ export default async function ScolariteStudentPage({ params }: PageProps) {
                         <Badge className={getStatusColor(p.status)}>{getStatusLabel(p.status)}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Link href={`/api/pdf/receipt/${p.id}`} target="_blank">
+                        <Link href={`/print/receipt/${p.id}`} target="_blank">
                           <Button variant="ghost" size="sm"><Download className="w-3 h-3" /></Button>
                         </Link>
                       </TableCell>

@@ -65,6 +65,7 @@ export const PaymentType = {
   TRANCHE1: 'TRANCHE1',
   TRANCHE2: 'TRANCHE2',
   TRANCHE3: 'TRANCHE3',
+  TRANCHE4: 'TRANCHE4',
   AUTRE: 'AUTRE'
 } as const
 

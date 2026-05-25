@@ -1,0 +1,185 @@
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { User, KeyRound, Calendar, BookOpen, Settings, Shield } from "lucide-react";
+
+export default async function SettingsPage() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  const isAdmin = session.user.role === "ADMIN";
+
+  const filieres = isAdmin
+    ? await prisma.filiere.findMany({ orderBy: { name: "asc" } })
+    : [];
+
+  const roleLabels: Record<string, string> = {
+    ADMIN: "Administrateur",
+    SCOLARITE: "Scolarité",
+    ENSEIGNANT: "Enseignant",
+    ETUDIANT: "Étudiant",
+    PARENT: "Parent",
+  };
+
+  const roleColors: Record<string, string> = {
+    ADMIN: "bg-[#B91C2F]/10 text-[#B91C2F]",
+    SCOLARITE: "bg-blue-100 text-blue-800",
+    ENSEIGNANT: "bg-purple-100 text-purple-800",
+    ETUDIANT: "bg-green-100 text-green-800",
+    PARENT: "bg-amber-100 text-amber-800",
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-8">
+      {/* Page header */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
+          <Settings className="w-5 h-5 text-[#B91C2F]" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Paramètres</h1>
+          <p className="text-gray-500 text-sm">Gérez votre compte et les préférences du système</p>
+        </div>
+      </div>
+
+      {/* Account Settings */}
+      <Card>
+        <CardHeader className="border-b border-gray-100">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <User className="w-4 h-4 text-[#B91C2F]" />
+            Informations du compte
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6 space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Nom complet</p>
+              <p className="text-sm font-semibold text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+                {session.user.name ?? "—"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Adresse e-mail</p>
+              <p className="text-sm font-semibold text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 break-all">
+                {session.user.email ?? "—"}
+              </p>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Rôle</p>
+            <div className="flex items-center gap-2">
+              <Badge className={roleColors[session.user.role] ?? "bg-gray-100 text-gray-800"}>
+                <Shield className="w-3 h-3 mr-1" />
+                {roleLabels[session.user.role] ?? session.user.role}
+              </Badge>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-gray-100">
+            <p className="text-xs text-gray-500 mb-3">
+              Ces informations sont en lecture seule. Pour les modifier, contactez l&apos;administrateur.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Security */}
+      <Card>
+        <CardHeader className="border-b border-gray-100">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <KeyRound className="w-4 h-4 text-[#B91C2F]" />
+            Sécurité
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div>
+              <p className="text-sm font-medium text-gray-800">Mot de passe</p>
+              <p className="text-xs text-gray-500 mt-0.5">Changez votre mot de passe pour sécuriser votre compte</p>
+            </div>
+            <Link href="/changer-mot-de-passe">
+              <Button variant="outline" size="sm">
+                <KeyRound className="w-3.5 h-3.5 mr-1.5" />
+                Changer
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ADMIN-only: System Settings */}
+      {isAdmin && (
+        <>
+          {/* Academic Year */}
+          <Card>
+            <CardHeader className="border-b border-gray-100">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Calendar className="w-4 h-4 text-[#B91C2F]" />
+                Année académique
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#B91C2F] flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">2025-2026</p>
+                    <p className="text-xs text-gray-500">Année académique en cours</p>
+                  </div>
+                </div>
+                <Badge className="bg-green-100 text-green-800">
+                  En cours
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Filieres */}
+          <Card>
+            <CardHeader className="border-b border-gray-100">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <BookOpen className="w-4 h-4 text-[#B91C2F]" />
+                Filières ({filieres.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              {filieres.length === 0 ? (
+                <p className="text-sm text-gray-500 text-center py-4">Aucune filière enregistrée.</p>
+              ) : (
+                <div className="space-y-2">
+                  {filieres.map((filiere) => (
+                    <div
+                      key={filiere.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded bg-[#B91C2F]/10 flex items-center justify-center">
+                          <BookOpen className="w-3.5 h-3.5 text-[#B91C2F]" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">{filiere.name}</p>
+                          <p className="text-xs text-gray-500 font-mono">{filiere.code}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">Frais totaux</p>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {new Intl.NumberFormat("fr-FR").format(filiere.totalFees)} FCFA
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
+    </div>
+  );
+}

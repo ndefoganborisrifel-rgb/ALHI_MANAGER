@@ -49,6 +49,7 @@ enum PaymentType {
   TRANCHE1
   TRANCHE2
   TRANCHE3
+  TRANCHE4
   AUTRE
 }
 
@@ -151,12 +152,24 @@ model Filiere {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  responsable Teacher?     @relation("FiliereResponsable", fields: [responsableId], references: [id])
-  students    Student[]
-  courses     Course[]
-  schedules   Schedule[]
-  ues         UE[]
-  tuitionFees TuitionFee[]
+  responsable     Teacher?         @relation("FiliereResponsable", fields: [responsableId], references: [id])
+  students        Student[]
+  courses         Course[]
+  schedules       Schedule[]
+  ues             UE[]
+  tuitionFees     TuitionFee[]
+  specializations Specialization[]
+}
+
+model Specialization {
+  id        String   @id @default(cuid())
+  name      String
+  filiereId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  filiere  Filiere   @relation(fields: [filiereId], references: [id])
+  students Student[]
 }
 
 model UE {
@@ -287,6 +300,7 @@ model Student {
   emergencyContact String?
   emergencyPhone   String?
   filiereId        String
+  specializationId String?
   promotionYear    Int
   level            Int           @default(1)
   status           StudentStatus @default(PROSPECT)
@@ -294,9 +308,10 @@ model Student {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  user        User?        @relation(fields: [userId], references: [id])
-  filiere     Filiere      @relation(fields: [filiereId], references: [id])
-  parent      Parent?      @relation(fields: [parentId], references: [id])
+  user           User?           @relation(fields: [userId], references: [id])
+  filiere        Filiere         @relation(fields: [filiereId], references: [id])
+  specialization Specialization? @relation(fields: [specializationId], references: [id])
+  parent         Parent?         @relation(fields: [parentId], references: [id])
   payments    Payment[]
   grades      Grade[]
   attendances Attendance[]

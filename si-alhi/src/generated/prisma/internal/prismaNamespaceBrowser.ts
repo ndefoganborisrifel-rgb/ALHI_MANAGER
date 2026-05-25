@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   AcademicYear: 'AcademicYear',
   Filiere: 'Filiere',
+  Specialization: 'Specialization',
   UE: 'UE',
   Course: 'Course',
   Teacher: 'Teacher',
@@ -130,6 +131,17 @@ export const FiliereScalarFieldEnum = {
 } as const
 
 export type FiliereScalarFieldEnum = (typeof FiliereScalarFieldEnum)[keyof typeof FiliereScalarFieldEnum]
+
+
+export const SpecializationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  filiereId: 'filiereId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpecializationScalarFieldEnum = (typeof SpecializationScalarFieldEnum)[keyof typeof SpecializationScalarFieldEnum]
 
 
 export const UEScalarFieldEnum = {
@@ -249,6 +261,7 @@ export const StudentScalarFieldEnum = {
   emergencyContact: 'emergencyContact',
   emergencyPhone: 'emergencyPhone',
   filiereId: 'filiereId',
+  specializationId: 'specializationId',
   promotionYear: 'promotionYear',
   level: 'level',
   status: 'status',

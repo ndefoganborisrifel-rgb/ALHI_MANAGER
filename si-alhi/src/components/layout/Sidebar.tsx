@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
   { href: "/logistique", label: "Logistique", icon: Package, roles: ["ADMIN"] },
   { href: "/stages", label: "Stages", icon: Briefcase, roles: ["ADMIN", "SCOLARITE", "ETUDIANT"] },
   { href: "/rh", label: "RH & Vacations", icon: UserCheck, roles: ["ADMIN", "ENSEIGNANT"] },
-  { href: "/parent", label: "Espace Parent", icon: Users, roles: ["PARENT"] },
+  { href: "/parent", label: "Espace Parent", icon: GraduationCap, roles: ["PARENT"] },
   { href: "/users", label: "Utilisateurs", icon: Users, roles: ["ADMIN"] },
 ];
 
@@ -100,7 +100,8 @@ export function Sidebar({ userRole, collapsed, onToggle }: SidebarProps) {
         <Link
           href="/settings"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-white/10 hover:text-white transition-all",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+            pathname === "/settings" ? "bg-[#B91C2F] text-white" : "text-gray-400 hover:bg-white/10 hover:text-white",
             collapsed && "justify-center px-2"
           )}
           title={collapsed ? "Paramètres" : undefined}

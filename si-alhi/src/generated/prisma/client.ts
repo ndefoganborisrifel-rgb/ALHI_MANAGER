@@ -57,6 +57,11 @@ export type AcademicYear = Prisma.AcademicYearModel
  */
 export type Filiere = Prisma.FiliereModel
 /**
+ * Model Specialization
+ * 
+ */
+export type Specialization = Prisma.SpecializationModel
+/**
  * Model UE
  * 
  */

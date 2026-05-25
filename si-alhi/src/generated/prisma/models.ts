@@ -11,6 +11,7 @@
 export type * from './models/User'
 export type * from './models/AcademicYear'
 export type * from './models/Filiere'
+export type * from './models/Specialization'
 export type * from './models/UE'
 export type * from './models/Course'
 export type * from './models/Teacher'
