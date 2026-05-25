@@ -37,7 +37,7 @@ export default async function BulletinsPage({ searchParams }: PageProps) {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Bulletins de notes</h1>
-        <p className="text-gray-500 text-sm">Relevés de notes semestriels — Semestre 1, 2025-2026</p>
+        <p className="text-gray-500 text-sm">Relevés de notes semestriels, Semestre 1, 2025-2026</p>
       </div>
 
       {/* Filière selector */}
@@ -52,7 +52,7 @@ export default async function BulletinsPage({ searchParams }: PageProps) {
       {selectedFiliere && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Étudiants — {selectedFiliere.name} ({students.length})</CardTitle>
+            <CardTitle>Étudiants : {selectedFiliere.name} ({students.length})</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
@@ -87,7 +87,7 @@ export default async function BulletinsPage({ searchParams }: PageProps) {
                           <span className={`font-bold ${avg >= 10 ? "text-green-600" : "text-red-600"}`}>
                             {avg.toFixed(2)}/20
                           </span>
-                        ) : "—"}
+                        ) : <span className="text-gray-300">-</span>}
                       </TableCell>
                       <TableCell>{totalCredits}/30</TableCell>
                       <TableCell>

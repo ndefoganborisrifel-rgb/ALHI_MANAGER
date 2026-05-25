@@ -46,7 +46,7 @@ export default async function ParentPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Espace Parent</h1>
           <p className="text-gray-500 text-sm mt-1">
-            Bienvenue, {parent.firstName} {parent.lastName} — Année académique 2025-2026
+            Bienvenue, {parent.firstName} {parent.lastName}. Année académique 2025-2026
           </p>
         </div>
         <Badge className="bg-[#B91C2F]/10 text-[#B91C2F] border-[#B91C2F]/20">
@@ -68,7 +68,7 @@ export default async function ParentPage() {
         const balance = totalFees - totalPaid;
         const paymentPercent = totalFees > 0 ? Math.min(100, Math.round((totalPaid / totalFees) * 100)) : 0;
 
-        // Count absences from grades context (no attendances in this query — show placeholder)
+        // Count absences from grades context (no attendances in this query, placeholder for now)
         const absenceCount: number = 0;
 
         return (
@@ -171,7 +171,7 @@ export default async function ParentPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-[#B91C2F]" />
-                    Relevé de notes — 2025-2026
+                    Relevé de notes 2025-2026
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -196,13 +196,13 @@ export default async function ParentPage() {
                             <TableCell className="font-mono text-xs text-gray-500">{grade.course.code}</TableCell>
                             <TableCell className="font-medium text-sm">{grade.course.name}</TableCell>
                             <TableCell className="text-center text-sm">
-                              {grade.cc1 != null ? grade.cc1.toFixed(1) : "—"}
+                              {grade.cc1 != null ? grade.cc1.toFixed(1) : <span className="text-gray-300">-</span>}
                             </TableCell>
                             <TableCell className="text-center text-sm">
-                              {grade.cc2 != null ? grade.cc2.toFixed(1) : "—"}
+                              {grade.cc2 != null ? grade.cc2.toFixed(1) : <span className="text-gray-300">-</span>}
                             </TableCell>
                             <TableCell className="text-center text-sm">
-                              {grade.examScore != null ? grade.examScore.toFixed(1) : "—"}
+                              {grade.examScore != null ? grade.examScore.toFixed(1) : <span className="text-gray-300">-</span>}
                             </TableCell>
                             <TableCell className="text-center">
                               {note != null ? (
@@ -210,7 +210,7 @@ export default async function ParentPage() {
                                   {note.toFixed(2)}
                                 </span>
                               ) : (
-                                <span className="text-gray-400 text-sm">—</span>
+                                <span className="text-gray-300 text-sm">-</span>
                               )}
                             </TableCell>
                             <TableCell className="text-center">

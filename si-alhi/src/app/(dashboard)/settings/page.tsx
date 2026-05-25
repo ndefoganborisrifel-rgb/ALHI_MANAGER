@@ -59,13 +59,13 @@ export default async function SettingsPage() {
             <div className="space-y-1">
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Nom complet</p>
               <p className="text-sm font-semibold text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                {session.user.name ?? "—"}
+                {session.user.name ?? <span className="text-gray-400 italic">Non renseigné</span>}
               </p>
             </div>
             <div className="space-y-1">
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Adresse e-mail</p>
               <p className="text-sm font-semibold text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 break-all">
-                {session.user.email ?? "—"}
+                {session.user.email ?? <span className="text-gray-400 italic">Non renseigné</span>}
               </p>
             </div>
           </div>

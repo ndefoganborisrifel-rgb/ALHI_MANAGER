@@ -87,7 +87,7 @@ export default async function LogistiquePage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             <Building2 className="w-5 h-5 text-[#B91C2F]" />
-            Salles &amp; Espaces ({rooms.length}) — {roomsAvailable} disponibles
+            Salles &amp; Espaces ({rooms.length}), {roomsAvailable} disponibles
           </h2>
           <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white">
             <Plus className="w-4 h-4 mr-1" />Ajouter une salle
@@ -116,7 +116,7 @@ export default async function LogistiquePage() {
                   {room.building && (
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">Bâtiment</span>
-                      <span className="font-medium text-gray-700">{room.building} — {room.floor}</span>
+                      <span className="font-medium text-gray-700">{room.building}, {room.floor}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-3 pt-1">
@@ -181,13 +181,13 @@ export default async function LogistiquePage() {
                       <TableCell>
                         <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{eq.category}</span>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-600">{eq.room?.name ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-gray-600">{eq.room?.name ?? <span className="text-gray-300">-</span>}</TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(eq.status)}>{getStatusLabel(eq.status)}</Badge>
                       </TableCell>
                       <TableCell>
                         <span className={`text-sm ${maintenanceOverdue ? "text-orange-600 font-medium" : "text-gray-500"}`}>
-                          {eq.nextMaintenanceDate ? formatDate(eq.nextMaintenanceDate) : "—"}
+                          {eq.nextMaintenanceDate ? formatDate(eq.nextMaintenanceDate) : <span className="text-gray-300">-</span>}
                           {maintenanceOverdue && " ⚠️"}
                         </span>
                       </TableCell>

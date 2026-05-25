@@ -37,7 +37,7 @@ export async function TeacherDashboard({ userId }: { userId: string }) {
                 <BookOpen className="w-4 h-4 text-gray-400" />
                 <div>
                   <p className="font-medium text-sm text-gray-900">{a.course.name}</p>
-                  <p className="text-xs text-gray-500">Code: {a.course.code} — {a.course.credits} crédits</p>
+                  <p className="text-xs text-gray-500">Code : {a.course.code}, {a.course.credits} crédits</p>
                 </div>
               </div>
             ))}

@@ -29,7 +29,7 @@ export function calculateGeneralAverage(ueAverages: Array<{ average: number | nu
 }
 
 export function getMention(average: number | null): string {
-  if (average == null) return "—";
+  if (average == null) return "En attente";
   if (average >= 16) return "Très Bien";
   if (average >= 14) return "Bien";
   if (average >= 12) return "Assez Bien";

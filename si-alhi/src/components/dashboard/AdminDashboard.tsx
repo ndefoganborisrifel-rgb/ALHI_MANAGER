@@ -22,7 +22,7 @@ export function AdminDashboard({ studentCount, teacherCount, totalCollected, rec
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-        <p className="text-gray-500 text-sm mt-1">Africa Leadership Higher Institute — Année 2025-2026</p>
+        <p className="text-gray-500 text-sm mt-1">Africa Leadership Higher Institute, Année 2025-2026</p>
       </div>
 
       {/* KPI Cards */}
@@ -63,7 +63,7 @@ export function AdminDashboard({ studentCount, teacherCount, totalCollected, rec
               <div key={student.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                 <div>
                   <p className="font-medium text-gray-900 text-sm">{student.name}</p>
-                  <p className="text-xs text-gray-500">{student.matricule} — {student.filiere}</p>
+                  <p className="text-xs text-gray-500">{student.matricule}, {student.filiere}</p>
                 </div>
                 <Badge className={getStatusColor(student.status)}>{getStatusLabel(student.status)}</Badge>
               </div>

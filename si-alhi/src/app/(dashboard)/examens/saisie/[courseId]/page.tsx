@@ -156,7 +156,7 @@ export default function SaisieNotesCoursePage() {
           setRows(allRows.sort((a, b) => a.lastName.localeCompare(b.lastName)));
         } else {
           // No grades yet, just load students from all filières and show a message
-          // Try to get course info from URL course id — minimal display
+          // Try to get course info from URL course id, minimal display
           setError(null);
           const allStud = Array.isArray(studentsRes) ? studentsRes : [];
           const studentRows: StudentRow[] = allStud.map((s: { id: string; matricule: string; firstName: string; lastName: string }) => ({
@@ -342,7 +342,7 @@ export default function SaisieNotesCoursePage() {
                           min="0"
                           max="20"
                           step="0.25"
-                          placeholder="—"
+                          placeholder="0"
                           value={row.cc1}
                           onChange={(e) => updateRow(idx, "cc1", e.target.value)}
                           className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]"
@@ -354,7 +354,7 @@ export default function SaisieNotesCoursePage() {
                           min="0"
                           max="20"
                           step="0.25"
-                          placeholder="—"
+                          placeholder="0"
                           value={row.cc2}
                           onChange={(e) => updateRow(idx, "cc2", e.target.value)}
                           className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]"
@@ -366,7 +366,7 @@ export default function SaisieNotesCoursePage() {
                           min="0"
                           max="20"
                           step="0.25"
-                          placeholder="—"
+                          placeholder="0"
                           value={row.examScore}
                           onChange={(e) => updateRow(idx, "examScore", e.target.value)}
                           className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]"
@@ -378,7 +378,7 @@ export default function SaisieNotesCoursePage() {
                             {preview.toFixed(2)}
                           </span>
                         ) : (
-                          <span className="text-gray-300">—</span>
+                          <span className="text-gray-200">-</span>
                         )}
                       </td>
                       <td className="px-3 py-2 text-center">
@@ -387,7 +387,7 @@ export default function SaisieNotesCoursePage() {
                             {passed ? "Validé" : "Ajourné"}
                           </Badge>
                         ) : (
-                          <span className="text-gray-300 text-xs">—</span>
+                          <span className="text-gray-200 text-xs">-</span>
                         )}
                       </td>
                       <td className="px-3 py-2">

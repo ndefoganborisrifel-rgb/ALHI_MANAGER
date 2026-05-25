@@ -137,7 +137,7 @@ export default async function SaisieNotesPage() {
                             S{course.semester}
                           </TableCell>
                           <TableCell className="text-center text-sm text-gray-600">
-                            {course.totalHours != null ? `${course.totalHours}h` : "—"}
+                            {course.totalHours != null ? `${course.totalHours}h` : <span className="text-gray-300">-</span>}
                           </TableCell>
                           <TableCell className="text-right pr-4">
                             <Link href={`/examens/saisie/${course.id}`}>

@@ -116,7 +116,7 @@ export default async function DeliberationPage() {
           PV de Délibération
         </h1>
         <p className="text-gray-500 text-sm mt-1">
-          Semestre {SEMESTER} — Année académique {ACADEMIC_YEAR}
+          Semestre {SEMESTER}, Année académique {ACADEMIC_YEAR}
         </p>
       </div>
 
@@ -215,7 +215,7 @@ export default async function DeliberationPage() {
                                 {student.average.toFixed(2)}
                               </span>
                             ) : (
-                              <span className="text-gray-400 text-sm">—</span>
+                              <span className="text-gray-300 text-sm">-</span>
                             )}
                           </TableCell>
                           <TableCell className="text-center text-sm text-gray-700">
@@ -263,7 +263,7 @@ export default async function DeliberationPage() {
                   const avgs = filiere.students
                     .filter((s) => s.average != null)
                     .map((s) => s.average as number);
-                  if (avgs.length === 0) return "—";
+                  if (avgs.length === 0) return "n.c.";
                   return (avgs.reduce((a, b) => a + b, 0) / avgs.length).toFixed(2);
                 })()}
                 /20

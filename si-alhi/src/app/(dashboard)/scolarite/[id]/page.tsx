@@ -36,7 +36,7 @@ export default async function ScolariteStudentPage({ params }: PageProps) {
         <Link href="/scolarite"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
         <div>
           <h1 className="text-xl font-bold text-gray-900">{student.lastName} {student.firstName}</h1>
-          <p className="text-sm text-gray-500">{student.matricule} — {student.filiere.name}</p>
+          <p className="text-sm text-gray-500">{student.matricule}, {student.filiere.name}</p>
         </div>
       </div>
 

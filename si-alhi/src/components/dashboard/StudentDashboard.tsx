@@ -18,7 +18,7 @@ export async function StudentDashboard({ userId }: { userId: string }) {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Bonjour, {student.firstName} !</h1>
-        <p className="text-gray-500 text-sm">{student.matricule} — {student.filiere.name}</p>
+        <p className="text-gray-500 text-sm">{student.matricule}, {student.filiere.name}</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>

@@ -54,7 +54,7 @@ export default function LoginPage() {
                 <div className="text-white/80 text-xs leading-tight">HIGHER INSTITUTE</div>
               </div>
             </div>
-            <p className="text-white/80 text-xs mt-2">Système d&apos;Information — SI-ALHI</p>
+            <p className="text-white/80 text-xs mt-2">Système d&apos;Information SI-ALHI</p>
           </div>
 
           {/* Form */}
@@ -121,7 +121,7 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center">
               <p className="text-xs text-gray-400">
-                Château Ngoa Ekélé — Yaoundé, Cameroun
+                Château Ngoa Ekélé, Yaoundé, Cameroun
               </p>
               <p className="text-xs text-gray-400 mt-1">
                 +237 657 75 54 87 / +237 676 25 85 13
@@ -131,7 +131,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-gray-500 text-xs mt-4">
-          02 ANS AU CAMEROUN &amp; 03 ANS EN FRANCE — PIGE
+          02 ANS AU CAMEROUN &amp; 03 ANS EN FRANCE. PIGE
         </p>
       </div>
     </div>

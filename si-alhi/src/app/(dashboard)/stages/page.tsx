@@ -57,9 +57,9 @@ export default async function StagesPage() {
                     <div className="text-xs text-gray-500">{i.student.filiere.name}</div>
                   </TableCell>
                   <TableCell className="font-medium text-sm">{i.companyName}</TableCell>
-                  <TableCell className="text-sm max-w-48 truncate">{i.topic ?? "—"}</TableCell>
+                  <TableCell className="text-sm max-w-48 truncate">{i.topic ?? <span className="text-gray-300 italic">Non défini</span>}</TableCell>
                   <TableCell className="text-sm">
-                    {i.startDate && i.endDate ? `${formatDate(i.startDate)} → ${formatDate(i.endDate)}` : "—"}
+                    {i.startDate && i.endDate ? `${formatDate(i.startDate)} au ${formatDate(i.endDate)}` : <span className="text-gray-300">-</span>}
                   </TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(i.status)}>{getStatusLabel(i.status)}</Badge>

@@ -47,7 +47,7 @@ export default function ChangePasswordPage() {
         <div className="bg-[#B91C2F] px-8 py-6 text-center">
           <Lock className="w-8 h-8 text-white mx-auto mb-2" />
           <h1 className="text-xl font-bold text-white">Changement de mot de passe</h1>
-          <p className="text-white/80 text-sm mt-1">Première connexion — créez votre mot de passe personnel</p>
+          <p className="text-white/80 text-sm mt-1">Première connexion : créez votre mot de passe personnel</p>
         </div>
         <div className="px-8 py-8">
           {error && (

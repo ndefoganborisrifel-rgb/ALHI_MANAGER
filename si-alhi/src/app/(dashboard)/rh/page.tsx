@@ -59,7 +59,7 @@ export default async function RHPage() {
               {teachers.map((teacher) => (
                 <TableRow key={teacher.id}>
                   <TableCell className="font-medium">{teacher.firstName} {teacher.lastName}</TableCell>
-                  <TableCell className="text-sm text-gray-600">{teacher.speciality ?? "—"}</TableCell>
+                  <TableCell className="text-sm text-gray-600">{teacher.speciality ?? <span className="text-gray-300 text-xs italic">Non renseigné</span>}</TableCell>
                   <TableCell>
                     <Badge className={teacher.type === "PERMANENT" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}>
                       {getStatusLabel(teacher.type)}
@@ -68,7 +68,7 @@ export default async function RHPage() {
                   <TableCell>
                     {teacher.type === "VACATAIRE" ? (
                       <span className="text-sm font-medium">{formatCFA(teacher.hourlyRate)}/h</span>
-                    ) : "—"}
+                    ) : <span className="text-gray-300 text-xs italic">Fixe</span>}
                   </TableCell>
                   <TableCell>{teacher.assignments.length} cours</TableCell>
                   <TableCell className="text-sm text-gray-500">{teacher.email ?? teacher.user.email}</TableCell>

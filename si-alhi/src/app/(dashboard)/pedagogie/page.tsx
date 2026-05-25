@@ -76,7 +76,7 @@ export default async function PedagogiePage() {
 
       {/* Timetable Grid */}
       <Card>
-        <CardHeader><CardTitle>Emploi du temps — Prépa Ingénieur (Semaine type)</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Emploi du temps : Prépa Ingénieur (Semaine type)</CardTitle></CardHeader>
         <CardContent className="overflow-x-auto p-0">
           <table className="w-full text-sm border-collapse">
             <thead>
@@ -118,7 +118,7 @@ export default async function PedagogiePage() {
                           <div className="font-semibold text-green-700">TPE</div>
                         </div>
                       ) : (
-                        <div className="text-center text-gray-300 py-2">—</div>
+                        <div className="py-2" />
                       )}
                     </td>
                   );
@@ -127,7 +127,7 @@ export default async function PedagogiePage() {
               {/* Pause */}
               <tr className="bg-orange-50">
                 <td colSpan={7} className="border border-gray-200 p-2 text-center text-sm font-medium text-orange-700">
-                  ☕ PAUSE — 12h00 à 13h15
+                  ☕ PAUSE : 12h00 à 13h15
                 </td>
               </tr>
               {/* Afternoon 13h20-17h20 */}
@@ -152,7 +152,7 @@ export default async function PedagogiePage() {
                           <div className="text-gray-500">{slot.courseAssignment.teacher.lastName}</div>
                         </div>
                       ) : (
-                        <div className="text-center text-gray-300 py-2">—</div>
+                        <div className="py-2" />
                       )}
                     </td>
                   );
