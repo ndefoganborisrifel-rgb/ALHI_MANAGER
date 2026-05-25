@@ -44,7 +44,7 @@ interface BulletinData {
 }
 
 function fmt(n: number | null | undefined): string {
-  if (n == null) return "—";
+  if (n == null) return "n/a";
   return n.toFixed(2);
 }
 
@@ -160,7 +160,7 @@ export default function PrintBulletinPage() {
         }}
       >
         <span style={{ color: "#aaa", fontFamily: "sans-serif", fontSize: "13px" }}>
-          Bulletin de notes — {data.student.lastName} {data.student.firstName}
+          Bulletin de notes : {data.student.lastName} {data.student.firstName}
         </span>
         <button
           onClick={() => window.print()}
@@ -223,7 +223,7 @@ export default function PrintBulletinPage() {
                 Africa Leadership Higher Institute
               </div>
               <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>
-                Château Ngoa Ekélé, Yaoundé, Cameroun &mdash; Tél. : +237 657 75 54 87
+                Château Ngoa Ekélé, Yaoundé, Cameroun, Tél. : +237 657 75 54 87
               </div>
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function PrintBulletinPage() {
             Relevé de Notes Semestriel
           </div>
           <div style={{ fontSize: "12px", color: "#555", marginTop: "4px" }}>
-            Semestre {data.semester} &mdash; Année Académique {data.academicYear}
+            Semestre {data.semester}, Année Académique {data.academicYear}
           </div>
         </div>
 
@@ -300,13 +300,13 @@ export default function PrintBulletinPage() {
               <>
                 <tr key={`ue-${ue.ueCode}`} className="ue-header">
                   <td className="left" colSpan={2}>
-                    <strong>{ue.ueCode}</strong> &mdash; {ue.ueName}
+                    <strong>{ue.ueCode}</strong> : {ue.ueName}
                   </td>
                   <td>{ue.totalCredits}</td>
                   <td colSpan={3}></td>
                   <td>
                     <strong>
-                      {ue.average != null ? ue.average.toFixed(2) : "—"}
+                      {ue.average != null ? ue.average.toFixed(2) : "n/a"}
                     </strong>
                   </td>
                   <td>
@@ -336,7 +336,7 @@ export default function PrintBulletinPage() {
                     </td>
                     <td>
                       <span className={c.noteFinal == null ? "neutral" : c.validated ? "validated" : "failed"}>
-                        {c.noteFinal == null ? "—" : c.validated ? "Validé" : "Ajourné"}
+                        {c.noteFinal == null ? "n/a" : c.validated ? "Validé" : "Ajourné"}
                       </span>
                     </td>
                   </tr>
@@ -396,7 +396,7 @@ export default function PrintBulletinPage() {
                 color: admis ? "#15803d" : "#b91c1c",
               }}
             >
-              {avg != null ? avg.toFixed(2) : "—"}/20
+              {avg != null ? avg.toFixed(2) : "n/a"}/20
             </div>
             <div style={{ fontSize: "11px", color: "#777", marginTop: "2px" }}>
               Moyenne Générale
@@ -454,7 +454,7 @@ export default function PrintBulletinPage() {
             paddingTop: "8px",
           }}
         >
-          Africa Leadership Higher Institute — Château Ngoa Ekélé, Yaoundé, Cameroun<br />
+          Africa Leadership Higher Institute, Château Ngoa Ekélé, Yaoundé, Cameroun<br />
           Ce document est un relevé officiel de notes. Toute falsification est passible de sanctions disciplinaires et pénales.
         </div>
       </div>
