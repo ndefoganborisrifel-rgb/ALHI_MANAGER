@@ -49,17 +49,19 @@ export function Sidebar({ userRole, collapsed, onToggle }: SidebarProps) {
       {/* Logo */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         {!collapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#B91C2F] rounded-lg flex items-center justify-center font-bold text-white text-sm">ali</div>
-            <div className="text-xs leading-tight">
-              <div className="font-bold text-white">AFRICA LEADERSHIP</div>
-              <div className="text-gray-400">HIGHER INSTITUTE</div>
+          <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-alhi.svg" alt="ALHI" className="w-9 h-9 shrink-0 brightness-0 invert" />
+            <div className="text-xs leading-tight min-w-0">
+              <div className="font-bold text-white truncate">AFRICA LEADERSHIP</div>
+              <div className="text-gray-400 truncate">HIGHER INSTITUTE</div>
             </div>
           </Link>
         )}
         {collapsed && (
           <Link href="/dashboard" className="mx-auto">
-            <div className="w-8 h-8 bg-[#B91C2F] rounded-lg flex items-center justify-center font-bold text-white text-sm">ali</div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-alhi.svg" alt="ALHI" className="w-8 h-8 brightness-0 invert" />
           </Link>
         )}
         <button

@@ -1,43 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
-  <!-- Africa continent silhouette (simplified, recognizable outline) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 120" width="110" height="120">
+  <defs>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(185,28,47,0.18)"/>
+    </filter>
+  </defs>
+  <!-- Africa continent silhouette — recognizable outline -->
   <path
-    d="
-      M60,8
-      C68,8 76,11 80,16
-      C85,21 87,26 89,30
-      C93,35 96,36 98,40
-      C100,44 99,49 97,52
-      C95,56 94,58 95,62
-      C97,68 100,72 99,78
-      C98,84 94,89 90,93
-      C86,97 81,100 76,103
-      C71,106 66,109 61,110
-      C56,111 51,110 47,108
-      C43,106 40,103 38,100
-      C35,97 33,93 32,89
-      C31,85 32,81 30,77
-      C28,73 24,70 22,66
-      C20,62 21,57 22,53
-      C23,49 26,46 27,42
-      C29,38 29,34 31,30
-      C34,25 38,22 42,18
-      C47,13 53,8 60,8
-      Z
-    "
-    fill="#f5f5f5"
+    d="M 28,8
+       C 40,4 52,3 64,6
+       C 70,8 74,11 78,14
+       L 82,22
+       L 84,32
+       L 80,37
+       L 92,45
+       L 87,57
+       L 82,69
+       L 78,81
+       L 74,93
+       L 68,104
+       L 60,111
+       L 52,106
+       L 45,96
+       L 38,82
+       L 33,68
+       L 27,56
+       L 22,50
+       L 16,44
+       L 14,36
+       L 14,28
+       C 16,22 18,18 22,14
+       C 24,10 26,8 28,8
+       Z"
+    fill="#fff7f7"
     stroke="#B91C2F"
-    stroke-width="3"
+    stroke-width="2.8"
     stroke-linejoin="round"
+    stroke-linecap="round"
+    filter="url(#sh)"
   />
-  <!-- "ALI" text in red, centered on Africa -->
+  <!-- ALI text centered in Africa -->
   <text
-    x="60"
-    y="67"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-size="26"
+    x="52"
+    y="70"
+    font-family="Georgia, 'Times New Roman', Times, serif"
+    font-size="22"
     font-weight="700"
     fill="#B91C2F"
     text-anchor="middle"
-    letter-spacing="2"
+    letter-spacing="3"
   >ALI</text>
 </svg>

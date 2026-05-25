@@ -2,10 +2,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,41 +37,224 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#1A1A1A] to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo Card */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="bg-[#B91C2F] px-8 py-6 text-center">
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <div className="text-4xl font-bold text-white tracking-tight">ali</div>
-              <div className="w-px h-10 bg-white/30" />
-              <div className="text-left">
-                <div className="text-white font-bold text-xs leading-tight">AFRICA</div>
-                <div className="text-white font-bold text-xs leading-tight">LEADERSHIP</div>
-                <div className="text-white/80 text-xs leading-tight">HIGHER INSTITUTE</div>
-              </div>
-            </div>
-            <p className="text-white/80 text-xs mt-2">Système d&apos;Information SI-ALHI</p>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}
+    >
+      {/* LEFT SIDE - Brand panel */}
+      <div
+        style={{
+          display: "none",
+          flex: "0 0 45%",
+          background: "#B91C2F",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "48px 40px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+        className="md-left-panel"
+      >
+        {/* Watermark ALHI text */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "-40px",
+            right: "-20px",
+            fontSize: "220px",
+            fontWeight: "900",
+            color: "rgba(255,255,255,0.06)",
+            letterSpacing: "-8px",
+            lineHeight: 1,
+            userSelect: "none",
+            pointerEvents: "none",
+          }}
+        >
+          ALHI
+        </div>
+        {/* Geometric circles */}
+        <div
+          style={{
+            position: "absolute",
+            top: "-60px",
+            left: "-60px",
+            width: "240px",
+            height: "240px",
+            borderRadius: "50%",
+            border: "40px solid rgba(255,255,255,0.05)",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "80px",
+            left: "40px",
+            width: "120px",
+            height: "120px",
+            borderRadius: "50%",
+            border: "20px solid rgba(255,255,255,0.06)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Center content */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-alhi.svg"
+            alt="ALHI"
+            style={{
+              width: "100px",
+              height: "100px",
+              filter: "brightness(0) invert(1)",
+              opacity: 0.92,
+              marginBottom: "28px",
+            }}
+          />
+          <h1
+            style={{
+              color: "white",
+              fontSize: "28px",
+              fontWeight: "800",
+              textAlign: "center",
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              lineHeight: "1.2",
+              marginBottom: "8px",
+            }}
+          >
+            Africa Leadership
+            <br />
+            Higher Institute
+          </h1>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.75)",
+              fontSize: "14px",
+              textAlign: "center",
+              marginTop: "12px",
+              fontStyle: "italic",
+              letterSpacing: "0.3px",
+            }}
+          >
+            Excellence et Leadership en Afrique Centrale
+          </p>
+          <div
+            style={{
+              width: "50px",
+              height: "3px",
+              background: "rgba(255,255,255,0.3)",
+              borderRadius: "2px",
+              marginTop: "24px",
+            }}
+          />
+        </div>
+
+        {/* Bottom address */}
+        <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+          <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px", lineHeight: "1.7" }}>
+            Chateau Ngoa Ekele, Yaounde, Cameroun
+          </p>
+          <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
+            +237 657 75 54 87 / +237 676 25 85 13
+          </p>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE - Login form */}
+      <div
+        style={{
+          flex: 1,
+          background: "white",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "40px 32px",
+          minHeight: "100vh",
+        }}
+      >
+        {/* Top logo (visible on mobile, subtle on desktop) */}
+        <div style={{ width: "100%", maxWidth: "380px", textAlign: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-alhi.svg" alt="ALHI" style={{ width: "32px", height: "32px" }} />
+            <span style={{ fontWeight: "700", fontSize: "15px", color: "#1A1A1A" }}>SI-ALHI</span>
+          </div>
+        </div>
+
+        {/* Form area */}
+        <div style={{ width: "100%", maxWidth: "380px" }}>
+          <div style={{ marginBottom: "32px" }}>
+            <h1
+              style={{
+                fontSize: "30px",
+                fontWeight: "800",
+                color: "#1A1A1A",
+                marginBottom: "6px",
+              }}
+            >
+              Bienvenue
+            </h1>
+            <p style={{ fontSize: "14px", color: "#6b7280" }}>
+              Connectez-vous a votre espace SI-ALHI
+            </p>
           </div>
 
-          {/* Form */}
-          <div className="px-8 py-8">
-            <div className="text-center mb-6">
-              <h1 className="text-xl font-bold text-gray-900">Connexion</h1>
-              <p className="text-sm text-gray-500 mt-1">Accédez à votre espace personnel</p>
+          {error && (
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "12px 16px",
+                background: "#fef2f2",
+                border: "1.5px solid #fecaca",
+                borderRadius: "10px",
+                fontSize: "13px",
+                color: "#b91c1c",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <span style={{ fontSize: "16px" }}>&#9888;</span>
+              {error}
             </div>
+          )}
 
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Adresse email</Label>
-                <Input
+          <form onSubmit={handleSubmit}>
+            {/* Email */}
+            <div style={{ marginBottom: "18px" }}>
+              <label
+                htmlFor="email"
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  color: "#374151",
+                  marginBottom: "6px",
+                }}
+              >
+                Adresse email
+              </label>
+              <div style={{ position: "relative" }}>
+                <Mail
+                  style={{
+                    position: "absolute",
+                    left: "13px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: "16px",
+                    height: "16px",
+                    color: "#9ca3af",
+                    pointerEvents: "none",
+                  }}
+                />
+                <input
                   id="email"
                   type="email"
                   placeholder="votre@email.com"
@@ -81,59 +262,188 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px 12px 40px",
+                    border: "1.5px solid #e5e7eb",
+                    borderRadius: "10px",
+                    fontSize: "14px",
+                    color: "#1A1A1A",
+                    outline: "none",
+                    background: "#f9fafb",
+                    boxSizing: "border-box",
+                    transition: "border-color 0.15s, background 0.15s",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#B91C2F";
+                    e.target.style.background = "white";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#e5e7eb";
+                    e.target.style.background = "#f9fafb";
+                  }}
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Connexion en cours...
-                  </>
-                ) : (
-                  "Se connecter"
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-xs text-gray-400">
-                Château Ngoa Ekélé, Yaoundé, Cameroun
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                +237 657 75 54 87 / +237 676 25 85 13
-              </p>
             </div>
-          </div>
+
+            {/* Password */}
+            <div style={{ marginBottom: "8px" }}>
+              <label
+                htmlFor="password"
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  color: "#374151",
+                  marginBottom: "6px",
+                }}
+              >
+                Mot de passe
+              </label>
+              <div style={{ position: "relative" }}>
+                <Lock
+                  style={{
+                    position: "absolute",
+                    left: "13px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: "16px",
+                    height: "16px",
+                    color: "#9ca3af",
+                    pointerEvents: "none",
+                  }}
+                />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  style={{
+                    width: "100%",
+                    padding: "12px 44px 12px 40px",
+                    border: "1.5px solid #e5e7eb",
+                    borderRadius: "10px",
+                    fontSize: "14px",
+                    color: "#1A1A1A",
+                    outline: "none",
+                    background: "#f9fafb",
+                    boxSizing: "border-box",
+                    transition: "border-color 0.15s, background 0.15s",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#B91C2F";
+                    e.target.style.background = "white";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#e5e7eb";
+                    e.target.style.background = "#f9fafb";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#9ca3af",
+                    padding: "2px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {showPassword ? <EyeOff style={{ width: "16px", height: "16px" }} /> : <Eye style={{ width: "16px", height: "16px" }} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Forgot password link */}
+            <div style={{ textAlign: "right", marginBottom: "24px" }}>
+              <Link
+                href="/mot-de-passe-oublie"
+                style={{
+                  fontSize: "12px",
+                  color: "#B91C2F",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                }}
+              >
+                Mot de passe oublie ?
+              </Link>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                width: "100%",
+                padding: "13px",
+                background: isLoading ? "#d1d5db" : "#B91C2F",
+                color: "white",
+                border: "none",
+                borderRadius: "10px",
+                fontSize: "15px",
+                fontWeight: "700",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                transition: "background 0.15s, transform 0.1s",
+                letterSpacing: "0.3px",
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading) (e.currentTarget as HTMLButtonElement).style.background = "#9b1625";
+              }}
+              onMouseLeave={(e) => {
+                if (!isLoading) (e.currentTarget as HTMLButtonElement).style.background = "#B91C2F";
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 style={{ width: "17px", height: "17px", animation: "spin 1s linear infinite" }} />
+                  Connexion en cours...
+                </>
+              ) : (
+                "Se connecter"
+              )}
+            </button>
+          </form>
         </div>
 
-        <p className="text-center text-gray-500 text-xs mt-4">
-          02 ANS AU CAMEROUN &amp; 03 ANS EN FRANCE. PIGE
-        </p>
+        {/* Bottom contact */}
+        <div style={{ width: "100%", maxWidth: "380px", textAlign: "center" }}>
+          <p style={{ fontSize: "11px", color: "#9ca3af" }}>
+            Chateau Ngoa Ekele, Yaounde, Cameroun
+          </p>
+          <p style={{ fontSize: "11px", color: "#9ca3af", marginTop: "2px" }}>
+            +237 657 75 54 87 / +237 676 25 85 13
+          </p>
+          <p style={{ fontSize: "11px", color: "#d1d5db", marginTop: "8px" }}>
+            02 ANS AU CAMEROUN &amp; 03 ANS EN FRANCE. PIGE
+          </p>
+        </div>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @media (min-width: 768px) {
+          .md-left-panel {
+            display: flex !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

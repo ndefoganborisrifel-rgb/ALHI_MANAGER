@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 
 interface CourseGrade {
@@ -285,8 +285,8 @@ export default function PrintBulletinPage() {
           </thead>
           <tbody>
             {data.ueResults.map((ue) => (
-              <>
-                <tr key={`ue-${ue.ueCode}`} className="ue-header">
+              <React.Fragment key={`ue-${ue.ueCode}`}>
+                <tr className="ue-header">
                   <td className="left" colSpan={2}>
                     <strong>{ue.ueCode}</strong> : {ue.ueName}
                   </td>
@@ -329,7 +329,7 @@ export default function PrintBulletinPage() {
                     </td>
                   </tr>
                 ))}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>

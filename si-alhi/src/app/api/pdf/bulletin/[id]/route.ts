@@ -77,15 +77,15 @@ export async function GET(req: Request, { params }: RouteParams) {
   const totalValidatedCredits = ueResults.reduce((sum, ue) => sum + ue.validatedCredits, 0);
   const mention = getMention(generalAverage);
 
-  // Get rank among all students in same filiere
+  // Get rank among all students in same filiere using proper credit weights
   const allStudents = await prisma.student.findMany({
     where: { filiereId: student.filiereId, status: { in: ["ACTIF", "INSCRIT"] } },
-    include: { grades: { where: { academicYear, semester } } },
+    include: { grades: { where: { academicYear, semester }, include: { course: true } } },
   });
 
   const avgList = allStudents.map((s) => ({
     id: s.id,
-    avg: calculateGeneralAverage(s.grades.map((g) => ({ average: g.noteFinal, credits: 1 }))),
+    avg: calculateGeneralAverage(s.grades.map((g) => ({ average: g.noteFinal, credits: g.course.credits }))),
   }));
   const sortedAvgs = avgList.sort((a, b) => (b.avg ?? 0) - (a.avg ?? 0));
   const rank = sortedAvgs.findIndex((a) => a.id === id) + 1;

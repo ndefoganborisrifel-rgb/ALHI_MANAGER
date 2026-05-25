@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, FileText, Award } from "lucide-react";
+import { BookOpen, FileText, Award, ClipboardList } from "lucide-react";
 
 export default async function ExamensPage() {
   const session = await auth();
@@ -100,6 +100,16 @@ export default async function ExamensPage() {
                 <span className="text-sm font-medium text-gray-700">Consulter et imprimer les bulletins</span>
               </div>
             </Link>
+            {canEnterGrades && (
+              <Link href="/examens/pv">
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-100 cursor-pointer transition-colors">
+                  <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
+                    <ClipboardList className="w-4 h-4 text-[#B91C2F]" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">PV de notes (CC et Examen)</span>
+                </div>
+              </Link>
+            )}
             {canEnterGrades && (
               <Link href="/examens/deliberation">
                 <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-100 cursor-pointer transition-colors">
