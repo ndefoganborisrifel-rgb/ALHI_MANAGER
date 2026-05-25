@@ -1,20 +1,20 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save, CheckCircle, AlertTriangle, BookOpen } from "lucide-react";
+import { ArrowLeft, Save, CheckCircle, AlertTriangle, BookOpen, Loader2 } from "lucide-react";
 
 interface CourseInfo {
   id: string;
   code: string;
   name: string;
   credits: number;
-  totalHours: number;
+  totalHours: number | null;
   semester: number;
-  filiere: { name: string; id: string };
+  filiere: { id: string; name: string };
   ue: { code: string; name: string } | null;
 }
 
@@ -46,141 +46,73 @@ export default function SaisieNotesCoursePage() {
   const [course, setCourse] = useState<CourseInfo | null>(null);
   const [rows, setRows] = useState<StudentRow[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [savedAll, setSavedAll] = useState(false);
   const [academicYear] = useState("2025-2026");
 
-  const loadData = useCallback(async () => {
-    try {
-      const [courseRes, studentsRes, gradesRes] = await Promise.all([
-        fetch(`/api/grades?courseId=${params.courseId}`).then((r) => r.json()),
-        fetch("/api/students").then((r) => r.json()),
-        fetch(`/api/grades?courseId=${params.courseId}`).then((r) => r.json()),
-      ]);
-
-      // Fetch course info from grades data or students API
-      const cRes = await fetch(`/api/grades?courseId=${params.courseId}`);
-      const gradeData = await cRes.json();
-
-      // Get course info
-      const courseInfoRes = await fetch(`/api/students`);
-      const allStudents = await courseInfoRes.json();
-
-      // We need to get course info separately
-      const gradeCourseInfo = Array.isArray(gradeData) && gradeData.length > 0 ? gradeData[0].course : null;
-
-      if (!gradeCourseInfo) {
-        // Try to get from all courses
-        const cInfoRes = await fetch(`/api/grades?courseId=${params.courseId}&limit=1`);
-        const cInfo = await cInfoRes.json();
-        void cInfo;
-      }
-
-      void courseRes;
-      void studentsRes;
-      void gradesRes;
-    } catch {
-      setError("Erreur de chargement");
-    }
-  }, [params.courseId]);
-
   useEffect(() => {
     const init = async () => {
       try {
-        // Load grades (which include course and student info)
-        const [gradesRes, studentsRes] = await Promise.all([
+        // Step 1: fetch course info (guaranteed filière data)
+        const courseRes = await fetch(`/api/courses/${params.courseId}`);
+        if (!courseRes.ok) {
+          setError("Cours introuvable");
+          setLoading(false);
+          return;
+        }
+        const courseData: CourseInfo = await courseRes.json();
+        setCourse(courseData);
+
+        // Step 2: fetch students for that filière + existing grades in parallel
+        const [studentsRes, gradesRes] = await Promise.all([
+          fetch(`/api/students?filiereId=${courseData.filiere.id}`).then((r) => r.json()),
           fetch(`/api/grades?courseId=${params.courseId}`).then((r) => r.json()),
-          fetch("/api/students").then((r) => r.json()),
         ]);
+
+        const students: Array<{
+          id: string;
+          matricule: string;
+          firstName: string;
+          lastName: string;
+        }> = Array.isArray(studentsRes) ? studentsRes : [];
 
         const grades: Array<{
           id: string;
           studentId: string;
-          courseId: string;
           cc1: number | null;
           cc2: number | null;
           examScore: number | null;
           noteFinal: number | null;
-          course: CourseInfo;
-          student: { id: string; matricule: string; firstName: string; lastName: string; filiereId: string };
         }> = Array.isArray(gradesRes) ? gradesRes : [];
 
-        const courseData = grades[0]?.course ?? null;
+        const gradeMap = new Map(grades.map((g) => [g.studentId, g]));
 
-        if (courseData) {
-          setCourse(courseData);
-          // Build rows from existing grades, then add students without grades
-          const gradedStudentIds = new Set(grades.map((g) => g.studentId));
-          const filiereStudents = Array.isArray(studentsRes)
-            ? studentsRes.filter(
-                (s: { filiereId: string }) => courseData && s.filiereId === courseData.filiere.id
-              )
-            : [];
-
-          const gradeMap = new Map(grades.map((g) => [g.studentId, g]));
-
-          const allRows: StudentRow[] = filiereStudents.map((s: { id: string; matricule: string; firstName: string; lastName: string }) => {
-            const existing = gradeMap.get(s.id);
-            return {
-              id: s.id,
-              matricule: s.matricule,
-              firstName: s.firstName,
-              lastName: s.lastName,
-              cc1: existing?.cc1 ?? "",
-              cc2: existing?.cc2 ?? "",
-              examScore: existing?.examScore ?? "",
-              noteFinal: existing?.noteFinal ?? null,
-              gradeId: existing?.id ?? null,
-              saved: !!existing,
-            };
-          });
-
-          // Also add any graded students not in filiere list (shouldn't happen normally)
-          grades.forEach((g) => {
-            if (!gradedStudentIds.has(g.studentId) && !allRows.find((r) => r.id === g.studentId)) {
-              allRows.push({
-                id: g.student.id,
-                matricule: g.student.matricule,
-                firstName: g.student.firstName,
-                lastName: g.student.lastName,
-                cc1: g.cc1 ?? "",
-                cc2: g.cc2 ?? "",
-                examScore: g.examScore ?? "",
-                noteFinal: g.noteFinal,
-                gradeId: g.id,
-                saved: true,
-              });
-            }
-          });
-
-          setRows(allRows.sort((a, b) => a.lastName.localeCompare(b.lastName)));
-        } else {
-          // No grades yet, just load students from all filières and show a message
-          // Try to get course info from URL course id, minimal display
-          setError(null);
-          const allStud = Array.isArray(studentsRes) ? studentsRes : [];
-          const studentRows: StudentRow[] = allStud.map((s: { id: string; matricule: string; firstName: string; lastName: string }) => ({
+        const allRows: StudentRow[] = students.map((s) => {
+          const existing = gradeMap.get(s.id);
+          return {
             id: s.id,
             matricule: s.matricule,
             firstName: s.firstName,
             lastName: s.lastName,
-            cc1: "",
-            cc2: "",
-            examScore: "",
-            noteFinal: null,
-            gradeId: null,
-            saved: false,
-          }));
-          setRows(studentRows.sort((a, b) => a.lastName.localeCompare(b.lastName)));
-        }
+            cc1: existing?.cc1 ?? "",
+            cc2: existing?.cc2 ?? "",
+            examScore: existing?.examScore ?? "",
+            noteFinal: existing?.noteFinal ?? null,
+            gradeId: existing?.id ?? null,
+            saved: !!existing,
+          };
+        });
+
+        setRows(allRows);
       } catch {
         setError("Erreur lors du chargement des données");
+      } finally {
+        setLoading(false);
       }
     };
     init();
   }, [params.courseId]);
-
-  void loadData;
 
   function updateRow(idx: number, field: "cc1" | "cc2" | "examScore", value: string) {
     setRows((prev) => {
@@ -238,6 +170,15 @@ export default function SaisieNotesCoursePage() {
     setSavedAll(true);
   }
 
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-3 text-gray-500">
+        <Loader2 className="w-8 h-8 animate-spin text-[#B91C2F]" />
+        <p>Chargement du cours...</p>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
@@ -270,7 +211,8 @@ export default function SaisieNotesCoursePage() {
           </div>
           {course && (
             <p className="text-sm text-gray-500">
-              {course.filiere.name}, Semestre {course.semester}, {course.credits} crédits
+              {course.filiere.name}, Semestre {course.semester}, {course.credits} crédit{course.credits > 1 ? "s" : ""}
+              {course.ue ? `, UE: ${course.ue.code}` : ""}
             </p>
           )}
         </div>
@@ -289,7 +231,7 @@ export default function SaisieNotesCoursePage() {
         </div>
       )}
 
-      {/* Info */}
+      {/* Formule */}
       <Card className="border-blue-100 bg-blue-50">
         <CardContent className="p-4 text-sm text-blue-800">
           <strong>Formule de calcul :</strong> Note finale = CC1 x 20% + CC2 x 20% + Examen x 60%.
@@ -302,7 +244,7 @@ export default function SaisieNotesCoursePage() {
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-[#B91C2F]" />
-            Saisie des notes ({rows.length} étudiants)
+            Saisie des notes ({rows.length} étudiant{rows.length !== 1 ? "s" : ""})
           </CardTitle>
           <span className="text-sm text-gray-500">{academicYear}</span>
         </CardHeader>
@@ -310,13 +252,13 @@ export default function SaisieNotesCoursePage() {
           {rows.length === 0 ? (
             <div className="py-12 text-center text-gray-500">
               <BookOpen className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-              <p>Aucun étudiant trouvé pour cette filière.</p>
+              <p>Aucun étudiant inscrit dans cette filière.</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-gray-50">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-700 w-32">Matricule</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-700 w-36">Matricule</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-700">Étudiant</th>
                   <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC1/20</th>
                   <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC2/20</th>
@@ -378,7 +320,7 @@ export default function SaisieNotesCoursePage() {
                             {preview.toFixed(2)}
                           </span>
                         ) : (
-                          <span className="text-gray-200">-</span>
+                          <span className="text-gray-300">-</span>
                         )}
                       </td>
                       <td className="px-3 py-2 text-center">
@@ -387,7 +329,7 @@ export default function SaisieNotesCoursePage() {
                             {passed ? "Validé" : "Ajourné"}
                           </Badge>
                         ) : (
-                          <span className="text-gray-200 text-xs">-</span>
+                          <span className="text-gray-300 text-xs">-</span>
                         )}
                       </td>
                       <td className="px-3 py-2">
@@ -398,7 +340,13 @@ export default function SaisieNotesCoursePage() {
                           onClick={() => saveRow(idx)}
                           className={row.saved ? "text-green-600 border-green-200 bg-green-50" : "bg-[#B91C2F] text-white hover:bg-[#B91C2F]/90"}
                         >
-                          {saving[row.id] ? "..." : row.saved ? <CheckCircle className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+                          {saving[row.id] ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : row.saved ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Save className="w-4 h-4" />
+                          )}
                         </Button>
                       </td>
                     </tr>

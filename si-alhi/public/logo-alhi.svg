@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Africa continent silhouette (simplified, recognizable outline) -->
+  <path
+    d="
+      M60,8
+      C68,8 76,11 80,16
+      C85,21 87,26 89,30
+      C93,35 96,36 98,40
+      C100,44 99,49 97,52
+      C95,56 94,58 95,62
+      C97,68 100,72 99,78
+      C98,84 94,89 90,93
+      C86,97 81,100 76,103
+      C71,106 66,109 61,110
+      C56,111 51,110 47,108
+      C43,106 40,103 38,100
+      C35,97 33,93 32,89
+      C31,85 32,81 30,77
+      C28,73 24,70 22,66
+      C20,62 21,57 22,53
+      C23,49 26,46 27,42
+      C29,38 29,34 31,30
+      C34,25 38,22 42,18
+      C47,13 53,8 60,8
+      Z
+    "
+    fill="#f5f5f5"
+    stroke="#B91C2F"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+  <!-- "ALI" text in red, centered on Africa -->
+  <text
+    x="60"
+    y="67"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="26"
+    font-weight="700"
+    fill="#B91C2F"
+    text-anchor="middle"
+    letter-spacing="2"
+  >ALI</text>
+</svg>

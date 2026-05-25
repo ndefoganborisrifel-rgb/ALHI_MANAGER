@@ -19,14 +19,18 @@ const createSchema = z.object({
   status: z.string().optional(),
 });
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
+  const { searchParams } = new URL(req.url);
+  const filiereId = searchParams.get("filiereId");
+
   const students = await prisma.student.findMany({
+    where: filiereId ? { filiereId } : undefined,
     include: { filiere: true },
-    orderBy: { createdAt: "desc" },
-    take: 100,
+    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    take: 200,
   });
   return NextResponse.json(students);
 }

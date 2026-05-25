@@ -192,24 +192,12 @@ export default function PrintBulletinPage() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-            <div
-              style={{
-                width: "58px",
-                height: "58px",
-                background: "#B91C2F",
-                borderRadius: "6px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontWeight: "bold",
-                fontSize: "16px",
-                flexShrink: 0,
-                letterSpacing: "1px",
-              }}
-            >
-              ALHI
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-alhi.svg"
+              alt="ALHI"
+              style={{ width: "64px", height: "64px", flexShrink: 0 }}
+            />
             <div>
               <div
                 style={{

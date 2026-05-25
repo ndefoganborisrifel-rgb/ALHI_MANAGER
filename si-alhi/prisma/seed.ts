@@ -299,7 +299,7 @@ async function main() {
   for (let i = 0; i < studentsData.length; i++) {
     const s = studentsData[i];
     const seq = i + 1;
-    const matricule = `ALI/PE${String(seq).padStart(3, "0")}/25`;
+    const matricule = `ALI\\ING${String(seq).padStart(3, "0")}\\25`;
     const slug = `${s.firstName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}.${s.lastName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}`;
     const email = `${slug}@etu.africaleadershipinstitute.com`;
 

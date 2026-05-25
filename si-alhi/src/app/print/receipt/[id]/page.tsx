@@ -81,24 +81,12 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: "3px solid #B91C2F", paddingBottom: "10px", marginBottom: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                background: "#B91C2F",
-                borderRadius: "6px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontWeight: "900",
-                fontSize: "13px",
-                letterSpacing: "0.5px",
-                flexShrink: 0,
-              }}
-            >
-              ALI
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-alhi.svg"
+              alt="ALHI"
+              style={{ width: "52px", height: "52px", flexShrink: 0 }}
+            />
             <div>
               <div style={{ fontSize: "12px", fontWeight: "bold", color: "#1A1A1A", textTransform: "uppercase", letterSpacing: "0.3px" }}>
                 Africa Leadership Higher Institute
