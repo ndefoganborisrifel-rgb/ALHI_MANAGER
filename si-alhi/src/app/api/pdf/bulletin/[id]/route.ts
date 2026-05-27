@@ -34,7 +34,28 @@ export async function GET(req: Request, { params }: RouteParams) {
     },
   });
 
-  if (!student) return NextResponse.json({ error: "Étudiant introuvable" }, { status: 404 });
+  if (!student) return NextResponse.json({ error: "Etudiant introuvable" }, { status: 404 });
+
+  // Access control: a student can only view their own bulletin, and only if published
+  if (session.user.role === "ETUDIANT") {
+    if (session.user.id !== student.userId) {
+      return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    }
+    if (!student.filiere.bulletinsPublished) {
+      return NextResponse.json({ error: "Les bulletins ne sont pas encore disponibles. Attendez l'autorisation de la direction." }, { status: 403 });
+    }
+  }
+
+  // A parent can only view bulletins of their children
+  if (session.user.role === "PARENT") {
+    const parent = await prisma.parent.findFirst({
+      where: { userId: session.user.id, students: { some: { id } } },
+    });
+    if (!parent) return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    if (!student.filiere.bulletinsPublished) {
+      return NextResponse.json({ error: "Les bulletins ne sont pas encore disponibles." }, { status: 403 });
+    }
+  }
 
   // Build bulletin structure
   const ueResults = student.filiere.ues.map((ue) => {

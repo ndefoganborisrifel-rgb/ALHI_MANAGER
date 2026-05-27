@@ -119,7 +119,19 @@ export default function LoginPage() {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="ALHI" style={{ width: "88px", height: "88px", objectFit: "contain" }} />
+            <img
+              src="/logo.png"
+              alt="ALHI"
+              style={{ width: "88px", height: "88px", objectFit: "contain" }}
+              onError={(e) => {
+                const t = e.currentTarget as HTMLImageElement;
+                t.style.display = "none";
+                const box = document.createElement("div");
+                box.style.cssText = "width:80px;height:80px;background:#B91C2F;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:22px;font-family:Arial,sans-serif;";
+                box.textContent = "ALI";
+                t.parentElement?.appendChild(box);
+              }}
+            />
           </div>
           <h1
             style={{
@@ -187,8 +199,22 @@ export default function LoginPage() {
         {/* Top logo (visible on mobile, subtle on desktop) */}
         <div style={{ width: "100%", maxWidth: "380px", textAlign: "center" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="ALHI" style={{ width: "32px", height: "32px" }} />
+            <div style={{ width: "32px", height: "32px", borderRadius: "8px", overflow: "hidden", background: "#B91C2F", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="ALHI"
+                style={{ width: "32px", height: "32px", objectFit: "contain" }}
+                onError={(e) => {
+                  const t = e.currentTarget as HTMLImageElement;
+                  t.style.display = "none";
+                  const box = document.createElement("span");
+                  box.style.cssText = "color:white;font-weight:900;font-size:10px;font-family:Arial;";
+                  box.textContent = "ALI";
+                  t.parentElement?.appendChild(box);
+                }}
+              />
+            </div>
             <span style={{ fontWeight: "700", fontSize: "15px", color: "#1A1A1A" }}>SI-ALHI</span>
           </div>
         </div>

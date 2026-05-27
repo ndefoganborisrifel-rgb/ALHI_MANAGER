@@ -148,9 +148,10 @@ model Filiere {
   duration      Int
   level         String?
   totalFees     Int
-  responsableId String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  responsableId      String?
+  bulletinsPublished Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   responsable     Teacher?         @relation("FiliereResponsable", fields: [responsableId], references: [id])
   students        Student[]

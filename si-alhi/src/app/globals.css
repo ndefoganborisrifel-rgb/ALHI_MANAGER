@@ -61,3 +61,61 @@ body {
 /* Hover helper classes */
 .card-hover:hover { background: var(--bg-card-hover); }
 .row-hover:hover { background: var(--bg-muted); }
+
+/* ── Dark mode overrides for pages using hardcoded Tailwind classes ── */
+html.dark .bg-white { background-color: var(--bg-card) !important; }
+html.dark .bg-gray-50 { background-color: var(--bg-muted) !important; }
+html.dark .bg-gray-100 { background-color: var(--bg) !important; }
+html.dark .text-gray-900 { color: var(--text) !important; }
+html.dark .text-gray-800 { color: var(--text) !important; }
+html.dark .text-gray-700 { color: var(--text) !important; }
+html.dark .text-gray-600 { color: var(--text-secondary) !important; }
+html.dark .text-gray-500 { color: var(--text-muted) !important; }
+html.dark .text-gray-400 { color: var(--text-muted) !important; }
+html.dark .text-gray-300 { color: var(--border) !important; }
+html.dark .border-gray-200 { border-color: var(--border) !important; }
+html.dark .border-gray-100 { border-color: var(--border-muted) !important; }
+html.dark .divide-gray-200 > * { border-color: var(--border) !important; }
+/* Blue */
+html.dark .bg-blue-50 { background-color: rgba(37,99,235,0.15) !important; }
+html.dark .text-blue-900 { color: #93c5fd !important; }
+html.dark .text-blue-800 { color: #93c5fd !important; }
+html.dark .text-blue-600 { color: #60a5fa !important; }
+html.dark .border-blue-200 { border-color: rgba(37,99,235,0.4) !important; }
+html.dark .bg-blue-100 { background-color: rgba(37,99,235,0.2) !important; }
+/* Green */
+html.dark .bg-green-50 { background-color: rgba(22,163,74,0.12) !important; }
+html.dark .text-green-900 { color: #86efac !important; }
+html.dark .text-green-800 { color: #86efac !important; }
+html.dark .text-green-600 { color: #4ade80 !important; }
+html.dark .border-green-200 { border-color: rgba(22,163,74,0.4) !important; }
+html.dark .bg-green-100 { background-color: rgba(22,163,74,0.2) !important; }
+html.dark .bg-green-500 { background-color: #16a34a !important; }
+/* Orange/Amber */
+html.dark .bg-orange-50 { background-color: rgba(234,88,12,0.12) !important; }
+html.dark .text-orange-900 { color: #fdba74 !important; }
+html.dark .text-orange-800 { color: #fdba74 !important; }
+html.dark .text-orange-600 { color: #fb923c !important; }
+html.dark .border-orange-200 { border-color: rgba(234,88,12,0.4) !important; }
+html.dark .bg-orange-100 { background-color: rgba(234,88,12,0.2) !important; }
+html.dark .text-amber-600 { color: #fbbf24 !important; }
+/* Red */
+html.dark .bg-red-50 { background-color: rgba(185,28,47,0.12) !important; }
+html.dark .text-red-700 { color: #fca5a5 !important; }
+html.dark .text-red-600 { color: #f87171 !important; }
+html.dark .border-red-200 { border-color: rgba(185,28,47,0.4) !important; }
+html.dark .bg-red-100 { background-color: rgba(185,28,47,0.2) !important; }
+/* Purple */
+html.dark .bg-purple-50 { background-color: rgba(124,58,237,0.12) !important; }
+html.dark .text-purple-600 { color: #c084fc !important; }
+/* Shadows */
+html.dark .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; }
+html.dark .shadow-2xl { box-shadow: 0 24px 80px rgba(0,0,0,0.6) !important; }
+html.dark .shadow { box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important; }
+
+/* Shadcn/ui card dark mode */
+html.dark [data-slot="card"] { background-color: var(--bg-card) !important; border-color: var(--border) !important; }
+html.dark [data-slot="card-content"] { color: var(--text) !important; }
+html.dark [data-slot="table-head"] { color: var(--text-muted) !important; background: var(--bg-muted) !important; }
+html.dark [data-slot="table-row"]:hover { background: var(--bg-muted) !important; }
+html.dark [data-slot="table-cell"] { color: var(--text) !important; border-color: var(--border) !important; }

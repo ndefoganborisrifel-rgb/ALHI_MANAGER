@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { AlertTriangle, Plus, Trash2, Calendar } from "lucide-react";
+import { AlertTriangle, Plus, Trash2, Calendar, Printer } from "lucide-react";
 
 type Filiere = {
   id: string;
@@ -359,6 +359,12 @@ export default function PedagogiePage() {
                 Planning des examens SN
               </button>
             </div>
+            <button
+              onClick={() => window.open(`/print/timetable/${activeFiliereId}?mode=${activeSubTab === "examens" ? "examens" : "cours"}&year=2025-2026`, "_blank")}
+              style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "6px 12px", background: "transparent", border: "1.5px solid var(--border)", borderRadius: "7px", fontSize: "12px", fontWeight: "600", color: "var(--text)", cursor: "pointer" }}
+            >
+              <Printer style={{ width: "13px", height: "13px" }} />Imprimer
+            </button>
             <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={openSlotModal}>
               <Plus className="w-4 h-4 mr-1" />Ajouter un creneau
             </Button>
