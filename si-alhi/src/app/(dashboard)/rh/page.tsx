@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Plus, Users, UserCheck, UserX, Wallet } from "lucide-react";
 import { formatCFA, getStatusLabel, getStatusColor } from "@/lib/utils";
+import { useCanManage } from "@/components/providers/RoleProvider";
 
 type Teacher = {
   id: string;
@@ -50,6 +51,7 @@ const emptyTeacherForm: { firstName: string; lastName: string; email: string; ph
 const emptyPayForm = { teacherId: "", month: String(new Date().getMonth() + 1), year: String(new Date().getFullYear()), hoursValidated: "" };
 
 export default function RHPage() {
+  const canManage = useCanManage();
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [payments, setPayments] = useState<TeacherPayment[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -266,9 +268,11 @@ export default function RHPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Liste des enseignants</CardTitle>
-            <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={openAddTeacher}>
-              <Plus className="w-4 h-4 mr-1" />Ajouter un enseignant
-            </Button>
+            {canManage && (
+              <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={openAddTeacher}>
+                <Plus className="w-4 h-4 mr-1" />Ajouter un enseignant
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="p-0">
             <Table>
@@ -317,9 +321,14 @@ export default function RHPage() {
                     <TableCell className="text-sm text-gray-500">{teacher.email ?? teacher.user.email}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-1 justify-end">
-                        <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openEditTeacher(teacher)}>Modifier</Button>
-                        {teacher.user.isActive && (
+                        {canManage && (
+                          <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openEditTeacher(teacher)}>Modifier</Button>
+                        )}
+                        {canManage && teacher.user.isActive && (
                           <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDisableTeacher(teacher)}>Desactiver</Button>
+                        )}
+                        {!canManage && (
+                          <span className="text-xs text-gray-400 italic">Lecture seule</span>
                         )}
                       </div>
                     </TableCell>

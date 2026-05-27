@@ -12,9 +12,10 @@ const createSchema = z.object({
   academicYear: z.string().default("2025-2026"),
   semester: z.number().int().default(1),
   filiereId: z.string().cuid(),
-  type: z.enum(["COURS", "TPE", "EVALUATION", "PAUSE"]).default("COURS"),
+  type: z.enum(["COURS", "TPE", "EVALUATION", "PAUSE", "FERIER", "EXCURSION", "AUTRE"]).default("COURS"),
   sessionNumber: z.number().int().optional(),
   totalSessions: z.number().int().optional(),
+  label: z.string().optional(),
 });
 
 export async function GET(req: Request) {
@@ -52,25 +53,84 @@ export async function POST(req: Request) {
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 });
 
-  // Collision check: same room, same day, same time
-  if (parsed.data.roomId) {
-    const collision = await prisma.schedule.findFirst({
-      where: {
-        roomId: parsed.data.roomId,
-        dayOfWeek: parsed.data.dayOfWeek,
-        startTime: parsed.data.startTime,
-        academicYear: parsed.data.academicYear,
-        semester: parsed.data.semester,
-      },
+  const { roomId, dayOfWeek, startTime, academicYear, semester, courseAssignmentId, filiereId } = parsed.data;
+
+  // Collision salle: meme salle, meme jour, meme heure
+  if (roomId) {
+    const roomCollision = await prisma.schedule.findFirst({
+      where: { roomId, dayOfWeek, startTime, academicYear, semester },
     });
-    if (collision) {
+    if (roomCollision) {
       return NextResponse.json({
-        error: "Collision détectée : cette salle est déjà utilisée à ce créneau.",
+        error: "Collision detectee : cette salle est deja occupee a ce creneau.",
         collision: true,
       }, { status: 409 });
     }
   }
 
+  // Collision enseignant: meme enseignant, meme jour, meme heure
+  if (courseAssignmentId) {
+    const assignment = await prisma.courseAssignment.findUnique({
+      where: { id: courseAssignmentId },
+      select: { teacherId: true },
+    });
+    if (assignment) {
+      const teacherConflict = await prisma.schedule.findFirst({
+        where: {
+          dayOfWeek,
+          startTime,
+          academicYear,
+          semester,
+          courseAssignment: { teacherId: assignment.teacherId },
+        },
+      });
+      if (teacherConflict) {
+        return NextResponse.json({
+          error: "Collision detectee : cet enseignant est deja programme a ce creneau.",
+          collision: true,
+        }, { status: 409 });
+      }
+    }
+  }
+
+  // Collision filiere: meme filiere, meme jour, meme heure
+  const filiereConflict = await prisma.schedule.findFirst({
+    where: { filiereId, dayOfWeek, startTime, academicYear, semester },
+  });
+  if (filiereConflict) {
+    return NextResponse.json({
+      error: "Collision detectee : cette filiere a deja un cours a ce creneau.",
+      collision: true,
+    }, { status: 409 });
+  }
+
   const schedule = await prisma.schedule.create({ data: parsed.data });
+
+  // Notification aux etudiants de la filiere
+  try {
+    const filiere = await prisma.filiere.findUnique({
+      where: { id: filiereId },
+      select: { name: true },
+    });
+    const students = await prisma.student.findMany({
+      where: { filiereId, status: { in: ["ACTIF", "INSCRIT"] } },
+      select: { userId: true },
+    });
+    const userIds = students.map((s) => s.userId).filter(Boolean) as string[];
+    if (userIds.length > 0 && filiere) {
+      const dayFr: Record<string, string> = { LUNDI: "lundi", MARDI: "mardi", MERCREDI: "mercredi", JEUDI: "jeudi", VENDREDI: "vendredi", SAMEDI: "samedi" };
+      await prisma.notification.createMany({
+        data: userIds.map((userId) => ({
+          userId,
+          title: "Emploi du temps mis a jour",
+          message: `Un nouveau creneau a ete ajoute le ${dayFr[dayOfWeek] ?? dayOfWeek} de ${startTime} pour ${filiere.name}.`,
+          type: "INFO",
+        })),
+      });
+    }
+  } catch {
+    // Ne pas bloquer la reponse si les notifications echouent
+  }
+
   return NextResponse.json(schedule, { status: 201 });
 }

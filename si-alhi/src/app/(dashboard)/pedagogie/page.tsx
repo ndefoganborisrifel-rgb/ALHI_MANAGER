@@ -9,7 +9,7 @@ type Room = { id: string; code: string; name: string; capacity?: number };
 type CourseAssignment = {
   id: string;
   course: { id: string; name: string; code: string; filiereId: string };
-  teacher: { firstName: string; lastName: string };
+  teacher: { id: string; firstName: string; lastName: string };
 };
 type Schedule = {
   id: string;
@@ -17,13 +17,16 @@ type Schedule = {
   dayOfWeek: string;
   startTime: string;
   endTime: string;
-  type: "COURS" | "TPE" | "EVALUATION" | "PAUSE";
+  type: string;
+  semester: number;
   roomId?: string | null;
   courseAssignmentId?: string | null;
   sessionNumber?: number | null;
+  totalSessions?: number | null;
+  label?: string | null;
   courseAssignment?: {
     course: { name: string; code: string };
-    teacher: { firstName: string; lastName: string };
+    teacher: { id: string; firstName: string; lastName: string };
   } | null;
   room?: { name: string; code: string } | null;
   filiere: { name: string; code: string };
@@ -31,21 +34,37 @@ type Schedule = {
 
 const DAYS = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"];
 const DAY_FR: Record<string, string> = { LUNDI: "Lundi", MARDI: "Mardi", MERCREDI: "Mercredi", JEUDI: "Jeudi", VENDREDI: "Vendredi", SAMEDI: "Samedi" };
+const DAY_JS: Record<number, string> = { 1: "LUNDI", 2: "MARDI", 3: "MERCREDI", 4: "JEUDI", 5: "VENDREDI", 6: "SAMEDI", 0: "DIMANCHE" };
+
 const TIME_SLOTS = [
-  { label: "08h00", end: "10h00", start: "08:00" },
-  { label: "10h00", end: "12h00", start: "10:00" },
-  { label: "13h00", end: "15h00", start: "13:00" },
-  { label: "15h00", end: "17h00", start: "15:00" },
+  { label: "08h00", end: "10h00", start: "08:00", endRaw: "10:00" },
+  { label: "10h00", end: "12h00", start: "10:00", endRaw: "12:00" },
+  { label: "13h20", end: "15h20", start: "13:20", endRaw: "15:20" },
+  { label: "15h20", end: "17h20", start: "15:20", endRaw: "17:20" },
 ];
 
 const TYPE_STYLE: Record<string, { bg: string; border: string; text: string; dot: string; label: string }> = {
-  COURS:      { bg: "#e0f2fe", border: "#7dd3fc", text: "#0c4a6e", dot: "#0ea5e9", label: "Cours" },
-  TPE:        { bg: "#dcfce7", border: "#86efac", text: "#14532d", dot: "#22c55e", label: "TPE" },
-  EVALUATION: { bg: "#fef3c7", border: "#fcd34d", text: "#78350f", dot: "#f59e0b", label: "Evaluation" },
-  PAUSE:      { bg: "#f3f4f6", border: "#d1d5db", text: "#6b7280", dot: "#9ca3af", label: "Pause" },
+  COURS:      { bg: "#e0f2fe", border: "#7dd3fc", text: "#0c4a6e", dot: "#0ea5e9",  label: "Cours" },
+  TPE:        { bg: "#dcfce7", border: "#86efac", text: "#14532d", dot: "#22c55e",  label: "TPE" },
+  EVALUATION: { bg: "#fef3c7", border: "#fcd34d", text: "#78350f", dot: "#f59e0b",  label: "Evaluation" },
+  PAUSE:      { bg: "#f3f4f6", border: "#d1d5db", text: "#6b7280", dot: "#9ca3af",  label: "Pause" },
+  FERIER:     { bg: "#f3e8ff", border: "#d8b4fe", text: "#581c87", dot: "#a855f7",  label: "Ferie" },
+  EXCURSION:  { bg: "#ecfdf5", border: "#6ee7b7", text: "#064e3b", dot: "#10b981",  label: "Excursion" },
+  AUTRE:      { bg: "#f8fafc", border: "#cbd5e1", text: "#475569", dot: "#94a3b8",  label: "Autre" },
 };
 
-const EMPTY_FORM = { type: "COURS" as Schedule["type"], dayOfWeek: "LUNDI", startTime: "08:00", endTime: "10:00", roomId: "", courseAssignmentId: "", sessionNumber: "" };
+const EMPTY_FORM = {
+  type: "COURS",
+  dayOfWeek: "LUNDI",
+  startTime: "08:00",
+  endTime: "10:00",
+  roomId: "",
+  courseAssignmentId: "",
+  sessionNumber: "",
+  totalSessions: "",
+  label: "",
+  semester: "1",
+};
 
 function getMonday(d: Date): Date {
   const date = new Date(d);
@@ -109,14 +128,20 @@ export default function PedagogiePage() {
 
   useEffect(() => { loadData(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Collision detection
+  // Collision detection: meme salle OU meme enseignant, meme jour, meme heure
   const collisions = new Set<string>();
   for (let i = 0; i < schedules.length; i++) {
     for (let j = i + 1; j < schedules.length; j++) {
       const a = schedules[i], b = schedules[j];
-      if (a.dayOfWeek === b.dayOfWeek && a.roomId && a.roomId === b.roomId && a.startTime === b.startTime) {
-        collisions.add(a.id); collisions.add(b.id);
-      }
+      if (a.dayOfWeek !== b.dayOfWeek || a.startTime !== b.startTime) continue;
+      // Collision salle
+      if (a.roomId && a.roomId === b.roomId) { collisions.add(a.id); collisions.add(b.id); }
+      // Collision enseignant
+      const ta = a.courseAssignment?.teacher?.id;
+      const tb = b.courseAssignment?.teacher?.id;
+      if (ta && ta === tb) { collisions.add(a.id); collisions.add(b.id); }
+      // Collision filiere (meme groupe, meme heure)
+      if (a.filiereId === b.filiereId) { collisions.add(a.id); collisions.add(b.id); }
     }
   }
 
@@ -126,6 +151,14 @@ export default function PedagogiePage() {
   const examSlots = filiereSchedules.filter((s) => s.type === "EVALUATION");
   const filiereAssignments = assignments.filter((a) => a.course.filiereId === activeFiliereId);
   const totalCollisions = collisions.size / 2;
+
+  // Demain
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowDay = DAY_JS[tomorrow.getDay()];
+  const tomorrowSlots = filiereSchedules.filter((s) => s.dayOfWeek === tomorrowDay && s.type !== "EVALUATION");
+  const tomorrowFirst = tomorrowSlots.length > 0 ? TIME_SLOTS.find((t) => t.start === tomorrowSlots[0]?.startTime) : null;
+  const tomorrowLast = tomorrowSlots.length > 0 ? TIME_SLOTS.find((t) => t.start === tomorrowSlots[tomorrowSlots.length - 1]?.startTime) : null;
 
   async function deleteSlot(id: string) {
     if (!confirm("Supprimer ce creneau ?")) return;
@@ -138,17 +171,21 @@ export default function PedagogiePage() {
     e.preventDefault();
     setSubmitting(true); setFormError(""); setCollisionWarn(false);
     try {
+      const endSlot = TIME_SLOTS.find((t) => t.start === form.startTime);
+      const endTime = endSlot ? endSlot.endRaw : form.endTime;
       const payload = {
         filiereId: activeFiliereId,
         dayOfWeek: form.dayOfWeek,
         startTime: form.startTime,
-        endTime: form.endTime,
+        endTime,
         type: form.type,
         academicYear: "2025-2026",
-        semester: 1,
+        semester: parseInt(form.semester),
         roomId: form.roomId || undefined,
-        courseAssignmentId: form.courseAssignmentId || undefined,
+        courseAssignmentId: (form.type === "COURS" || form.type === "TPE" || form.type === "EVALUATION") ? (form.courseAssignmentId || undefined) : undefined,
         sessionNumber: form.sessionNumber ? parseInt(form.sessionNumber) : undefined,
+        totalSessions: form.totalSessions ? parseInt(form.totalSessions) : undefined,
+        label: form.label.trim() || undefined,
       };
       const res = await fetch("/api/schedules", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const data = await res.json();
@@ -164,7 +201,7 @@ export default function PedagogiePage() {
     } finally { setSubmitting(false); }
   }
 
-  function openModal() { setForm(EMPTY_FORM); setFormError(""); setCollisionWarn(false); setShowModal(true); }
+  function openModal() { setForm({ ...EMPTY_FORM }); setFormError(""); setCollisionWarn(false); setShowModal(true); }
 
   const weekEnd = addDays(weekStart, 5);
 
@@ -184,15 +221,6 @@ export default function PedagogiePage() {
 
     return (
       <div style={{ overflowX: "auto", position: "relative" }}>
-        {/* Watermark */}
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
-          backgroundImage: "url('/logo.svg')",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center 55%",
-          backgroundSize: "25%",
-          opacity: 0.05,
-        }} />
         <table style={{ width: "100%", borderCollapse: "collapse", position: "relative", zIndex: 1 }}>
           <thead>
             <tr style={{ background: "#1A1A1A" }}>
@@ -210,18 +238,8 @@ export default function PedagogiePage() {
               <React.Fragment key={slot.start}>
                 {idx === 2 && (
                   <tr>
-                    <td colSpan={7} style={{
-                      background: "linear-gradient(90deg, #fff7ed, #fffbf5, #fff7ed)",
-                      border: "1px solid #fed7aa",
-                      padding: "5px 10px",
-                      textAlign: "center",
-                      fontSize: "10px",
-                      fontWeight: "800",
-                      color: "#c2410c",
-                      letterSpacing: "1.5px",
-                      textTransform: "uppercase",
-                    }}>
-                      Pause dejeuner : 12h00 - 13h00
+                    <td colSpan={7} style={{ background: "linear-gradient(90deg, #fff7ed, #fffbf5, #fff7ed)", border: "1px solid #fed7aa", padding: "5px 10px", textAlign: "center", fontSize: "10px", fontWeight: "800", color: "#c2410c", letterSpacing: "1.5px", textTransform: "uppercase" }}>
+                      Pause dejeuner : 12h00 - 13h15
                     </td>
                   </tr>
                 )}
@@ -246,6 +264,9 @@ export default function PedagogiePage() {
                                   <AlertTriangle style={{ width: "9px", height: "9px" }} />Collision
                                 </div>
                               )}
+                              {s.label && !s.courseAssignment && (
+                                <div style={{ fontWeight: "800", fontSize: "10px", color: style.text, lineHeight: 1.3 }}>{s.label}</div>
+                              )}
                               {s.courseAssignment ? (
                                 <>
                                   <div style={{ fontWeight: "800", fontSize: "10px", color: style.text, lineHeight: 1.3 }}>{s.courseAssignment.course.code}</div>
@@ -255,13 +276,15 @@ export default function PedagogiePage() {
                                   </div>
                                 </>
                               ) : (
-                                <div style={{ fontWeight: "700", fontSize: "11px", color: style.text }}>{style.label}</div>
+                                !s.label && <div style={{ fontWeight: "700", fontSize: "11px", color: style.text }}>{style.label}</div>
                               )}
                               {s.room && (
                                 <div style={{ fontSize: "8px", color: style.text, opacity: 0.6, marginTop: "1px" }}>Salle : {s.room.code}</div>
                               )}
                               {s.sessionNumber && (
-                                <div style={{ fontSize: "8px", color: style.text, opacity: 0.6 }}>Session {s.sessionNumber}</div>
+                                <div style={{ fontSize: "8px", color: style.text, opacity: 0.75, fontWeight: "700" }}>
+                                  Seance {s.sessionNumber}{s.totalSessions ? `/${s.totalSessions}` : ""}
+                                </div>
                               )}
                               {canManage && (
                                 <button
@@ -314,14 +337,25 @@ export default function PedagogiePage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
           <div>
             <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "2px" }}>SI-Pedagogie</h1>
-            <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Emploi du temps et plannings d'examens, 2025-2026</p>
+            <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Emploi du temps et plannings d&apos;examens, 2025-2026</p>
           </div>
-          {totalCollisions > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: "10px", padding: "8px 14px" }}>
-              <AlertTriangle style={{ width: "14px", height: "14px", color: "#dc2626" }} />
-              <span style={{ fontSize: "12px", fontWeight: "700", color: "#991b1b" }}>{totalCollisions} collision{totalCollisions > 1 ? "s" : ""} detectee{totalCollisions > 1 ? "s" : ""}</span>
-            </div>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {/* Demain banner */}
+            {tomorrowSlots.length > 0 && tomorrowFirst && tomorrowLast && (
+              <div style={{ display: "flex", alignItems: "center", gap: "7px", background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: "10px", padding: "7px 12px" }}>
+                <Calendar style={{ width: "13px", height: "13px", color: "#2563eb" }} />
+                <span style={{ fontSize: "11.5px", fontWeight: "600", color: "#1e40af" }}>
+                  Demain : {tomorrowFirst.label} a {tomorrowLast.end} ({tomorrowSlots.length} cours)
+                </span>
+              </div>
+            )}
+            {totalCollisions > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: "10px", padding: "8px 14px" }}>
+                <AlertTriangle style={{ width: "14px", height: "14px", color: "#dc2626" }} />
+                <span style={{ fontSize: "12px", fontWeight: "700", color: "#991b1b" }}>{totalCollisions} collision{totalCollisions > 1 ? "s" : ""}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* KPIs */}
@@ -340,9 +374,9 @@ export default function PedagogiePage() {
         </div>
 
         {/* Legend */}
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "14px" }}>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "14px" }}>
           {Object.entries(TYPE_STYLE).map(([type, s]) => (
-            <div key={type} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "4px 10px", background: s.bg, border: `1.5px solid ${s.border}`, borderRadius: "20px" }}>
+            <div key={type} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "3px 10px", background: s.bg, border: `1.5px solid ${s.border}`, borderRadius: "20px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: s.dot }} />
               <span style={{ fontSize: "11px", fontWeight: "600", color: s.text }}>{s.label}</span>
             </div>
@@ -361,7 +395,6 @@ export default function PedagogiePage() {
 
         {filiere && (
           <div>
-            {/* Controls row */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "12px", flexWrap: "wrap" }}>
               {/* Sub-tabs */}
               <div style={{ display: "flex", gap: "4px", background: "var(--bg-muted)", borderRadius: "9px", padding: "4px" }}>
@@ -380,9 +413,7 @@ export default function PedagogiePage() {
                 ))}
               </div>
 
-              {/* Right controls: week nav + actions */}
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                {/* Week navigator */}
                 <button className="week-nav-btn" onClick={() => setWeekStart(d => addDays(d, -7))}>
                   <ChevronLeft style={{ width: "13px", height: "13px" }} />
                 </button>
@@ -426,11 +457,17 @@ export default function PedagogiePage() {
               <div style={{ padding: "12px" }}>
                 {renderGrid(activeTab === "emploi" ? coursSlots : examSlots)}
               </div>
+              {/* Disclaimer */}
+              <div style={{ padding: "10px 18px", borderTop: "1px solid var(--border)", background: "var(--bg-muted)" }}>
+                <p style={{ fontSize: "10.5px", color: "var(--text-muted)", fontStyle: "italic", textAlign: "center" }}>
+                  Cet emploi du temps est susceptible de changer independamment de la volonte des differents intervenants.
+                </p>
+              </div>
             </div>
 
             {canManage && filiereAssignments.length === 0 && (
               <div style={{ marginTop: "10px", padding: "10px 14px", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: "8px", fontSize: "12px", color: "#92400e" }}>
-                Aucun cours assigne pour cette filiere. Allez dans RH pour affecter des enseignants aux cours avant d'ajouter des creneaux.
+                Aucun cours assigne pour cette filiere. Allez dans RH pour affecter des enseignants avant d&apos;ajouter des creneaux.
               </div>
             )}
           </div>
@@ -444,7 +481,7 @@ export default function PedagogiePage() {
       {/* Add Slot Modal */}
       {showModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }} onClick={() => setShowModal(false)}>
-          <div style={{ background: "var(--bg-card)", borderRadius: "16px", width: "100%", maxWidth: "500px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 24px 80px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
+          <div style={{ background: "var(--bg-card)", borderRadius: "16px", width: "100%", maxWidth: "520px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 24px 80px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid var(--border)" }}>
               <div>
                 <h2 style={{ fontSize: "15px", fontWeight: "800", color: "var(--text)" }}>Ajouter un creneau</h2>
@@ -455,14 +492,19 @@ export default function PedagogiePage() {
               </button>
             </div>
             <form onSubmit={handleSubmit} style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "14px" }}>
+
+              {/* Type + Jour */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
                   <label className="form-label">Type de creneau</label>
-                  <select className="form-input" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as Schedule["type"] }))}>
+                  <select className="form-input" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
                     <option value="COURS">Cours</option>
                     <option value="TPE">TPE</option>
                     <option value="EVALUATION">Evaluation</option>
                     <option value="PAUSE">Pause</option>
+                    <option value="FERIER">Jour ferie</option>
+                    <option value="EXCURSION">Excursion</option>
+                    <option value="AUTRE">Autre</option>
                   </select>
                 </div>
                 <div>
@@ -472,16 +514,44 @@ export default function PedagogiePage() {
                   </select>
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+
+              {/* Heure + Semestre */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
                 <div>
                   <label className="form-label">Heure de debut</label>
-                  <input type="time" className="form-input" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))} required />
+                  <select className="form-input" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}>
+                    {TIME_SLOTS.map((t) => (
+                      <option key={t.start} value={t.start}>{t.label}</option>
+                    ))}
+                    <option value="custom">Autre heure...</option>
+                  </select>
+                  {form.startTime === "custom" && (
+                    <input type="time" className="form-input" style={{ marginTop: "6px" }} value="" onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))} />
+                  )}
                 </div>
                 <div>
                   <label className="form-label">Heure de fin</label>
-                  <input type="time" className="form-input" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))} required />
+                  <select className="form-input" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}>
+                    {TIME_SLOTS.map((t) => (
+                      <option key={t.endRaw} value={t.endRaw}>{t.end}</option>
+                    ))}
+                    <option value="custom">Autre heure...</option>
+                  </select>
+                  {form.endTime === "custom" && (
+                    <input type="time" className="form-input" style={{ marginTop: "6px" }} value="" onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))} />
+                  )}
+                </div>
+                <div>
+                  <label className="form-label">Semestre</label>
+                  <select className="form-input" value={form.semester} onChange={(e) => setForm((f) => ({ ...f, semester: e.target.value }))}>
+                    {[1, 2, 3, 4, 5, 6].map((s) => (
+                      <option key={s} value={String(s)}>S{s}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
+
+              {/* Salle */}
               <div>
                 <label className="form-label">Salle</label>
                 <select className="form-input" value={form.roomId} onChange={(e) => setForm((f) => ({ ...f, roomId: e.target.value }))}>
@@ -489,9 +559,11 @@ export default function PedagogiePage() {
                   {rooms.map((r) => <option key={r.id} value={r.id}>{r.code} - {r.name}{r.capacity ? ` (${r.capacity} pl.)` : ""}</option>)}
                 </select>
               </div>
-              {form.type === "COURS" && (
+
+              {/* Cours assigne (pour COURS, TPE, EVALUATION) */}
+              {(form.type === "COURS" || form.type === "TPE" || form.type === "EVALUATION") && (
                 <div>
-                  <label className="form-label">Cours assigne (enseignant)</label>
+                  <label className="form-label">Matiere / Cours assigne</label>
                   <select className="form-input" value={form.courseAssignmentId} onChange={(e) => setForm((f) => ({ ...f, courseAssignmentId: e.target.value }))}>
                     <option value="">Selectionner un cours...</option>
                     {filiereAssignments.map((a) => (
@@ -501,16 +573,31 @@ export default function PedagogiePage() {
                     ))}
                   </select>
                   {filiereAssignments.length === 0 && (
-                    <p style={{ fontSize: "11px", color: "#d97706", marginTop: "4px" }}>Aucun cours assigne pour cette filiere. Creez d'abord des affectations dans RH.</p>
+                    <p style={{ fontSize: "11px", color: "#d97706", marginTop: "4px" }}>Aucun cours assigne. Creez des affectations dans RH.</p>
                   )}
                 </div>
               )}
-              {form.type === "EVALUATION" && (
+
+              {/* Seance X/Y et libelle (pour EVALUATION et autres types) */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
-                  <label className="form-label">Numero de session</label>
-                  <input type="number" min={1} className="form-input" value={form.sessionNumber} onChange={(e) => setForm((f) => ({ ...f, sessionNumber: e.target.value }))} placeholder="1" />
+                  <label className="form-label">No. seance (ex: 2)</label>
+                  <input type="number" min={1} className="form-input" value={form.sessionNumber} onChange={(e) => setForm((f) => ({ ...f, sessionNumber: e.target.value }))} placeholder="ex: 2" />
+                </div>
+                <div>
+                  <label className="form-label">Total seances (ex: 4)</label>
+                  <input type="number" min={1} className="form-input" value={form.totalSessions} onChange={(e) => setForm((f) => ({ ...f, totalSessions: e.target.value }))} placeholder="ex: 4" />
+                </div>
+              </div>
+
+              {/* Libelle libre (pour FERIER, EXCURSION, AUTRE) */}
+              {(form.type === "FERIER" || form.type === "EXCURSION" || form.type === "AUTRE") && (
+                <div>
+                  <label className="form-label">Intitule / Description</label>
+                  <input type="text" className="form-input" value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder={form.type === "FERIER" ? "ex: Fete Nationale" : form.type === "EXCURSION" ? "ex: Visite entreprise XYZ" : "ex: Rattrapage"} />
                 </div>
               )}
+
               {collisionWarn && (
                 <div style={{ display: "flex", gap: "8px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: "8px", padding: "10px 12px" }}>
                   <AlertTriangle style={{ width: "14px", height: "14px", color: "#dc2626", flexShrink: 0, marginTop: "1px" }} />
@@ -518,6 +605,7 @@ export default function PedagogiePage() {
                 </div>
               )}
               {formError && !collisionWarn && <p style={{ fontSize: "12px", color: "#B91C2F" }}>{formError}</p>}
+
               <div style={{ display: "flex", gap: "10px", paddingTop: "4px" }}>
                 <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: "10px", background: "var(--bg-muted)", border: "1.5px solid var(--border)", borderRadius: "9px", fontSize: "13px", fontWeight: "600", color: "var(--text)", cursor: "pointer" }}>Annuler</button>
                 <button type="submit" disabled={submitting} style={{ flex: 1, padding: "10px", background: "#B91C2F", border: "none", borderRadius: "9px", fontSize: "13px", fontWeight: "700", color: "white", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.7 : 1 }}>

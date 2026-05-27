@@ -147,7 +147,10 @@ export const ScheduleType = {
   COURS: 'COURS',
   TPE: 'TPE',
   EVALUATION: 'EVALUATION',
-  PAUSE: 'PAUSE'
+  PAUSE: 'PAUSE',
+  FERIER: 'FERIER',
+  EXCURSION: 'EXCURSION',
+  AUTRE: 'AUTRE'
 } as const
 
 export type ScheduleType = (typeof ScheduleType)[keyof typeof ScheduleType]

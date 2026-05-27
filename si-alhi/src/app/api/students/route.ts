@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { buildMatriculeCode } from "@/lib/matricule-generator";
 
 const createSchema = z.object({
   firstName: z.string().min(1),
@@ -51,26 +52,16 @@ export async function POST(req: Request) {
   const filiere = await prisma.filiere.findUnique({ where: { code: filiereCode } });
   if (!filiere) return NextResponse.json({ error: "Filière non trouvée" }, { status: 404 });
 
-  // Generate matricule: ALI\XXXYYY\YY
-  // Year suffix changes September 1 (new academic year starts)
   const now = new Date();
   const academicStartYear = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
   const yearSuffix = String(academicStartYear).slice(-2);
-  const year = now.getFullYear();
-
-  const filiereCodeMap: Record<string, string> = {
-    PE: "ING",
-    PB: "BUS",
-    MBA: "MBA",
-    BBA: "BBA",
-  };
-  const matriculeCode = filiereCodeMap[filiereCode] ?? filiereCode;
+  const matriculeCode = buildMatriculeCode(filiereCode);
 
   const count = await prisma.student.count({
     where: { filiereId: filiere.id, promotionYear: academicStartYear },
   });
   const seq = count + 1;
-  const matricule = `ALI\\${matriculeCode}${String(seq).padStart(3, "0")}\\${yearSuffix}`;
+  const matricule = `ALI/${matriculeCode}${String(seq).padStart(3, "0")}/${yearSuffix}`;
 
   const student = await prisma.student.create({
     data: {
@@ -80,7 +71,7 @@ export async function POST(req: Request) {
       matricule,
       promotionYear: academicStartYear,
       level: 1,
-      status: (status as "PROSPECT" | "DOSSIER_RECU" | "ENTRETIEN" | "ACCEPTE" | "INSCRIT" | "ACTIF") || "PROSPECT",
+      status: (status as "PROSPECT" | "DOSSIER_RECU" | "ENTRETIEN" | "ACCEPTE" | "INSCRIT" | "ACTIF") ?? "PROSPECT",
       dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
     },
   });

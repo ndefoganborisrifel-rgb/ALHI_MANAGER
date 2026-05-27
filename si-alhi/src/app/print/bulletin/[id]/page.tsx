@@ -50,79 +50,84 @@ function fmt(n: number | null | undefined): string {
 
 function ProgressChart({ ueResults }: { ueResults: UEResult[] }) {
   const allCourses = ueResults.flatMap((ue) => ue.courses).filter((c) => c.noteFinal != null);
-  if (allCourses.length === 0) return null;
+  if (allCourses.length < 3) return null;
 
-  const chartW = 420;
-  const chartH = 90;
-  const marginL = 28;
-  const marginB = 26;
-  const innerW = chartW - marginL - 10;
-  const innerH = chartH - marginB - 8;
-  const barW = Math.min(22, Math.floor(innerW / allCourses.length) - 4);
+  const cx = 110, cy = 100, r = 78;
+  const n = allCourses.length;
+
+  function polarPt(angle: number, radius: number) {
+    const rad = (angle - 90) * (Math.PI / 180);
+    return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) };
+  }
+
+  const levels = [20, 15, 10, 5];
+  const angleStep = 360 / n;
+
+  const scorePts = allCourses.map((c, i) => {
+    const angle = i * angleStep;
+    const ratio = (c.noteFinal ?? 0) / 20;
+    return polarPt(angle, ratio * r);
+  });
+
+  const scorePath = scorePts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ") + " Z";
 
   return (
-    <div style={{ marginTop: "14px" }}>
-      <div style={{ fontSize: "9px", fontWeight: "bold", color: "#1A1A1A", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-        Progression par matiere
+    <div style={{ marginTop: "12px" }}>
+      <div style={{ fontSize: "9px", fontWeight: "bold", color: "#1A1A1A", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        Profil de performance par matiere
       </div>
-      <svg width={chartW} height={chartH} style={{ fontFamily: "Arial, sans-serif", overflow: "visible" }}>
-        {/* Grid lines */}
-        {[0, 5, 10, 15, 20].map((v) => {
-          const y = 8 + innerH - (v / 20) * innerH;
+      <svg width="230" height="210" style={{ fontFamily: "Arial, sans-serif", overflow: "visible" }}>
+        {/* Grilles circulaires */}
+        {levels.map((lv) => {
+          const pts = allCourses.map((_, i) => polarPt(i * angleStep, (lv / 20) * r));
+          const path = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ") + " Z";
+          const isThreshold = lv === 10;
           return (
-            <g key={v}>
-              <line x1={marginL} y1={y} x2={marginL + innerW} y2={y} stroke="#ddd" strokeWidth="0.5" />
-              <text x={marginL - 2} y={y + 3} fontSize="6" fill="#999" textAnchor="end">{v}</text>
+            <g key={lv}>
+              <path d={path} fill="none" stroke={isThreshold ? "#B91C2F" : "#e5e7eb"} strokeWidth={isThreshold ? 1.2 : 0.7} strokeDasharray={isThreshold ? "3,2" : undefined} />
+              <text x={cx + 3} y={cy - (lv / 20) * r + 3} fontSize="6" fill={isThreshold ? "#B91C2F" : "#aaa"}>{lv}</text>
             </g>
           );
         })}
-        {/* Threshold at 10 */}
-        <line
-          x1={marginL}
-          y1={8 + innerH - (10 / 20) * innerH}
-          x2={marginL + innerW}
-          y2={8 + innerH - (10 / 20) * innerH}
-          stroke="#B91C2F"
-          strokeWidth="1"
-          strokeDasharray="4,2"
-        />
-        {/* Axes */}
-        <line x1={marginL} y1="8" x2={marginL} y2={8 + innerH} stroke="#333" strokeWidth="1" />
-        <line x1={marginL} y1={8 + innerH} x2={marginL + innerW} y2={8 + innerH} stroke="#333" strokeWidth="1" />
-        {/* Bars */}
+        {/* Axes radiaux */}
         {allCourses.map((c, i) => {
-          const score = c.noteFinal!;
-          const barH = (score / 20) * innerH;
-          const x = marginL + 6 + i * (barW + Math.max(2, (innerW - allCourses.length * barW - 12) / Math.max(1, allCourses.length - 1)));
-          const y = 8 + innerH - barH;
-          const color = score >= 10 ? "#16a34a" : "#B91C2F";
-          const labelX = x + barW / 2;
+          const outerPt = polarPt(i * angleStep, r + 4);
+          const labelPt = polarPt(i * angleStep, r + 16);
           return (
             <g key={c.code}>
-              <rect x={x} y={y} width={barW} height={barH} fill={color} opacity="0.82" rx="1.5" />
-              <text x={labelX} y={y - 1.5} fontSize="5.5" textAnchor="middle" fill={color} fontWeight="bold">
-                {score.toFixed(1)}
-              </text>
+              <line x1={cx} y1={cy} x2={outerPt.x.toFixed(1)} y2={outerPt.y.toFixed(1)} stroke="#d1d5db" strokeWidth="0.8" />
               <text
-                x={labelX}
-                y={8 + innerH + 14}
+                x={labelPt.x.toFixed(1)}
+                y={labelPt.y.toFixed(1)}
                 fontSize="5.5"
                 textAnchor="middle"
-                fill="#555"
-                transform={`rotate(-30, ${labelX}, ${8 + innerH + 14})`}
+                fill={c.noteFinal != null && c.noteFinal >= 10 ? "#15803d" : "#B91C2F"}
+                fontWeight="600"
               >
-                {c.code.slice(-4)}
+                {c.code.length > 6 ? c.code.slice(-5) : c.code}
               </text>
             </g>
           );
         })}
-        {/* Legend */}
-        <rect x={marginL + innerW - 80} y="2" width="6" height="5" fill="#16a34a" rx="1" />
-        <text x={marginL + innerW - 72} y="7" fontSize="6" fill="#555">Valide (&#x2265;10)</text>
-        <rect x={marginL + innerW - 80} y="10" width="6" height="5" fill="#B91C2F" rx="1" />
-        <text x={marginL + innerW - 72} y="15" fontSize="6" fill="#555">Ajourne</text>
-        <line x1={marginL + innerW - 80} y1="21" x2={marginL + innerW - 74} y2="21" stroke="#B91C2F" strokeWidth="1" strokeDasharray="2,1" />
-        <text x={marginL + innerW - 72} y="23" fontSize="6" fill="#B91C2F">Seuil 10/20</text>
+        {/* Surface de score */}
+        <path d={scorePath} fill="rgba(185,28,47,0.12)" stroke="#B91C2F" strokeWidth="1.5" strokeLinejoin="round" />
+        {/* Points */}
+        {scorePts.map((p, i) => {
+          const score = allCourses[i].noteFinal ?? 0;
+          return (
+            <g key={i}>
+              <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3" fill={score >= 10 ? "#15803d" : "#B91C2F"} />
+              <text x={p.x.toFixed(1)} y={(p.y - 5).toFixed(1)} fontSize="5.5" textAnchor="middle" fill={score >= 10 ? "#15803d" : "#B91C2F"} fontWeight="bold">{score.toFixed(1)}</text>
+            </g>
+          );
+        })}
+        {/* Legende */}
+        <circle cx="165" cy="10" r="4" fill="#15803d" />
+        <text x="172" y="13" fontSize="6" fill="#555">Valide (10/20)</text>
+        <circle cx="165" cy="22" r="4" fill="#B91C2F" />
+        <text x="172" y="25" fontSize="6" fill="#555">Ajourne</text>
+        <line x1="161" y1="33" x2="169" y2="33" stroke="#B91C2F" strokeWidth="1" strokeDasharray="2,1" />
+        <text x="172" y="36" fontSize="6" fill="#B91C2F">Seuil 10</text>
       </svg>
     </div>
   );
@@ -212,7 +217,7 @@ export default function PrintBulletinPage() {
         .ok { color: #15803d; font-weight: bold; }
         .ko { color: #b91c1c; font-weight: bold; }
         .na { color: #aaa; }
-        .sep { border-top: 1.5px solid #1A1A1A; width: 100%; margin: 6px 0; }
+        .sep { height: 6px; }
       `}</style>
 
       {/* Print toolbar */}
@@ -240,7 +245,7 @@ export default function PrintBulletinPage() {
       <div className="page">
 
         {/* ─── EN-TETE OFFICIELLE CAMEROUN 3 COLONNES ─── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 1fr", gap: "12px", paddingBottom: "10px", borderBottom: "2.5px solid #1A1A1A", marginBottom: "8px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 1fr", gap: "12px", paddingBottom: "10px", marginBottom: "8px" }}>
 
           {/* Colonne gauche : version francaise */}
           <div style={{ textAlign: "center", fontSize: "8.5px", lineHeight: "1.55" }}>

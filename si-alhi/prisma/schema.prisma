@@ -108,6 +108,9 @@ enum ScheduleType {
   TPE
   EVALUATION
   PAUSE
+  FERIER
+  EXCURSION
+  AUTRE
 }
 
 model User {

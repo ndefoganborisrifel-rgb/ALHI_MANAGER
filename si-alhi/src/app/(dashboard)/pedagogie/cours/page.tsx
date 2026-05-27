@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Plus, Pencil, Trash2, X, BookOpen, Search, GraduationCap } from "lucide-react";
+import { useCanManage } from "@/components/providers/RoleProvider";
 
 type Filiere = { id: string; code: string; name: string };
 type UE = { id: string; code: string; name: string };
@@ -33,6 +34,7 @@ const emptyForm = {
 };
 
 export default function CoursPage() {
+  const canManage = useCanManage();
   const [courses, setCourses] = useState<Course[]>([]);
   const [filieres, setFilieres] = useState<Filiere[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,13 +159,15 @@ export default function CoursPage() {
             Gestion des cours, unites d'enseignement et credits
           </p>
         </div>
-        <button
-          onClick={openAdd}
-          style={{ display: "inline-flex", alignItems: "center", gap: "7px", padding: "9px 18px", background: "#B91C2F", color: "white", borderRadius: "9px", fontWeight: "700", fontSize: "13px", border: "none", cursor: "pointer" }}
-        >
-          <Plus style={{ width: "15px", height: "15px" }} />
-          Nouveau cours
-        </button>
+        {canManage && (
+          <button
+            onClick={openAdd}
+            style={{ display: "inline-flex", alignItems: "center", gap: "7px", padding: "9px 18px", background: "#B91C2F", color: "white", borderRadius: "9px", fontWeight: "700", fontSize: "13px", border: "none", cursor: "pointer" }}
+          >
+            <Plus style={{ width: "15px", height: "15px" }} />
+            Nouveau cours
+          </button>
+        )}
       </div>
 
       {/* KPIs */}
@@ -265,18 +269,22 @@ export default function CoursPage() {
                           </td>
                           <td style={{ padding: "10px 14px" }}>
                             <div style={{ display: "flex", gap: "6px" }}>
-                              <button
-                                onClick={() => openEdit(course)}
-                                style={{ padding: "4px 10px", background: "var(--bg-muted)", border: "1px solid var(--border)", borderRadius: "6px", fontSize: "11px", fontWeight: "600", color: "var(--text)", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
-                              >
-                                <Pencil style={{ width: "11px", height: "11px" }} />Modifier
-                              </button>
-                              <button
-                                onClick={() => handleDelete(course)}
-                                style={{ padding: "4px 10px", background: "#B91C2F15", border: "1px solid #B91C2F30", borderRadius: "6px", fontSize: "11px", fontWeight: "600", color: "#B91C2F", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
-                              >
-                                <Trash2 style={{ width: "11px", height: "11px" }} />Suppr.
-                              </button>
+                              {canManage && (
+                                <button
+                                  onClick={() => openEdit(course)}
+                                  style={{ padding: "4px 10px", background: "var(--bg-muted)", border: "1px solid var(--border)", borderRadius: "6px", fontSize: "11px", fontWeight: "600", color: "var(--text)", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+                                >
+                                  <Pencil style={{ width: "11px", height: "11px" }} />Modifier
+                                </button>
+                              )}
+                              {canManage && (
+                                <button
+                                  onClick={() => handleDelete(course)}
+                                  style={{ padding: "4px 10px", background: "#B91C2F15", border: "1px solid #B91C2F30", borderRadius: "6px", fontSize: "11px", fontWeight: "600", color: "#B91C2F", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+                                >
+                                  <Trash2 style={{ width: "11px", height: "11px" }} />Suppr.
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>

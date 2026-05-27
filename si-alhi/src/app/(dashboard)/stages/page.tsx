@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { formatDate, getStatusColor, getStatusLabel } from "@/lib/utils";
+import { useCanManage } from "@/components/providers/RoleProvider";
 
 type Student = {
   id: string;
@@ -45,6 +46,7 @@ const emptyCreateForm = { studentId: "", companyName: "", topic: "", startDate: 
 const emptyUpdateForm = { status: "EN_COURS", defenseDate: "", defenseNote: "", jury: "" };
 
 export default function StagesPage() {
+  const canManage = useCanManage();
   const [internships, setInternships] = useState<Internship[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,9 +164,11 @@ export default function StagesPage() {
           <h1 className="text-2xl font-bold text-gray-900">SI-Stage</h1>
           <p className="text-gray-500 text-sm">Suivi des stages et conventions</p>
         </div>
-        <Button className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={() => { setCreateForm(emptyCreateForm); setCreateError(""); setShowCreateModal(true); }}>
-          <Plus className="w-4 h-4 mr-2" />Ajouter un stage
-        </Button>
+        {canManage && (
+          <Button className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={() => { setCreateForm(emptyCreateForm); setCreateError(""); setShowCreateModal(true); }}>
+            <Plus className="w-4 h-4 mr-2" />Ajouter un stage
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -209,12 +213,19 @@ export default function StagesPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex gap-1 justify-end">
-                      <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openUpdate(i)}>
-                        <Pencil className="w-3 h-3 mr-1" />Mettre a jour
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDelete(i)}>
-                        <Trash2 className="w-3 h-3 mr-1" />Supprimer
-                      </Button>
+                      {canManage && (
+                        <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openUpdate(i)}>
+                          <Pencil className="w-3 h-3 mr-1" />Mettre a jour
+                        </Button>
+                      )}
+                      {canManage && (
+                        <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDelete(i)}>
+                          <Trash2 className="w-3 h-3 mr-1" />Supprimer
+                        </Button>
+                      )}
+                      {!canManage && (
+                        <span className="text-xs text-gray-400 italic">Lecture seule</span>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
