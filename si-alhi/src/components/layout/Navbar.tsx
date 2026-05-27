@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { Bell, LogOut, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface NavbarProps {
   userName: string;
@@ -21,9 +21,9 @@ interface Notif {
 
 const roleLabels: Record<string, string> = {
   ADMIN: "Administrateur",
-  SCOLARITE: "Service Scolarité",
+  SCOLARITE: "Service Scolarite",
   ENSEIGNANT: "Enseignant",
-  ETUDIANT: "Étudiant",
+  ETUDIANT: "Etudiant",
   PARENT: "Parent",
 };
 
@@ -68,61 +68,128 @@ export function Navbar({ userName, userRole }: NavbarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm">
-      <div className="flex items-center gap-4">
-        <div className="hidden md:block">
-          <p className="text-xs text-gray-500">Année académique 2025-2026</p>
-        </div>
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 30,
+        background: "var(--bg-card)",
+        borderBottom: "1px solid var(--border)",
+        padding: "0 20px",
+        height: "56px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+      }}
+    >
+      <div>
+        <p style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "500" }}>
+          Annee academique 2025-2026
+        </p>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <ThemeToggle />
+
         {/* Notification bell */}
-        <div className="relative" ref={ref}>
+        <div style={{ position: "relative" }} ref={ref}>
           <button
             onClick={() => setOpen(!open)}
-            className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            style={{
+              width: "34px",
+              height: "34px",
+              borderRadius: "8px",
+              border: "1.5px solid var(--border)",
+              background: "var(--bg-card)",
+              color: "var(--text-secondary)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              position: "relative",
+            }}
           >
-            <Bell className="w-5 h-5" />
+            <Bell style={{ width: "16px", height: "16px" }} />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-[#B91C2F] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5">
+              <span style={{
+                position: "absolute",
+                top: "3px",
+                right: "3px",
+                minWidth: "14px",
+                height: "14px",
+                background: "#B91C2F",
+                color: "white",
+                fontSize: "9px",
+                fontWeight: "bold",
+                borderRadius: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0 2px",
+              }}>
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
-                <span className="font-semibold text-sm text-gray-800">Notifications</span>
+            <div style={{
+              position: "absolute",
+              right: 0,
+              top: "calc(100% + 8px)",
+              width: "320px",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
+              borderRadius: "12px",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+              overflow: "hidden",
+              zIndex: 50,
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "12px 16px",
+                borderBottom: "1px solid var(--border)",
+                background: "var(--bg-muted)",
+              }}>
+                <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Notifications</span>
                 {unreadCount > 0 && (
-                  <button
-                    onClick={markAllRead}
-                    className="text-xs text-[#B91C2F] hover:underline font-medium"
-                  >
+                  <button onClick={markAllRead} style={{ fontSize: "11px", color: "#B91C2F", fontWeight: "600", background: "none", border: "none", cursor: "pointer" }}>
                     Tout marquer lu
                   </button>
                 )}
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
+              <div style={{ maxHeight: "320px", overflowY: "auto" }}>
                 {notifs.length === 0 ? (
-                  <div className="py-8 text-center text-gray-400 text-sm">
-                    <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    Aucune notification
+                  <div style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)" }}>
+                    <Bell style={{ width: "28px", height: "28px", margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
+                    <p style={{ fontSize: "13px" }}>Aucune notification</p>
                   </div>
                 ) : (
                   notifs.map((n) => (
                     <button
                       key={n.id}
                       onClick={() => { markRead(n.id); if (n.link) window.location.href = n.link; }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors ${!n.isRead ? "bg-blue-50/50" : ""}`}
+                      style={{
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "10px 16px",
+                        borderBottom: "1px solid var(--border-muted)",
+                        background: n.isRead ? "transparent" : "var(--red-bg)",
+                        cursor: "pointer",
+                        border: "none",
+                        display: "block",
+                      }}
                     >
-                      <div className="flex items-start gap-2">
-                        {!n.isRead && <span className="mt-1.5 w-2 h-2 rounded-full bg-[#B91C2F] shrink-0" />}
-                        <div className={!n.isRead ? "" : "pl-4"}>
-                          <p className="font-medium text-sm text-gray-900">{n.title}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
-                          <p className="text-[10px] text-gray-400 mt-1">
+                      <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                        {!n.isRead && <span style={{ marginTop: "5px", width: "6px", height: "6px", borderRadius: "50%", background: "#B91C2F", flexShrink: 0 }} />}
+                        <div style={{ paddingLeft: n.isRead ? "14px" : "0" }}>
+                          <p style={{ fontWeight: "600", fontSize: "12px", color: "var(--text)", marginBottom: "2px" }}>{n.title}</p>
+                          <p style={{ fontSize: "11px", color: "var(--text-secondary)", lineHeight: "1.4" }}>{n.message}</p>
+                          <p style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "3px" }}>
                             {new Date(n.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                           </p>
                         </div>
@@ -131,34 +198,38 @@ export function Navbar({ userName, userRole }: NavbarProps) {
                   ))
                 )}
               </div>
-
-              {notifs.length > 0 && (
-                <div className="px-4 py-2 border-t bg-gray-50 text-center">
-                  <span className="text-xs text-gray-400">{notifs.length} notification{notifs.length !== 1 ? "s" : ""} au total</span>
-                </div>
-              )}
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-2 pl-3 border-l border-gray-200">
-          <div className="w-8 h-8 bg-[#B91C2F] rounded-full flex items-center justify-center">
-            <User className="w-4 h-4 text-white" />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", paddingLeft: "10px", borderLeft: "1px solid var(--border)" }}>
+          <div style={{ width: "30px", height: "30px", background: "#B91C2F", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <User style={{ width: "14px", height: "14px", color: "white" }} />
           </div>
-          <div className="hidden sm:block">
-            <p className="text-sm font-medium text-gray-900">{userName}</p>
-            <p className="text-xs text-gray-500">{roleLabels[userRole] ?? userRole}</p>
+          <div style={{ display: "none" }} className="sm:block">
+            <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--text)" }}>{userName}</p>
+            <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>{roleLabels[userRole] ?? userRole}</p>
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="text-gray-500 hover:text-red-600"
+          style={{
+            width: "34px",
+            height: "34px",
+            borderRadius: "8px",
+            border: "1.5px solid var(--border)",
+            background: "var(--bg-card)",
+            color: "var(--text-secondary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
+          title="Deconnexion"
         >
-          <LogOut className="w-4 h-4" />
-        </Button>
+          <LogOut style={{ width: "15px", height: "15px" }} />
+        </button>
       </div>
     </header>
   );

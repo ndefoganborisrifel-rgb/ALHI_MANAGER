@@ -14,7 +14,7 @@ export function DashboardLayoutClient({ children, userName, userRole }: Dashboar
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
       <Sidebar
         userRole={userRole}
         collapsed={collapsed}

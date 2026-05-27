@@ -16,9 +16,9 @@ export default async function ExamensPage() {
   const canEnterGrades = ["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(role);
 
   const kpis = [
-    { label: "Notes saisies", value: totalGrades, color: "#2563eb", bg: "linear-gradient(135deg, #eff6ff, #dbeafe)", icon: BookOpen },
-    { label: "Etudiants actifs", value: students, color: "#16a34a", bg: "linear-gradient(135deg, #f0fdf4, #dcfce7)", icon: GraduationCap },
-    { label: "Filieres", value: filieres.length, color: "#B91C2F", bg: "linear-gradient(135deg, #fff1f2, #fecdd3)", icon: Award },
+    { label: "Notes saisies", value: totalGrades, color: "#2563eb", icon: BookOpen },
+    { label: "Etudiants actifs", value: students, color: "#16a34a", icon: GraduationCap },
+    { label: "Filieres", value: filieres.length, color: "#B91C2F", icon: Award },
   ];
 
   const actions = [
@@ -32,156 +32,61 @@ export default async function ExamensPage() {
 
   return (
     <div style={{ maxWidth: "1100px" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <div>
-          <h1 style={{ fontSize: "24px", fontWeight: "800", color: "#111827", marginBottom: "4px" }}>
-            SI-Examens et Notes
-          </h1>
-          <p style={{ fontSize: "14px", color: "#6b7280" }}>
-            Saisie des notes et generation des bulletins, annee 2025-2026
-          </p>
+          <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>SI-Examens et Notes</h1>
+          <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Saisie des notes et generation des bulletins, 2025-2026</p>
         </div>
         {canEnterGrades && (
-          <div style={{ display: "flex", gap: "10px" }}>
-            <Link
-              href="/examens/saisie"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "7px",
-                padding: "9px 18px",
-                background: "white",
-                color: "#374151",
-                border: "1.5px solid #e5e7eb",
-                borderRadius: "10px",
-                fontWeight: "600",
-                fontSize: "13px",
-                textDecoration: "none",
-              }}
-            >
-              <BookOpen style={{ width: "15px", height: "15px" }} />
-              Saisir les notes
+          <div style={{ display: "flex", gap: "8px" }}>
+            <Link href="/examens/saisie" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 16px", background: "var(--bg-card)", color: "var(--text)", border: "1.5px solid var(--border)", borderRadius: "9px", fontWeight: "600", fontSize: "12px", textDecoration: "none" }}>
+              <BookOpen style={{ width: "14px", height: "14px" }} />Saisir les notes
             </Link>
-            <Link
-              href="/examens/bulletins"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "7px",
-                padding: "9px 18px",
-                background: "#B91C2F",
-                color: "white",
-                borderRadius: "10px",
-                fontWeight: "700",
-                fontSize: "13px",
-                textDecoration: "none",
-              }}
-            >
-              <FileText style={{ width: "15px", height: "15px" }} />
-              Bulletins
+            <Link href="/examens/bulletins" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 16px", background: "#B91C2F", color: "white", borderRadius: "9px", fontWeight: "700", fontSize: "12px", textDecoration: "none" }}>
+              <FileText style={{ width: "14px", height: "14px" }} />Bulletins
             </Link>
           </div>
         )}
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "18px" }}>
         {kpis.map((kpi) => {
           const Icon = kpi.icon;
           return (
-            <div
-              key={kpi.label}
-              style={{
-                background: kpi.bg,
-                borderRadius: "14px",
-                padding: "20px 24px",
-                border: "1px solid rgba(255,255,255,0.8)",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
-              }}
-            >
-              <div
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: kpi.color,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Icon style={{ width: "24px", height: "24px", color: "white" }} />
+            <div key={kpi.label} style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "18px", border: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "14px" }}>
+              <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: `${kpi.color}20`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Icon style={{ width: "22px", height: "22px", color: kpi.color }} />
               </div>
               <div>
-                <p style={{ fontSize: "32px", fontWeight: "800", color: kpi.color, lineHeight: 1, marginBottom: "4px" }}>
-                  {kpi.value.toLocaleString("fr-FR")}
-                </p>
-                <p style={{ fontSize: "12px", color: "#6b7280", fontWeight: "500" }}>{kpi.label}</p>
+                <p style={{ fontSize: "28px", fontWeight: "800", color: kpi.color, lineHeight: 1, marginBottom: "3px" }}>{kpi.value.toLocaleString("fr-FR")}</p>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{kpi.label}</p>
               </div>
             </div>
           );
         })}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "16px" }}>
         {/* Actions */}
-        <div
-          style={{
-            background: "white",
-            borderRadius: "14px",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-            overflow: "hidden",
-            border: "1px solid #f3f4f6",
-          }}
-        >
-          <div style={{ padding: "16px 20px", borderBottom: "1px solid #f3f4f6" }}>
-            <h2 style={{ fontSize: "15px", fontWeight: "700", color: "#111827" }}>Actions disponibles</h2>
+        <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", overflow: "hidden" }}>
+          <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
+            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Actions disponibles</span>
           </div>
-          <div style={{ padding: "8px" }}>
+          <div style={{ padding: "6px" }}>
             {actions.map((action) => {
               const Icon = action.icon;
               return (
-                <Link key={action.href} href={action.href} style={{ textDecoration: "none" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "14px",
-                      padding: "14px 12px",
-                      borderRadius: "10px",
-                      marginBottom: "4px",
-                      cursor: "pointer",
-                      transition: "background 0.1s",
-                    }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.background = "#f9fafb")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.background = "transparent")}
-                  >
-                    <div
-                      style={{
-                        width: "42px",
-                        height: "42px",
-                        borderRadius: "10px",
-                        background: "#fff1f2",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Icon style={{ width: "20px", height: "20px", color: "#B91C2F" }} />
+                <Link key={action.href} href={action.href} style={{ textDecoration: "none", display: "block" }}>
+                  <div className="card-hover" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "10px", marginBottom: "2px", cursor: "pointer" }}>
+                    <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: "var(--red-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon style={{ width: "18px", height: "18px", color: "#B91C2F" }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "2px" }}>
-                        {action.label}
-                      </p>
-                      <p style={{ fontSize: "11px", color: "#9ca3af" }}>{action.desc}</p>
+                      <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--text)", marginBottom: "1px" }}>{action.label}</p>
+                      <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>{action.desc}</p>
                     </div>
-                    <ArrowRight style={{ width: "16px", height: "16px", color: "#d1d5db" }} />
+                    <ArrowRight style={{ width: "14px", height: "14px", color: "var(--text-muted)" }} />
                   </div>
                 </Link>
               );
@@ -190,49 +95,18 @@ export default async function ExamensPage() {
         </div>
 
         {/* Filieres */}
-        <div
-          style={{
-            background: "white",
-            borderRadius: "14px",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-            overflow: "hidden",
-            border: "1px solid #f3f4f6",
-          }}
-        >
-          <div style={{ padding: "16px 20px", borderBottom: "1px solid #f3f4f6" }}>
-            <h2 style={{ fontSize: "15px", fontWeight: "700", color: "#111827" }}>Filieres</h2>
+        <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", overflow: "hidden" }}>
+          <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
+            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Filieres</span>
           </div>
           <div style={{ padding: "8px" }}>
             {filieres.map((f, i) => (
-              <div
-                key={f.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "12px",
-                  borderRadius: "10px",
-                  marginBottom: i < filieres.length - 1 ? "4px" : "0",
-                  background: "#f9fafb",
-                }}
-              >
+              <div key={f.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px", borderRadius: "8px", background: "var(--bg-muted)", marginBottom: i < filieres.length - 1 ? "4px" : "0" }}>
                 <div>
-                  <p style={{ fontWeight: "600", fontSize: "13px", color: "#111827", marginBottom: "2px" }}>{f.name}</p>
-                  <p style={{ fontSize: "10px", color: "#9ca3af", fontFamily: "monospace" }}>{f.code}</p>
+                  <p style={{ fontWeight: "600", fontSize: "12px", color: "var(--text)", marginBottom: "1px" }}>{f.name}</p>
+                  <p style={{ fontSize: "10px", color: "var(--text-muted)", fontFamily: "monospace" }}>{f.code}</p>
                 </div>
-                <Link
-                  href={`/examens/bulletins?filiere=${f.id}`}
-                  style={{
-                    padding: "4px 10px",
-                    background: "white",
-                    border: "1.5px solid #e5e7eb",
-                    borderRadius: "6px",
-                    fontSize: "11px",
-                    fontWeight: "600",
-                    color: "#374151",
-                    textDecoration: "none",
-                  }}
-                >
+                <Link href={`/examens/bulletins?filiere=${f.id}`} style={{ padding: "3px 10px", background: "var(--bg-card)", border: "1.5px solid var(--border)", borderRadius: "6px", fontSize: "11px", fontWeight: "600", color: "var(--text)", textDecoration: "none" }}>
                   Bulletins
                 </Link>
               </div>
