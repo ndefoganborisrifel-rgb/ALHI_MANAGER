@@ -1,99 +1,243 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getStatusColor, getStatusLabel, formatDate } from "@/lib/utils";
-import { UserPlus } from "lucide-react";
+import { getStatusLabel, formatDate } from "@/lib/utils";
+import { UserPlus, ChevronRight } from "lucide-react";
+
+const STAGE_CONFIG = [
+  { key: "PROSPECT", label: "Prospects", dot: "#6b7280", bg: "#f9fafb" },
+  { key: "DOSSIER_RECU", label: "Dossier recu", dot: "#d97706", bg: "#fffbeb" },
+  { key: "ENTRETIEN", label: "Entretien", dot: "#7c3aed", bg: "#faf5ff" },
+  { key: "ACCEPTE", label: "Acceptes", dot: "#2563eb", bg: "#eff6ff" },
+  { key: "INSCRIT", label: "Inscrits", dot: "#0891b2", bg: "#ecfeff" },
+  { key: "ACTIF", label: "Actifs", dot: "#16a34a", bg: "#f0fdf4" },
+];
 
 export default async function AdmissionPage() {
   const students = await prisma.student.findMany({
     include: { filiere: true, parent: true },
     orderBy: { createdAt: "desc" },
-    take: 50,
+    take: 100,
   });
 
-  const statusCounts = {
-    PROSPECT: students.filter((s) => s.status === "PROSPECT").length,
-    DOSSIER_RECU: students.filter((s) => s.status === "DOSSIER_RECU").length,
-    ENTRETIEN: students.filter((s) => s.status === "ENTRETIEN").length,
-    ACCEPTE: students.filter((s) => s.status === "ACCEPTE").length,
-    INSCRIT: students.filter((s) => s.status === "INSCRIT").length,
-    ACTIF: students.filter((s) => s.status === "ACTIF").length,
-  };
-
-  const pipeline = [
-    { key: "PROSPECT", label: "Prospects", color: "bg-gray-100 border-gray-300", count: statusCounts.PROSPECT },
-    { key: "DOSSIER_RECU", label: "Dossier reçu", color: "bg-orange-50 border-orange-300", count: statusCounts.DOSSIER_RECU },
-    { key: "ENTRETIEN", label: "Entretien", color: "bg-yellow-50 border-yellow-300", count: statusCounts.ENTRETIEN },
-    { key: "ACCEPTE", label: "Acceptés", color: "bg-blue-50 border-blue-300", count: statusCounts.ACCEPTE },
-    { key: "INSCRIT", label: "Inscrits", color: "bg-green-50 border-green-300", count: statusCounts.INSCRIT },
-    { key: "ACTIF", label: "Actifs", color: "bg-emerald-50 border-emerald-300", count: statusCounts.ACTIF },
-  ];
+  const statusCounts = Object.fromEntries(
+    STAGE_CONFIG.map((s) => [s.key, students.filter((st) => st.status === s.key).length])
+  );
+  const total = students.length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div style={{ maxWidth: "1200px" }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">SI-Admission</h1>
-          <p className="text-gray-500 text-sm mt-1">Gestion du pipeline de candidatures</p>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", color: "#111827", marginBottom: "4px" }}>
+            SI-Admission
+          </h1>
+          <p style={{ fontSize: "14px", color: "#6b7280" }}>
+            Pipeline de candidatures, {total} dossier{total !== 1 ? "s" : ""} au total
+          </p>
         </div>
-        <Link href="/admission/nouveau">
-          <Button><UserPlus className="w-4 h-4 mr-2" />Nouveau candidat</Button>
+        <Link
+          href="/admission/nouveau"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "10px 20px",
+            background: "#B91C2F",
+            color: "white",
+            borderRadius: "10px",
+            fontWeight: "700",
+            fontSize: "14px",
+            textDecoration: "none",
+          }}
+        >
+          <UserPlus style={{ width: "16px", height: "16px" }} />
+          Nouveau candidat
         </Link>
       </div>
 
-      {/* Pipeline Kanban */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {pipeline.map((stage) => (
-          <Card key={stage.key} className={`border-2 ${stage.color}`}>
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">{stage.count}</p>
-              <p className="text-xs text-gray-600 mt-1">{stage.label}</p>
-            </CardContent>
-          </Card>
-        ))}
+      {/* Pipeline cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "12px", marginBottom: "24px" }}>
+        {STAGE_CONFIG.map((stage, i) => {
+          const count = statusCounts[stage.key] ?? 0;
+          const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+          return (
+            <div
+              key={stage.key}
+              style={{
+                background: stage.bg,
+                borderRadius: "14px",
+                padding: "16px",
+                border: `2px solid ${stage.dot}30`,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {i < STAGE_CONFIG.length - 1 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "-10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    zIndex: 2,
+                    background: "white",
+                    borderRadius: "50%",
+                    width: "20px",
+                    height: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <ChevronRight style={{ width: "12px", height: "12px", color: "#9ca3af" }} />
+                </div>
+              )}
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: stage.dot, flexShrink: 0 }} />
+                <span style={{ fontSize: "10px", color: "#6b7280", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.3px" }}>
+                  {stage.label}
+                </span>
+              </div>
+              <p style={{ fontSize: "32px", fontWeight: "800", color: stage.dot, lineHeight: 1, marginBottom: "4px" }}>
+                {count}
+              </p>
+              <p style={{ fontSize: "10px", color: "#9ca3af" }}>{pct}% du total</p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Table */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Liste des candidats ({students.length})</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom complet</TableHead>
-                <TableHead>Matricule</TableHead>
-                <TableHead>Filière</TableHead>
-                <TableHead>Inscription</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {students.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell className="font-medium">{student.lastName} {student.firstName}</TableCell>
-                  <TableCell className="font-mono text-sm">{student.matricule}</TableCell>
-                  <TableCell>{student.filiere.name}</TableCell>
-                  <TableCell>{formatDate(student.createdAt)}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(student.status)}>{getStatusLabel(student.status)}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={`/admission/${student.id}`} className="text-[#B91C2F] hover:underline text-sm">
-                      Voir
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div
+        style={{
+          background: "white",
+          borderRadius: "14px",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+          overflow: "hidden",
+          border: "1px solid #f3f4f6",
+        }}
+      >
+        <div style={{ padding: "16px 20px", borderBottom: "1px solid #f3f4f6" }}>
+          <h2 style={{ fontSize: "15px", fontWeight: "700", color: "#111827" }}>
+            Liste des candidats ({total})
+          </h2>
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+            <thead>
+              <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+                {["Candidat", "Matricule", "Filiere", "Date dossier", "Statut", ""].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      padding: "10px 16px",
+                      textAlign: "left",
+                      fontWeight: "600",
+                      color: "#6b7280",
+                      fontSize: "11px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((student, i) => {
+                const stageCfg = STAGE_CONFIG.find((s) => s.key === student.status);
+                return (
+                  <tr
+                    key={student.id}
+                    style={{
+                      borderBottom: i < students.length - 1 ? "1px solid #f9fafb" : "none",
+                    }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLTableRowElement).style.background = "#f9fafb")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLTableRowElement).style.background = "transparent")}
+                  >
+                    <td style={{ padding: "12px 16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <div
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            background: "linear-gradient(135deg, #1A1A1A, #B91C2F)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "white",
+                            fontSize: "11px",
+                            fontWeight: "700",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {student.firstName[0]}{student.lastName[0]}
+                        </div>
+                        <div>
+                          <p style={{ fontWeight: "600", color: "#111827" }}>{student.lastName} {student.firstName}</p>
+                          {student.phone && <p style={{ fontSize: "11px", color: "#9ca3af" }}>{student.phone}</p>}
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: "12px 16px", fontFamily: "monospace", color: "#6b7280", fontSize: "11px" }}>
+                      {student.matricule}
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#374151" }}>{student.filiere.name}</td>
+                    <td style={{ padding: "12px 16px", color: "#6b7280" }}>{formatDate(student.createdAt)}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          padding: "3px 10px",
+                          borderRadius: "20px",
+                          fontSize: "11px",
+                          fontWeight: "600",
+                          background: stageCfg ? `${stageCfg.dot}18` : "#f3f4f6",
+                          color: stageCfg ? stageCfg.dot : "#6b7280",
+                        }}
+                      >
+                        <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: stageCfg?.dot ?? "#6b7280" }} />
+                        {getStatusLabel(student.status)}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <Link
+                        href={`/admission/${student.id}`}
+                        style={{
+                          display: "inline-block",
+                          padding: "4px 12px",
+                          background: "#B91C2F",
+                          color: "white",
+                          borderRadius: "6px",
+                          fontSize: "11px",
+                          fontWeight: "600",
+                          textDecoration: "none",
+                        }}
+                      >
+                        Voir
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+              {students.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
+                    Aucun candidat enregistre. Commencez par ajouter un nouveau candidat.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

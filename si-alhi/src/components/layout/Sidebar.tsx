@@ -51,7 +51,7 @@ export function Sidebar({ userRole, collapsed, onToggle }: SidebarProps) {
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-alhi.svg" alt="ALHI" className="w-9 h-9 shrink-0 brightness-0 invert" />
+            <img src="/logo.png" alt="ALHI" className="w-9 h-9 shrink-0 brightness-0 invert" />
             <div className="text-xs leading-tight min-w-0">
               <div className="font-bold text-white truncate">AFRICA LEADERSHIP</div>
               <div className="text-gray-400 truncate">HIGHER INSTITUTE</div>
@@ -61,7 +61,7 @@ export function Sidebar({ userRole, collapsed, onToggle }: SidebarProps) {
         {collapsed && (
           <Link href="/dashboard" className="mx-auto">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-alhi.svg" alt="ALHI" className="w-8 h-8 brightness-0 invert" />
+            <img src="/logo.png" alt="ALHI" className="w-8 h-8 brightness-0 invert" />
           </Link>
         )}
         <button

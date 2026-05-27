@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-alhi.svg" alt="ALHI" style={{ width: "40px", height: "40px", filter: "brightness(0) invert(1)" }} />
+              <img src="/logo.png" alt="ALHI" style={{ width: "40px", height: "40px", filter: "brightness(0) invert(1)" }} />
               <div style={{ textAlign: "left" }}>
                 <div style={{ color: "white", fontWeight: "800", fontSize: "18px", letterSpacing: "0.5px" }}>
                   ALHI

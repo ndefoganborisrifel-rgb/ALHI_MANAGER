@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   const role = session?.user.role ?? "";
 
   if (role === "ADMIN" || role === "SCOLARITE") {
-    const [studentCount, teacherCount, paymentsData, recentStudents] = await Promise.all([
+    const [studentCount, teacherCount, paymentsData, recentStudents, pendingCount, courseCount] = await Promise.all([
       prisma.student.count({ where: { status: { in: ["ACTIF", "INSCRIT"] } } }),
       prisma.teacher.count(),
       prisma.payment.findMany({
@@ -18,10 +18,12 @@ export default async function DashboardPage() {
         select: { amount: true },
       }),
       prisma.student.findMany({
-        take: 5,
+        take: 6,
         orderBy: { createdAt: "desc" },
         include: { filiere: true },
       }),
+      prisma.student.count({ where: { status: { in: ["PROSPECT", "DOSSIER_RECU", "ENTRETIEN", "ACCEPTE"] } } }),
+      prisma.course.count(),
     ]);
 
     const totalCollected = paymentsData.reduce((sum, p) => sum + p.amount, 0);
@@ -31,6 +33,8 @@ export default async function DashboardPage() {
         studentCount={studentCount}
         teacherCount={teacherCount}
         totalCollected={totalCollected}
+        pendingCount={pendingCount}
+        courseCount={courseCount}
         recentStudents={recentStudents.map((s) => ({
           id: s.id,
           name: `${s.firstName} ${s.lastName}`,
@@ -54,5 +58,5 @@ export default async function DashboardPage() {
     return <ParentDashboard userId={session?.user.id ?? ""} />;
   }
 
-  return <div className="text-center py-12 text-gray-500">Rôle non reconnu</div>;
+  return <div className="text-center py-12 text-gray-500">Role non reconnu</div>;
 }

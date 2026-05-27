@@ -106,7 +106,7 @@ export default function LoginPage() {
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo-alhi.svg"
+            src="/logo.png"
             alt="ALHI"
             style={{
               width: "100px",
@@ -183,7 +183,7 @@ export default function LoginPage() {
         <div style={{ width: "100%", maxWidth: "380px", textAlign: "center" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-alhi.svg" alt="ALHI" style={{ width: "32px", height: "32px" }} />
+            <img src="/logo.png" alt="ALHI" style={{ width: "32px", height: "32px" }} />
             <span style={{ fontWeight: "700", fontSize: "15px", color: "#1A1A1A" }}>SI-ALHI</span>
           </div>
         </div>

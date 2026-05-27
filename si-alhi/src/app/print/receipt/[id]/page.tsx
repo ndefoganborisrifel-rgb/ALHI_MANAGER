@@ -83,7 +83,7 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-alhi.svg"
+              src="/logo.png"
               alt="ALHI"
               style={{ width: "52px", height: "52px", flexShrink: 0 }}
             />
