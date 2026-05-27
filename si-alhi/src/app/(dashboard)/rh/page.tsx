@@ -21,8 +21,15 @@ type Teacher = {
   type: "PERMANENT" | "VACATAIRE";
   hourlyRate: number;
   user: { email: string; isActive: boolean };
-  assignments: { id: string; course: { name: string } }[];
+  assignments: { id: string; course: { id: string; name: string; code?: string } }[];
   payments: TeacherPayment[];
+};
+
+type Course = {
+  id: string;
+  code: string;
+  name: string;
+  filiere?: { code: string; name: string } | null;
 };
 
 type TeacherPayment = {
@@ -39,12 +46,13 @@ type TeacherPayment = {
 
 const MONTHS = ["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"];
 
-const emptyTeacherForm: { firstName: string; lastName: string; email: string; phone: string; speciality: string; type: "PERMANENT" | "VACATAIRE"; hourlyRate: string } = { firstName: "", lastName: "", email: "", phone: "", speciality: "", type: "VACATAIRE", hourlyRate: "" };
+const emptyTeacherForm: { firstName: string; lastName: string; email: string; phone: string; speciality: string; type: "PERMANENT" | "VACATAIRE"; hourlyRate: string; courseIds: string[] } = { firstName: "", lastName: "", email: "", phone: "", speciality: "", type: "VACATAIRE", hourlyRate: "", courseIds: [] };
 const emptyPayForm = { teacherId: "", month: String(new Date().getMonth() + 1), year: String(new Date().getFullYear()), hoursValidated: "" };
 
 export default function RHPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [payments, setPayments] = useState<TeacherPayment[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"enseignants" | "vacations">("enseignants");
 
@@ -63,12 +71,14 @@ export default function RHPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const [teachersRes, paymentsRes] = await Promise.all([
+      const [teachersRes, paymentsRes, coursesRes] = await Promise.all([
         fetch("/api/teachers"),
         fetch("/api/teacher-payments"),
+        fetch("/api/courses"),
       ]);
       if (teachersRes.ok) setTeachers(await teachersRes.json());
       if (paymentsRes.ok) setPayments(await paymentsRes.json());
+      if (coursesRes.ok) setCourses(await coursesRes.json());
     } finally {
       setLoading(false);
     }
@@ -97,9 +107,19 @@ export default function RHPage() {
       speciality: t.speciality ?? "",
       type: t.type,
       hourlyRate: String(t.hourlyRate),
+      courseIds: t.assignments.map((a) => a.course.id),
     });
     setTeacherError("");
     setShowTeacherModal(true);
+  }
+
+  function toggleCourse(courseId: string) {
+    setTeacherForm((f) => ({
+      ...f,
+      courseIds: f.courseIds.includes(courseId)
+        ? f.courseIds.filter((c) => c !== courseId)
+        : [...f.courseIds, courseId],
+    }));
   }
 
   async function handleDisableTeacher(t: Teacher) {
@@ -121,6 +141,9 @@ export default function RHPage() {
         speciality: teacherForm.speciality.trim() || undefined,
         type: teacherForm.type,
         hourlyRate: parseInt(teacherForm.hourlyRate) || 0,
+        courseIds: teacherForm.courseIds,
+        academicYear: "2025-2026",
+        semester: 1,
       };
       const url = editingTeacher ? `/api/teachers/${editingTeacher.id}` : "/api/teachers";
       const method = editingTeacher ? "PATCH" : "POST";
@@ -275,7 +298,22 @@ export default function RHPage() {
                         <span className="text-sm font-medium">{formatCFA(teacher.hourlyRate)}/h</span>
                       ) : <span className="text-gray-300 text-xs italic">Fixe</span>}
                     </TableCell>
-                    <TableCell>{teacher.assignments.length} cours</TableCell>
+                    <TableCell>
+                      {teacher.assignments.length === 0 ? (
+                        <span className="text-gray-300 text-xs italic">Aucune</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1 max-w-[220px]">
+                          {teacher.assignments.slice(0, 4).map((a) => (
+                            <span key={a.id} className="text-[10px] font-medium bg-gray-100 text-gray-700 rounded px-1.5 py-0.5">
+                              {a.course.code ?? a.course.name}
+                            </span>
+                          ))}
+                          {teacher.assignments.length > 4 && (
+                            <span className="text-[10px] text-gray-400">+{teacher.assignments.length - 4}</span>
+                          )}
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell className="text-sm text-gray-500">{teacher.email ?? teacher.user.email}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-1 justify-end">
@@ -390,6 +428,32 @@ export default function RHPage() {
                   <Label htmlFor="t-rate">Taux horaire (FCFA)</Label>
                   <Input id="t-rate" type="number" min={0} value={teacherForm.hourlyRate} onChange={(e) => setTeacherForm((f) => ({ ...f, hourlyRate: e.target.value }))} placeholder="5000" />
                 </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label>Matieres enseignees</Label>
+                  <span className="text-xs text-gray-400">{teacherForm.courseIds.length} selectionnee{teacherForm.courseIds.length > 1 ? "s" : ""}</span>
+                </div>
+                {courses.length === 0 ? (
+                  <p className="text-xs text-gray-400 italic py-2">Aucune matiere disponible. Creez des matieres dans Pedagogie.</p>
+                ) : (
+                  <div className="max-h-44 overflow-y-auto rounded-lg border border-gray-200 divide-y divide-gray-100">
+                    {courses.map((c) => {
+                      const checked = teacherForm.courseIds.includes(c.id);
+                      return (
+                        <label key={c.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors">
+                          <input type="checkbox" checked={checked} onChange={() => toggleCourse(c.id)} className="accent-[#B91C2F] w-4 h-4" />
+                          <span className="text-sm text-gray-700 flex-1 min-w-0">
+                            <span className="font-medium">{c.code}</span>
+                            <span className="text-gray-500"> · {c.name}</span>
+                          </span>
+                          {c.filiere && <span className="text-[10px] text-gray-400 shrink-0">{c.filiere.code}</span>}
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+                <p className="text-[11px] text-gray-400 mt-1.5">Un enseignant ne peut saisir des notes que pour les matieres qui lui sont assignees ici.</p>
               </div>
               {teacherError && <p className="text-sm text-red-600">{teacherError}</p>}
               <div className="flex gap-3 pt-2">

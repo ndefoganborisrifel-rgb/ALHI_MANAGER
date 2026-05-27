@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, BookOpen, PenLine, Info } from "lucide-react";
+import { ArrowLeft, BookOpen, PenLine, Info, Eye } from "lucide-react";
+import { getTeacherCourseIds } from "@/lib/authz";
 
 export default async function SaisieNotesPage() {
   const session = await auth();
@@ -17,6 +18,10 @@ export default async function SaisieNotesPage() {
   if (!allowedRoles.includes(role)) {
     redirect("/dashboard");
   }
+
+  const isStaff = role === "ADMIN" || role === "SCOLARITE";
+  const ownedCourseIds = role === "ENSEIGNANT" ? new Set(await getTeacherCourseIds(session.user.id)) : new Set<string>();
+  const canEdit = (courseId: string) => isStaff || ownedCourseIds.has(courseId);
 
   const courses = await prisma.course.findMany({
     include: {
@@ -141,10 +146,17 @@ export default async function SaisieNotesPage() {
                           </TableCell>
                           <TableCell className="text-right pr-4">
                             <Link href={`/examens/saisie/${course.id}`}>
-                              <Button size="sm" className="bg-[#B91C2F] hover:bg-[#B91C2F]/90 text-white">
-                                <PenLine className="w-3.5 h-3.5 mr-1.5" />
-                                Saisir
-                              </Button>
+                              {canEdit(course.id) ? (
+                                <Button size="sm" className="bg-[#B91C2F] hover:bg-[#B91C2F]/90 text-white">
+                                  <PenLine className="w-3.5 h-3.5 mr-1.5" />
+                                  Saisir
+                                </Button>
+                              ) : (
+                                <Button size="sm" variant="outline" className="text-gray-600">
+                                  <Eye className="w-3.5 h-3.5 mr-1.5" />
+                                  Consulter
+                                </Button>
+                              )}
                             </Link>
                           </TableCell>
                         </TableRow>

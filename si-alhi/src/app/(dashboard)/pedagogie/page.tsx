@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { AlertTriangle, Plus, Trash2, Calendar, ChevronLeft, ChevronRight, Printer, X } from "lucide-react";
+import { AlertTriangle, Plus, Trash2, Calendar, ChevronLeft, ChevronRight, Printer, X, Eye } from "lucide-react";
+import { useCanManage } from "@/components/providers/RoleProvider";
 
 type Filiere = { id: string; code: string; name: string };
 type Room = { id: string; code: string; name: string; capacity?: number };
@@ -67,6 +68,7 @@ function fmtDateLong(d: Date): string {
 }
 
 export default function PedagogiePage() {
+  const canManage = useCanManage();
   const [filieres, setFilieres] = useState<Filiere[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [assignments, setAssignments] = useState<CourseAssignment[]>([]);
@@ -261,13 +263,15 @@ export default function PedagogiePage() {
                               {s.sessionNumber && (
                                 <div style={{ fontSize: "8px", color: style.text, opacity: 0.6 }}>Session {s.sessionNumber}</div>
                               )}
-                              <button
-                                onClick={() => deleteSlot(s.id)}
-                                className="del-btn"
-                                style={{ position: "absolute", top: "3px", right: "3px", background: "rgba(185,28,47,0.12)", border: "none", borderRadius: "4px", cursor: "pointer", color: "#B91C2F", padding: "2px", display: "flex", alignItems: "center", opacity: 0, transition: "opacity 0.15s" }}
-                              >
-                                <Trash2 style={{ width: "10px", height: "10px" }} />
-                              </button>
+                              {canManage && (
+                                <button
+                                  onClick={() => deleteSlot(s.id)}
+                                  className="del-btn"
+                                  style={{ position: "absolute", top: "3px", right: "3px", background: "rgba(185,28,47,0.12)", border: "none", borderRadius: "4px", cursor: "pointer", color: "#B91C2F", padding: "2px", display: "flex", alignItems: "center", opacity: 0, transition: "opacity 0.15s" }}
+                                >
+                                  <Trash2 style={{ width: "10px", height: "10px" }} />
+                                </button>
+                              )}
                             </div>
                           );
                         })}
@@ -395,12 +399,18 @@ export default function PedagogiePage() {
                 >
                   <Printer style={{ width: "12px", height: "12px" }} />Imprimer
                 </button>
-                <button
-                  onClick={openModal}
-                  style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 16px", background: "#B91C2F", border: "none", borderRadius: "8px", fontSize: "12px", fontWeight: "700", color: "white", cursor: "pointer" }}
-                >
-                  <Plus style={{ width: "13px", height: "13px" }} />Ajouter
-                </button>
+                {canManage ? (
+                  <button
+                    onClick={openModal}
+                    style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 16px", background: "#B91C2F", border: "none", borderRadius: "8px", fontSize: "12px", fontWeight: "700", color: "white", cursor: "pointer" }}
+                  >
+                    <Plus style={{ width: "13px", height: "13px" }} />Ajouter
+                  </button>
+                ) : (
+                  <span style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", background: "var(--bg-muted)", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)" }}>
+                    <Eye style={{ width: "12px", height: "12px" }} />Lecture seule
+                  </span>
+                )}
               </div>
             </div>
 
@@ -418,7 +428,7 @@ export default function PedagogiePage() {
               </div>
             </div>
 
-            {filiereAssignments.length === 0 && (
+            {canManage && filiereAssignments.length === 0 && (
               <div style={{ marginTop: "10px", padding: "10px 14px", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: "8px", fontSize: "12px", color: "#92400e" }}>
                 Aucun cours assigne pour cette filiere. Allez dans RH pour affecter des enseignants aux cours avant d'ajouter des creneaux.
               </div>
