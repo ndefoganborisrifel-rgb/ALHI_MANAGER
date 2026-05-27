@@ -104,18 +104,23 @@ export default function LoginPage() {
 
         {/* Center content */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="ALHI"
+          <div
             style={{
               width: "100px",
               height: "100px",
-              filter: "brightness(0) invert(1)",
-              opacity: 0.92,
+              borderRadius: "20px",
+              background: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               marginBottom: "28px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+              overflow: "hidden",
             }}
-          />
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="ALHI" style={{ width: "88px", height: "88px", objectFit: "contain" }} />
+          </div>
           <h1
             style={{
               color: "white",
