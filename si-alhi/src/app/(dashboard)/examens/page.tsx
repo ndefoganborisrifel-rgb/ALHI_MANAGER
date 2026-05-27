@@ -1,9 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, FileText, Award, ClipboardList } from "lucide-react";
+import { BookOpen, FileText, Award, ClipboardList, ArrowRight, GraduationCap } from "lucide-react";
 
 export default async function ExamensPage() {
   const session = await auth();
@@ -17,130 +15,230 @@ export default async function ExamensPage() {
 
   const canEnterGrades = ["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(role);
 
+  const kpis = [
+    { label: "Notes saisies", value: totalGrades, color: "#2563eb", bg: "linear-gradient(135deg, #eff6ff, #dbeafe)", icon: BookOpen },
+    { label: "Etudiants actifs", value: students, color: "#16a34a", bg: "linear-gradient(135deg, #f0fdf4, #dcfce7)", icon: GraduationCap },
+    { label: "Filieres", value: filieres.length, color: "#B91C2F", bg: "linear-gradient(135deg, #fff1f2, #fecdd3)", icon: Award },
+  ];
+
+  const actions = [
+    ...(canEnterGrades ? [{ label: "Saisir les notes CC1, CC2, Examen", href: "/examens/saisie", icon: BookOpen, desc: "Remplir les notes des etudiants par cours" }] : []),
+    { label: "Consulter et imprimer les bulletins", href: "/examens/bulletins", icon: FileText, desc: "Bulletins semestriels par etudiant" },
+    ...(canEnterGrades ? [
+      { label: "PV de notes (CC et Examen)", href: "/examens/pv", icon: ClipboardList, desc: "Proces-verbal officiel des notes" },
+      { label: "PV de deliberation", href: "/examens/deliberation", icon: Award, desc: "Deliberation et decisions du jury" },
+    ] : []),
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div style={{ maxWidth: "1100px" }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">SI-Examens &amp; Notes</h1>
-          <p className="text-gray-500 text-sm">Saisie des notes et génération des bulletins, 2025-2026</p>
+          <h1 style={{ fontSize: "24px", fontWeight: "800", color: "#111827", marginBottom: "4px" }}>
+            SI-Examens et Notes
+          </h1>
+          <p style={{ fontSize: "14px", color: "#6b7280" }}>
+            Saisie des notes et generation des bulletins, annee 2025-2026
+          </p>
         </div>
-        <div className="flex gap-2">
-          {canEnterGrades && (
-            <Link href="/examens/saisie">
-              <Button variant="outline"><BookOpen className="w-4 h-4 mr-2" />Saisir les notes</Button>
+        {canEnterGrades && (
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Link
+              href="/examens/saisie"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "7px",
+                padding: "9px 18px",
+                background: "white",
+                color: "#374151",
+                border: "1.5px solid #e5e7eb",
+                borderRadius: "10px",
+                fontWeight: "600",
+                fontSize: "13px",
+                textDecoration: "none",
+              }}
+            >
+              <BookOpen style={{ width: "15px", height: "15px" }} />
+              Saisir les notes
             </Link>
-          )}
-          <Link href="/examens/bulletins">
-            <Button><FileText className="w-4 h-4 mr-2" />Bulletins</Button>
-          </Link>
-        </div>
+            <Link
+              href="/examens/bulletins"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "7px",
+                padding: "9px 18px",
+                background: "#B91C2F",
+                color: "white",
+                borderRadius: "10px",
+                fontWeight: "700",
+                fontSize: "13px",
+                textDecoration: "none",
+              }}
+            >
+              <FileText style={{ width: "15px", height: "15px" }} />
+              Bulletins
+            </Link>
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-50 rounded-xl">
-                <BookOpen className="w-6 h-6 text-blue-600" />
+      {/* KPIs */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
+        {kpis.map((kpi) => {
+          const Icon = kpi.icon;
+          return (
+            <div
+              key={kpi.label}
+              style={{
+                background: kpi.bg,
+                borderRadius: "14px",
+                padding: "20px 24px",
+                border: "1px solid rgba(255,255,255,0.8)",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                display: "flex",
+                alignItems: "center",
+                gap: "16px",
+              }}
+            >
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  background: kpi.color,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <Icon style={{ width: "24px", height: "24px", color: "white" }} />
               </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">{totalGrades}</p>
-                <p className="text-sm text-gray-500">Notes saisies</p>
+                <p style={{ fontSize: "32px", fontWeight: "800", color: kpi.color, lineHeight: 1, marginBottom: "4px" }}>
+                  {kpi.value.toLocaleString("fr-FR")}
+                </p>
+                <p style={{ fontSize: "12px", color: "#6b7280", fontWeight: "500" }}>{kpi.label}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-50 rounded-xl">
-                <FileText className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-gray-900">{students}</p>
-                <p className="text-sm text-gray-500">Étudiants actifs</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-red-50 rounded-xl">
-                <Award className="w-6 h-6 text-[#B91C2F]" />
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-gray-900">{filieres.length}</p>
-                <p className="text-sm text-gray-500">Filières</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader><CardTitle>Actions rapides</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {canEnterGrades && (
-              <Link href="/examens/saisie">
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-100 cursor-pointer transition-colors">
-                  <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
-                    <BookOpen className="w-4 h-4 text-[#B91C2F]" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "20px" }}>
+        {/* Actions */}
+        <div
+          style={{
+            background: "white",
+            borderRadius: "14px",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+            overflow: "hidden",
+            border: "1px solid #f3f4f6",
+          }}
+        >
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid #f3f4f6" }}>
+            <h2 style={{ fontSize: "15px", fontWeight: "700", color: "#111827" }}>Actions disponibles</h2>
+          </div>
+          <div style={{ padding: "8px" }}>
+            {actions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <Link key={action.href} href={action.href} style={{ textDecoration: "none" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "14px",
+                      padding: "14px 12px",
+                      borderRadius: "10px",
+                      marginBottom: "4px",
+                      cursor: "pointer",
+                      transition: "background 0.1s",
+                    }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.background = "#f9fafb")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.background = "transparent")}
+                  >
+                    <div
+                      style={{
+                        width: "42px",
+                        height: "42px",
+                        borderRadius: "10px",
+                        background: "#fff1f2",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Icon style={{ width: "20px", height: "20px", color: "#B91C2F" }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: "14px", fontWeight: "600", color: "#111827", marginBottom: "2px" }}>
+                        {action.label}
+                      </p>
+                      <p style={{ fontSize: "11px", color: "#9ca3af" }}>{action.desc}</p>
+                    </div>
+                    <ArrowRight style={{ width: "16px", height: "16px", color: "#d1d5db" }} />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">Saisir les notes CC1, CC2, Examen</span>
-                </div>
-              </Link>
-            )}
-            <Link href="/examens/bulletins">
-              <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-100 cursor-pointer transition-colors">
-                <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
-                  <FileText className="w-4 h-4 text-[#B91C2F]" />
-                </div>
-                <span className="text-sm font-medium text-gray-700">Consulter et imprimer les bulletins</span>
-              </div>
-            </Link>
-            {canEnterGrades && (
-              <Link href="/examens/pv">
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-100 cursor-pointer transition-colors">
-                  <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
-                    <ClipboardList className="w-4 h-4 text-[#B91C2F]" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">PV de notes (CC et Examen)</span>
-                </div>
-              </Link>
-            )}
-            {canEnterGrades && (
-              <Link href="/examens/deliberation">
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-100 cursor-pointer transition-colors">
-                  <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
-                    <Award className="w-4 h-4 text-[#B91C2F]" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">PV de délibération</span>
-                </div>
-              </Link>
-            )}
-          </CardContent>
-        </Card>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader><CardTitle>Filières</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {filieres.map((f) => (
-                <div key={f.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-sm text-gray-800">{f.name}</p>
-                    <p className="text-xs text-gray-500 font-mono">{f.code}</p>
-                  </div>
-                  <Link href={`/examens/bulletins?filiere=${f.id}`}>
-                    <Button variant="outline" size="sm">Bulletins</Button>
-                  </Link>
+        {/* Filieres */}
+        <div
+          style={{
+            background: "white",
+            borderRadius: "14px",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+            overflow: "hidden",
+            border: "1px solid #f3f4f6",
+          }}
+        >
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid #f3f4f6" }}>
+            <h2 style={{ fontSize: "15px", fontWeight: "700", color: "#111827" }}>Filieres</h2>
+          </div>
+          <div style={{ padding: "8px" }}>
+            {filieres.map((f, i) => (
+              <div
+                key={f.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  marginBottom: i < filieres.length - 1 ? "4px" : "0",
+                  background: "#f9fafb",
+                }}
+              >
+                <div>
+                  <p style={{ fontWeight: "600", fontSize: "13px", color: "#111827", marginBottom: "2px" }}>{f.name}</p>
+                  <p style={{ fontSize: "10px", color: "#9ca3af", fontFamily: "monospace" }}>{f.code}</p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <Link
+                  href={`/examens/bulletins?filiere=${f.id}`}
+                  style={{
+                    padding: "4px 10px",
+                    background: "white",
+                    border: "1.5px solid #e5e7eb",
+                    borderRadius: "6px",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    color: "#374151",
+                    textDecoration: "none",
+                  }}
+                >
+                  Bulletins
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
