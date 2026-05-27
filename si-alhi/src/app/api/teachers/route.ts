@@ -12,6 +12,10 @@ const createSchema = z.object({
   speciality: z.string().optional(),
   type: z.enum(["PERMANENT", "VACATAIRE"]).default("VACATAIRE"),
   hourlyRate: z.number().int().nonnegative().default(0),
+  // Assign one or more subjects at creation time.
+  courseIds: z.array(z.string().cuid()).optional().default([]),
+  academicYear: z.string().default("2025-2026"),
+  semester: z.number().int().min(1).max(2).default(1),
 });
 
 export async function GET() {
@@ -32,7 +36,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-  if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
+  if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role)) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
@@ -72,5 +76,25 @@ export async function POST(req: Request) {
     include: { user: { select: { id: true, email: true, role: true } } },
   });
 
-  return NextResponse.json({ ...teacher, tempPassword }, { status: 201 });
+  // Assign the selected subjects to the freshly created teacher.
+  if (parsed.data.courseIds.length > 0) {
+    await prisma.courseAssignment.createMany({
+      data: parsed.data.courseIds.map((courseId) => ({
+        courseId,
+        teacherId: teacher.id,
+        academicYear: parsed.data.academicYear,
+        semester: parsed.data.semester,
+      })),
+    });
+  }
+
+  const withAssignments = await prisma.teacher.findUnique({
+    where: { id: teacher.id },
+    include: {
+      user: { select: { id: true, email: true, role: true } },
+      assignments: { include: { course: true } },
+    },
+  });
+
+  return NextResponse.json({ ...withAssignments, tempPassword }, { status: 201 });
 }

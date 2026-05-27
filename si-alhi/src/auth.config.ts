@@ -1,5 +1,23 @@
 import type { NextAuthConfig } from "next-auth";
 
+// Server-side route guard. Each rule lists the roles allowed on a path prefix.
+// This mirrors the sidebar nav but is enforced before the page renders, so a
+// student cannot reach a management page by typing its URL. The first matching
+// rule wins; unlisted paths are allowed to any authenticated user.
+const ROUTE_RULES: { prefix: string; roles: string[] }[] = [
+  { prefix: "/users", roles: ["ADMIN"] },
+  { prefix: "/logistique", roles: ["ADMIN"] },
+  { prefix: "/admission", roles: ["ADMIN", "SCOLARITE"] },
+  { prefix: "/scolarite", roles: ["ADMIN", "SCOLARITE"] },
+  { prefix: "/rh", roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
+  { prefix: "/pedagogie/cours", roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
+  { prefix: "/stages", roles: ["ADMIN", "SCOLARITE", "ETUDIANT"] },
+  { prefix: "/discipline", roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
+  { prefix: "/parent", roles: ["PARENT", "ADMIN"] },
+  // /pedagogie (timetable) and /examens stay open to all authenticated users;
+  // they are read-only for students at the API layer.
+];
+
 export const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/login",
@@ -15,8 +33,16 @@ export const authConfig: NextAuthConfig = {
 
       if (isPublic || isApiAuth) return true;
       if (!isLoggedIn && !isAuthPage) return Response.redirect(new URL(`/login?callbackUrl=${pathname}`, nextUrl));
-      if (isLoggedIn && (auth.user as { mustChangePassword?: boolean }).mustChangePassword && !isAuthPage) {
+      if (isLoggedIn && (auth!.user as { mustChangePassword?: boolean }).mustChangePassword && !isAuthPage) {
         return Response.redirect(new URL("/changer-mot-de-passe", nextUrl));
+      }
+
+      if (isLoggedIn && !isAuthPage) {
+        const role = (auth!.user as { role?: string }).role ?? "ETUDIANT";
+        const rule = ROUTE_RULES.find((r) => pathname === r.prefix || pathname.startsWith(r.prefix + "/"));
+        if (rule && !rule.roles.includes(role)) {
+          return Response.redirect(new URL("/dashboard", nextUrl));
+        }
       }
       return true;
     },

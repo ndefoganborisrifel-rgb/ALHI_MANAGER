@@ -15,6 +15,10 @@ const updateSchema = z.object({
   speciality: z.string().optional().nullable(),
   type: z.enum(["PERMANENT", "VACATAIRE"]).optional(),
   hourlyRate: z.number().int().nonnegative().optional(),
+  // When provided, replaces the teacher's subject assignments (add/remove).
+  courseIds: z.array(z.string().cuid()).optional(),
+  academicYear: z.string().optional(),
+  semester: z.number().int().min(1).max(2).optional(),
 });
 
 export async function GET(_req: Request, { params }: RouteParams) {
@@ -39,7 +43,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
 export async function PATCH(req: Request, { params }: RouteParams) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-  if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
+  if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role)) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
@@ -48,7 +52,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Données invalides", details: parsed.error.issues }, { status: 400 });
 
-  const { email, firstName, lastName, ...teacherRest } = parsed.data;
+  const { email, firstName, lastName, courseIds, academicYear, semester, ...teacherRest } = parsed.data;
 
   const teacher = await prisma.teacher.findUnique({ where: { id } });
   if (!teacher) return NextResponse.json({ error: "Enseignant introuvable" }, { status: 404 });
@@ -62,6 +66,30 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     },
   });
 
+  // Sync subject assignments when a courseIds list is supplied: drop the ones
+  // removed, add the new ones, leave the rest untouched.
+  if (courseIds) {
+    const year = academicYear ?? "2025-2026";
+    const sem = semester ?? 1;
+    const current = await prisma.courseAssignment.findMany({
+      where: { teacherId: id, academicYear: year, semester: sem },
+      select: { id: true, courseId: true },
+    });
+    const currentIds = new Set(current.map((c) => c.courseId));
+    const targetIds = new Set(courseIds);
+    const toRemove = current.filter((c) => !targetIds.has(c.courseId)).map((c) => c.id);
+    const toAdd = courseIds.filter((cid) => !currentIds.has(cid));
+
+    if (toRemove.length > 0) {
+      await prisma.courseAssignment.deleteMany({ where: { id: { in: toRemove } } });
+    }
+    if (toAdd.length > 0) {
+      await prisma.courseAssignment.createMany({
+        data: toAdd.map((courseId) => ({ courseId, teacherId: id, academicYear: year, semester: sem })),
+      });
+    }
+  }
+
   const updated = await prisma.teacher.update({
     where: { id },
     data: {
@@ -70,7 +98,10 @@ export async function PATCH(req: Request, { params }: RouteParams) {
       ...(lastName ? { lastName } : {}),
       ...(email ? { email } : {}),
     },
-    include: { user: { select: { id: true, email: true, role: true, isActive: true } } },
+    include: {
+      user: { select: { id: true, email: true, role: true, isActive: true } },
+      assignments: { include: { course: true } },
+    },
   });
 
   return NextResponse.json(updated);
@@ -79,7 +110,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 export async function DELETE(_req: Request, { params }: RouteParams) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-  if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
+  if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role)) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
