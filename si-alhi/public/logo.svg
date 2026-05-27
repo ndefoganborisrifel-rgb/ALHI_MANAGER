@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 100" width="280" height="100">
+  <!-- Africa silhouette (simplified) -->
+  <g opacity="0.55" fill="#b8a898">
+    <path d="M95 8 C98 8 104 10 108 14 C112 18 114 22 115 27 C116 32 114 37 112 40 C110 43 111 47 110 51 C109 55 107 60 105 64 C103 68 101 72 98 75 C95 78 92 80 89 80 C86 80 83 79 81 77 C79 75 79 72 80 69 C81 66 80 63 79 60 C78 57 76 54 75 51 C74 48 74 44 73 41 C72 38 70 35 69 32 C68 29 68 25 69 22 C70 19 72 16 75 13 C78 10 82 8 86 8 C89 8 92 8 95 8Z"/>
+  </g>
+  <!-- Letter a (red, bold) -->
+  <text x="14" y="72" font-family="Arial Black, Arial, sans-serif" font-size="62" font-weight="900" fill="#B91C2F" letter-spacing="-2">a</text>
+  <!-- Letter l -->
+  <text x="54" y="72" font-family="Arial Black, Arial, sans-serif" font-size="62" font-weight="900" fill="#B91C2F" letter-spacing="-2">l</text>
+  <!-- Letter i (without dot) -->
+  <text x="72" y="72" font-family="Arial Black, Arial, sans-serif" font-size="62" font-weight="900" fill="#B91C2F" letter-spacing="-2">i</text>
+  <!-- Red dot on the i -->
+  <circle cx="82" cy="14" r="7" fill="#B91C2F"/>
+  <!-- Vertical separator line -->
+  <line x1="120" y1="15" x2="120" y2="85" stroke="#cccccc" stroke-width="2"/>
+  <!-- AFRICA LEADERSHIP HIGHER INSTITUTE text -->
+  <text x="132" y="38" font-family="Arial Black, Arial, sans-serif" font-size="18" font-weight="900" fill="#1A1A1A" letter-spacing="1">AFRICA</text>
+  <text x="132" y="60" font-family="Arial Black, Arial, sans-serif" font-size="18" font-weight="900" fill="#1A1A1A" letter-spacing="1">LEADERSHIP</text>
+  <text x="132" y="80" font-family="Arial Black, Arial, sans-serif" font-size="13" font-weight="700" fill="#555555" letter-spacing="2">HIGHER INSTITUTE</text>
+</svg>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 
 const DAYS = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"];
@@ -178,15 +178,17 @@ export default function PrintTimetablePage() {
             </tr>
           </thead>
           <tbody>
-            {/* Pause row */}
-            <tr className="pause-row">
-              <td className="time-col">12h - 13h</td>
-              <td colSpan={6} style={{ textAlign: "center", fontSize: "9px", color: "#b45309", fontStyle: "italic", height: "22px", verticalAlign: "middle" }}>
-                Pause dejeuner / Lunch break
-              </td>
-            </tr>
-            {TIME_SLOTS.map((slot) => (
-              <tr key={slot.start}>
+            {TIME_SLOTS.map((slot, idx) => (
+              <React.Fragment key={slot.start}>
+                {idx === 2 && (
+                  <tr className="pause-row">
+                    <td className="time-col">12h - 13h</td>
+                    <td colSpan={6} style={{ textAlign: "center", fontSize: "9px", color: "#b45309", fontStyle: "italic", height: "22px", verticalAlign: "middle" }}>
+                      Pause dejeuner / Lunch break
+                    </td>
+                  </tr>
+                )}
+              <tr>
                 <td className="time-col">{slot.label}</td>
                 {DAYS.map((day) => {
                   const slots = filtered.filter((s) => s.dayOfWeek === day && s.startTime === slot.start);
@@ -218,6 +220,7 @@ export default function PrintTimetablePage() {
                   );
                 })}
               </tr>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
