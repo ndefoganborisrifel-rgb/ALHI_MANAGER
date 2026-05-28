@@ -130,6 +130,12 @@ export default function RHPage() {
     loadData();
   }
 
+  async function handleReactivateTeacher(t: Teacher) {
+    if (!confirm(`Reactiver ${t.firstName} ${t.lastName} ?`)) return;
+    await fetch(`/api/teachers/${t.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isActive: true }) });
+    loadData();
+  }
+
   async function handleTeacherSubmit(e: React.FormEvent) {
     e.preventDefault();
     setTeacherSubmitting(true);
@@ -326,6 +332,9 @@ export default function RHPage() {
                         )}
                         {canManage && teacher.user.isActive && (
                           <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDisableTeacher(teacher)}>Desactiver</Button>
+                        )}
+                        {canManage && !teacher.user.isActive && (
+                          <Button variant="outline" size="sm" className="text-xs h-7 text-green-600 hover:text-green-700" onClick={() => handleReactivateTeacher(teacher)}>Reactiver</Button>
                         )}
                         {!canManage && (
                           <span className="text-xs text-gray-400 italic">Lecture seule</span>

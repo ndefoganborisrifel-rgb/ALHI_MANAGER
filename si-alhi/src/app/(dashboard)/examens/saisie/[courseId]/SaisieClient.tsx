@@ -101,6 +101,10 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
   }, [courseId]);
 
   function updateRow(idx: number, field: "cc1" | "cc2" | "examScore", value: string) {
+    if (value !== "") {
+      const num = parseFloat(value);
+      if (isNaN(num) || num < 0 || num > 20) return;
+    }
     setRows((prev) => {
       const copy = [...prev];
       copy[idx] = {

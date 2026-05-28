@@ -19,6 +19,7 @@ const updateSchema = z.object({
   courseIds: z.array(z.string().cuid()).optional(),
   academicYear: z.string().optional(),
   semester: z.number().int().min(1).max(2).optional(),
+  isActive: z.boolean().optional(),
 });
 
 export async function GET(_req: Request, { params }: RouteParams) {
@@ -52,7 +53,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Données invalides", details: parsed.error.issues }, { status: 400 });
 
-  const { email, firstName, lastName, courseIds, academicYear, semester, ...teacherRest } = parsed.data;
+  const { email, firstName, lastName, courseIds, academicYear, semester, isActive, ...teacherRest } = parsed.data;
 
   const teacher = await prisma.teacher.findUnique({ where: { id } });
   if (!teacher) return NextResponse.json({ error: "Enseignant introuvable" }, { status: 404 });
@@ -63,6 +64,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
       ...(email ? { email } : {}),
       ...(firstName ? { firstName } : {}),
       ...(lastName ? { lastName } : {}),
+      ...(isActive !== undefined ? { isActive } : {}),
     },
   });
 

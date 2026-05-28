@@ -66,6 +66,13 @@ const EMPTY_FORM = {
   semester: "1",
 };
 
+function getSlotSpan(s: Schedule): number {
+  const startIdx = TIME_SLOTS.findIndex((t) => t.start === s.startTime);
+  const endIdx = TIME_SLOTS.findIndex((t) => t.endRaw === s.endTime);
+  if (startIdx === -1 || endIdx <= startIdx) return 1;
+  return endIdx - startIdx + 1;
+}
+
 function getMonday(d: Date): Date {
   const date = new Date(d);
   const day = date.getDay();
@@ -209,6 +216,17 @@ export default function PedagogiePage() {
     const dayDates: Record<string, string> = {};
     DAYS.forEach((day, i) => { dayDates[day] = fmtDate(addDays(weekStart, i)); });
 
+    // Pre-compute which cells are consumed by a rowspan from a slot above them
+    const skipped = new Set<string>();
+    for (const s of slotsList) {
+      const startIdx = TIME_SLOTS.findIndex((t) => t.start === s.startTime);
+      if (startIdx === -1) continue;
+      const span = getSlotSpan(s);
+      for (let r = startIdx + 1; r < startIdx + span; r++) {
+        skipped.add(`${s.dayOfWeek}:${r}`);
+      }
+    }
+
     const th: React.CSSProperties = {
       padding: "8px 6px", color: "white", textAlign: "center", fontSize: "11px",
       fontWeight: "700", border: "1px solid #333", whiteSpace: "nowrap",
@@ -249,9 +267,11 @@ export default function PedagogiePage() {
                     <div style={{ fontSize: "9px", opacity: 0.5, fontWeight: "400", marginTop: "1px" }}>{slot.end}</div>
                   </td>
                   {DAYS.map((day) => {
+                    if (skipped.has(`${day}:${idx}`)) return null;
                     const matching = slotsList.filter((s) => s.dayOfWeek === day && s.startTime === slot.start);
+                    const cellSpan = matching.length > 0 ? Math.max(...matching.map(getSlotSpan)) : 1;
                     return (
-                      <td key={day} style={{ border: "1px solid var(--border)", padding: "4px", verticalAlign: "top", minHeight: "70px" }}>
+                      <td key={day} rowSpan={cellSpan} style={{ border: "1px solid var(--border)", padding: "4px", verticalAlign: "top", minHeight: cellSpan > 1 ? `${70 * cellSpan}px` : "70px" }}>
                         {matching.map((s) => {
                           const hasCol = collisions.has(s.id);
                           const style = hasCol

@@ -6,6 +6,25 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Save, AlertTriangle, CheckCircle, ClipboardList } from "lucide-react";
 
+interface ScheduleOption {
+  id: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  type: string;
+  label?: string | null;
+  courseAssignment?: {
+    course: { code: string; name: string };
+    teacher: { firstName: string; lastName: string };
+  } | null;
+}
+
+const DAY_MAP: Record<number, string> = { 1: "LUNDI", 2: "MARDI", 3: "MERCREDI", 4: "JEUDI", 5: "VENDREDI", 6: "SAMEDI" };
+
+function getDayOfWeek(dateStr: string): string {
+  return DAY_MAP[new Date(dateStr + "T00:00:00").getDay()] ?? "";
+}
+
 interface Student {
   id: string;
   matricule: string;
@@ -34,6 +53,8 @@ export default function AbsenceSaisiePage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filiereSchedules, setFiliereSchedules] = useState<ScheduleOption[]>([]);
+  const [selectedScheduleId, setSelectedScheduleId] = useState("");
 
   useEffect(() => {
     fetch("/api/students")
@@ -52,6 +73,21 @@ export default function AbsenceSaisiePage() {
       })
       .catch(() => setError("Erreur de chargement des étudiants"));
   }, []);
+
+  useEffect(() => {
+    if (!selectedFiliere) { setFiliereSchedules([]); setSelectedScheduleId(""); return; }
+    fetch(`/api/schedules?filiereId=${selectedFiliere}&academicYear=2025-2026`)
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: ScheduleOption[]) => setFiliereSchedules(data));
+    setSelectedScheduleId("");
+  }, [selectedFiliere]);
+
+  useEffect(() => {
+    setSelectedScheduleId("");
+  }, [date]);
+
+  const currentDay = getDayOfWeek(date);
+  const daySchedules = filiereSchedules.filter((s) => s.dayOfWeek === currentDay && s.type !== "PAUSE" && s.type !== "FERIER");
 
   const filtered = selectedFiliere ? students.filter((s) => s.filiereId === selectedFiliere) : students;
 
@@ -75,7 +111,7 @@ export default function AbsenceSaisiePage() {
       const res = await fetch("/api/discipline/attendance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entries }),
+        body: JSON.stringify({ entries, scheduleId: selectedScheduleId || undefined }),
       });
       const data = await res.json();
       if (data.error) setError(data.error);
@@ -146,6 +182,25 @@ export default function AbsenceSaisiePage() {
                 ))}
               </select>
             </div>
+            {daySchedules.length > 0 && (
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Cours / Seance</label>
+                <select
+                  value={selectedScheduleId}
+                  onChange={(e) => setSelectedScheduleId(e.target.value)}
+                  className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 bg-white min-w-48"
+                >
+                  <option value="">Toutes les seances</option>
+                  {daySchedules.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.courseAssignment
+                        ? `${s.courseAssignment.course.code} - ${s.courseAssignment.course.name} (${s.startTime})`
+                        : `${s.label ?? s.type} (${s.startTime})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="flex gap-3 text-sm ml-auto">
               <span className="text-red-600 font-semibold">{absentCount} absent{absentCount !== 1 ? "s" : ""}</span>
               <span className="text-amber-600 font-semibold">{lateCount} retard{lateCount !== 1 ? "s" : ""}</span>

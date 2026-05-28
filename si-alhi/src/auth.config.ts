@@ -27,7 +27,7 @@ export const authConfig: NextAuthConfig = {
       const isLoggedIn = !!auth?.user;
       const pathname = nextUrl.pathname;
 
-      const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/changer-mot-de-passe");
+      const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/changer-mot-de-passe") || pathname.startsWith("/mot-de-passe-oublie");
       const isApiAuth = pathname.startsWith("/api/auth");
       const isPublic = pathname === "/favicon.ico" || pathname.startsWith("/_next");
 

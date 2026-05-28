@@ -45,5 +45,5 @@ export async function generateMatricule(filiereCode: string, year?: number): Pro
     : 0;
 
   const seq = count + 1;
-  return `ALI/${matriculeCode}${String(seq).padStart(3, "0")}/${yearSuffix}`;
+  return `ALI\\${matriculeCode}${String(seq).padStart(3, "0")}\\${yearSuffix}`;
 }

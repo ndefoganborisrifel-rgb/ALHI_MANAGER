@@ -3,7 +3,6 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -54,7 +53,7 @@ export default function LoginPage() {
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-              <Image src="/logo.png" alt="ALHI" width={28} height={28} style={{ objectFit: "contain" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+              <img src="/logo-alhi.svg" alt="ALHI" width={28} height={28} style={{ objectFit: "contain" }} />
             </div>
             <span style={{ color: "rgba(255,255,255,0.9)", fontSize: "13px", fontWeight: "600", letterSpacing: "1px", textTransform: "uppercase" }}>SI-ALHI</span>
           </div>
@@ -63,20 +62,7 @@ export default function LoginPage() {
         {/* Center: logo + name + tagline */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1 }}>
           <div style={{ marginBottom: "24px", background: "rgba(255,255,255,0.12)", borderRadius: "20px", padding: "20px 28px", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.18)", display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
-            <Image
-              src="/logo.png"
-              alt="Africa Leadership Higher Institute"
-              width={80}
-              height={80}
-              style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }}
-              onError={(e) => {
-                const img = e.currentTarget as HTMLImageElement;
-                img.style.display = "none";
-                const box = img.nextElementSibling as HTMLElement;
-                if (box) box.style.display = "flex";
-              }}
-            />
-            <div style={{ display: "none", width: "80px", height: "80px", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.2)", borderRadius: "12px", color: "white", fontWeight: "900", fontSize: "22px", fontFamily: "Arial Black" }}>ALI</div>
+            <img src="/logo-alhi.svg" alt="Africa Leadership Higher Institute" width={80} height={80} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
             <div style={{ textAlign: "center" }}>
               <p style={{ color: "white", fontWeight: "900", fontSize: "16px", letterSpacing: "1px", textTransform: "uppercase", lineHeight: "1.3" }}>Africa Leadership</p>
               <p style={{ color: "white", fontWeight: "900", fontSize: "16px", letterSpacing: "1px", textTransform: "uppercase", lineHeight: "1.3" }}>Higher Institute</p>
@@ -109,7 +95,7 @@ export default function LoginPage() {
       {/* RIGHT - Form */}
       <div style={{
         flex: 1,
-        background: "var(--bg-card, #ffffff)",
+        background: "#FAF8F4",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -120,7 +106,7 @@ export default function LoginPage() {
       }}>
         {/* Mobile logo (hidden on desktop) */}
         <div className="login-mobile-logo" style={{ marginBottom: "28px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <Image src="/logo.png" alt="ALHI" width={56} height={56} style={{ objectFit: "contain" }} />
+          <img src="/logo-alhi.svg" alt="ALHI" width={56} height={56} style={{ objectFit: "contain" }} />
           <div>
             <p style={{ fontSize: "13px", fontWeight: "800", color: "#B91C2F", textTransform: "uppercase", letterSpacing: "0.5px" }}>Africa Leadership Higher Institute</p>
           </div>
