@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Pencil, Trash2, X, BookOpen, Search, GraduationCap } from "lucide-react";
+import Link from "next/link";
+import { Plus, Pencil, Trash2, X, BookOpen, Search, GraduationCap, ArrowLeft } from "lucide-react";
 import { useCanManage } from "@/components/providers/RoleProvider";
 
 type Filiere = { id: string; code: string; name: string };
@@ -154,6 +155,11 @@ export default function CoursPage() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+            <Link href="/pedagogie" style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", color: "var(--text-muted)", textDecoration: "none", fontWeight: "500" }}>
+              <ArrowLeft style={{ width: "13px", height: "13px" }} />Pedagogie
+            </Link>
+          </div>
           <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>Matieres et UE</h1>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
             Gestion des cours, unites d'enseignement et credits

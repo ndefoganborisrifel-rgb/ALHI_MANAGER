@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { AlertTriangle, Monitor, Building2, Projector, Plus, Pencil, Trash2 } from "lucide-react";
+import { AlertTriangle, Monitor, Building2, Projector, Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { getStatusColor, getStatusLabel, formatDate } from "@/lib/utils";
 
 type Room = {
@@ -218,6 +219,9 @@ export default function LogistiquePage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Link href="/dashboard"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
+          </div>
           <h1 className="text-2xl font-bold text-gray-900">SI-Logistique</h1>
           <p className="text-gray-500 text-sm">Inventaire du patrimoine et gestion des salles</p>
         </div>

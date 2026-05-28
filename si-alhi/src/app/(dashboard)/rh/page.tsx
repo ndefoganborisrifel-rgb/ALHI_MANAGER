@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Plus, Users, UserCheck, UserX, Wallet } from "lucide-react";
+import { Plus, Users, UserCheck, UserX, Wallet, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { formatCFA, getStatusLabel, getStatusColor } from "@/lib/utils";
 import { useCanManage } from "@/components/providers/RoleProvider";
 
@@ -203,6 +204,9 @@ export default function RHPage() {
   return (
     <div className="space-y-6">
       <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Link href="/dashboard"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
+        </div>
         <h1 className="text-2xl font-bold text-gray-900">SI-RH et Vacations</h1>
         <p className="text-gray-500 text-sm">Gestion des formateurs et des vacations</p>
       </div>

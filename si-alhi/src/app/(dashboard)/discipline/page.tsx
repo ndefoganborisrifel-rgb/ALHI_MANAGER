@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, ClipboardList, UserX, Plus } from "lucide-react";
+import { AlertTriangle, ClipboardList, UserX, Plus, ArrowLeft } from "lucide-react";
 
 export default async function DisciplinePage() {
   const session = await auth();
@@ -34,6 +34,9 @@ export default async function DisciplinePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
+          <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-1 font-medium">
+            <ArrowLeft className="w-4 h-4" />Retour
+          </Link>
           <h1 className="text-2xl font-bold text-gray-900">SI-Discipline</h1>
           <p className="text-gray-500 text-sm">Suivi des absences et de l&apos;assiduité</p>
         </div>

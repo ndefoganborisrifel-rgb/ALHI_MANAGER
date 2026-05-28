@@ -8,7 +8,7 @@ type Filiere = { id: string; code: string; name: string };
 type Room = { id: string; code: string; name: string; capacity?: number };
 type CourseAssignment = {
   id: string;
-  course: { id: string; name: string; code: string; filiereId: string };
+  course: { id: string; name: string; code: string; filiereId: string; totalHours: number };
   teacher: { id: string; firstName: string; lastName: string };
 };
 type Schedule = {
@@ -584,11 +584,22 @@ export default function PedagogiePage() {
               {(form.type === "COURS" || form.type === "TPE" || form.type === "EVALUATION") && (
                 <div>
                   <label className="form-label">Matiere / Cours assigne</label>
-                  <select className="form-input" value={form.courseAssignmentId} onChange={(e) => setForm((f) => ({ ...f, courseAssignmentId: e.target.value }))}>
+                  <select
+                    className="form-input"
+                    value={form.courseAssignmentId}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      const selectedAssignment = filiereAssignments.find((a) => a.id === selectedId);
+                      const autoTotal = selectedAssignment
+                        ? String(Math.ceil(selectedAssignment.course.totalHours / 2))
+                        : "";
+                      setForm((f) => ({ ...f, courseAssignmentId: selectedId, totalSessions: autoTotal }));
+                    }}
+                  >
                     <option value="">Selectionner un cours...</option>
                     {filiereAssignments.map((a) => (
                       <option key={a.id} value={a.id}>
-                        {a.course.code} - {a.course.name} ({a.teacher.lastName} {a.teacher.firstName[0]}.)
+                        {a.course.code} - {a.course.name} ({a.teacher.lastName} {a.teacher.firstName[0]}.) [{Math.ceil(a.course.totalHours / 2)} seances]
                       </option>
                     ))}
                   </select>
@@ -598,17 +609,41 @@ export default function PedagogiePage() {
                 </div>
               )}
 
-              {/* Seance X/Y et libelle (pour EVALUATION et autres types) */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                <div>
-                  <label className="form-label">No. seance (ex: 2)</label>
-                  <input type="number" min={1} className="form-input" value={form.sessionNumber} onChange={(e) => setForm((f) => ({ ...f, sessionNumber: e.target.value }))} placeholder="ex: 2" />
+              {/* Seance X/Y (seulement pour COURS et TPE, pas EVALUATION) */}
+              {(form.type === "COURS" || form.type === "TPE") && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  <div>
+                    <label className="form-label">No. seance</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={form.totalSessions ? parseInt(form.totalSessions) : undefined}
+                      className="form-input"
+                      value={form.sessionNumber}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        const max = form.totalSessions ? parseInt(form.totalSessions) : Infinity;
+                        if (!isNaN(val) && val > 0 && val <= max) setForm((f) => ({ ...f, sessionNumber: e.target.value }));
+                        else if (e.target.value === "") setForm((f) => ({ ...f, sessionNumber: "" }));
+                      }}
+                      placeholder="ex: 2"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Total seances{form.courseAssignmentId ? " (auto)" : ""}</label>
+                    <input
+                      type="number"
+                      min={1}
+                      className="form-input"
+                      value={form.totalSessions}
+                      readOnly={!!form.courseAssignmentId}
+                      style={form.courseAssignmentId ? { background: "var(--bg-muted)", color: "var(--text-secondary)" } : {}}
+                      onChange={(e) => { if (!form.courseAssignmentId) setForm((f) => ({ ...f, totalSessions: e.target.value })); }}
+                      placeholder="ex: 4"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="form-label">Total seances (ex: 4)</label>
-                  <input type="number" min={1} className="form-input" value={form.totalSessions} onChange={(e) => setForm((f) => ({ ...f, totalSessions: e.target.value }))} placeholder="ex: 4" />
-                </div>
-              </div>
+              )}
 
               {/* Libelle libre (pour FERIER, EXCURSION, AUTRE) */}
               {(form.type === "FERIER" || form.type === "EXCURSION" || form.type === "AUTRE") && (

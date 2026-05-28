@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, KeyRound, Calendar, BookOpen, Settings, Shield } from "lucide-react";
+import { User, KeyRound, Calendar, BookOpen, Settings, Shield, ArrowLeft } from "lucide-react";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -36,13 +36,18 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       {/* Page header */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
-          <Settings className="w-5 h-5 text-[#B91C2F]" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Paramètres</h1>
-          <p className="text-gray-500 text-sm">Gérez votre compte et les préférences du système</p>
+      <div>
+        <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-3 font-medium">
+          <ArrowLeft className="w-4 h-4" />Retour
+        </Link>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-[#B91C2F]/10 rounded-lg">
+            <Settings className="w-5 h-5 text-[#B91C2F]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Parametres</h1>
+            <p className="text-gray-500 text-sm">Gerez votre compte et les preferences du systeme</p>
+          </div>
         </div>
       </div>
 
