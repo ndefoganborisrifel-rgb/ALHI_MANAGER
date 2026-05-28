@@ -107,7 +107,7 @@ export async function StudentDashboard({ userId }: { userId: string }) {
           </div>
           <div style={{ padding: "6px" }}>
             {[
-              { label: "Mes notes et bulletins", href: "/examens", icon: BookOpen },
+              { label: "Mes notes et mon bulletin", href: "/examens", icon: BookOpen },
               { label: "Suivi paiements", href: "/scolarite", icon: CreditCard },
               { label: "Emploi du temps", href: "/pedagogie", icon: Calendar },
               { label: "Mon stage", href: "/stages", icon: FileText },

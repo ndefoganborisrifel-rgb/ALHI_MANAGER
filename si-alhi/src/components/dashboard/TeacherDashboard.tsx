@@ -101,7 +101,7 @@ export async function TeacherDashboard({ userId }: { userId: string }) {
           <div style={{ padding: "6px" }}>
             {[
               { label: "Saisir les notes", href: "/examens/saisie" },
-              { label: "Voir les bulletins", href: "/examens/bulletins" },
+              { label: "PV de notes", href: "/examens/pv" },
               { label: "Emploi du temps", href: "/pedagogie" },
               { label: "Mes vacations", href: "/rh" },
             ].map((item) => (

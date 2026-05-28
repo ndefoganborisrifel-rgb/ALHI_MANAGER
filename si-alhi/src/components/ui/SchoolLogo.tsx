@@ -11,7 +11,7 @@ export function SchoolLogo({ size = 40, className, wrapperStyle }: SchoolLogoPro
     width: size,
     height: size,
     borderRadius: size * 0.18,
-    background: "white",
+    background: "linear-gradient(135deg, #B91C2F, #6B0D1A)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -22,12 +22,7 @@ export function SchoolLogo({ size = 40, className, wrapperStyle }: SchoolLogoPro
 
   return (
     <div style={containerStyle} className={className}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/logo-alhi.svg"
-        alt="ALHI"
-        style={{ width: size * 0.92, height: size * 0.92, objectFit: "contain" }}
-      />
+      <span style={{ fontSize: size * 0.38, fontWeight: 900, color: "white", letterSpacing: "0.5px", lineHeight: 1, fontFamily: "'Arial Black','Arial Bold',Arial,sans-serif" }}>ALI</span>
     </div>
   );
 }

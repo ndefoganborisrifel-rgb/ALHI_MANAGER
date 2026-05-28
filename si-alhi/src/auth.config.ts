@@ -14,7 +14,13 @@ const ROUTE_RULES: { prefix: string; roles: string[] }[] = [
   { prefix: "/stages", roles: ["ADMIN", "SCOLARITE", "ETUDIANT"] },
   { prefix: "/discipline", roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { prefix: "/parent", roles: ["PARENT", "ADMIN"] },
-  // /pedagogie (timetable) and /examens stay open to all authenticated users;
+  // Bulletin management (publish button, list of students) is admin/scolarite only.
+  // Students access their own bulletin via /examens (which shows a link) and /print/bulletin/[id].
+  { prefix: "/examens/bulletins", roles: ["ADMIN", "SCOLARITE"] },
+  { prefix: "/examens/saisie", roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
+  { prefix: "/examens/pv", roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
+  { prefix: "/examens/deliberation", roles: ["ADMIN", "SCOLARITE"] },
+  // /pedagogie (timetable) and /examens (index) stay open to all authenticated users;
   // they are read-only for students at the API layer.
 ];
 

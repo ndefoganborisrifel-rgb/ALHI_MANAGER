@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Globe, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -31,70 +31,105 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
-      {/* LEFT - Brand panel */}
+    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'Inter',system-ui,-apple-system,sans-serif", background: "#FAF8F4" }}>
+      {/* LEFT BRAND PANEL */}
       <div className="login-brand-panel" style={{
-        flex: "0 0 42%",
-        background: "linear-gradient(145deg, #B91C2F 0%, #8B1222 60%, #6B0D1A 100%)",
+        flex: "1 1 50%",
+        background: "linear-gradient(135deg, #A01829 0%, #8B1424 50%, #6B0D1A 100%)",
         display: "flex",
         flexDirection: "column",
-        padding: "48px 44px",
+        padding: "32px 40px",
         position: "relative",
         overflow: "hidden",
+        color: "white",
       }}>
-        {/* Decorative circles */}
-        <div style={{ position: "absolute", top: "-80px", right: "-80px", width: "300px", height: "300px", borderRadius: "50%", border: "50px solid rgba(255,255,255,0.04)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "-60px", left: "-60px", width: "240px", height: "240px", borderRadius: "50%", border: "40px solid rgba(255,255,255,0.05)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: "40%", left: "50%", transform: "translate(-50%,-50%)", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-        {/* ALHI watermark text */}
-        <div style={{ position: "absolute", bottom: "-20px", right: "-10px", fontSize: "180px", fontWeight: "900", color: "rgba(255,255,255,0.04)", letterSpacing: "-8px", lineHeight: 1, userSelect: "none", pointerEvents: "none", fontFamily: "Arial Black,Arial,sans-serif" }}>ALHI</div>
+        {/* Decorative circles/patterns */}
+        <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.06, pointerEvents: "none" }} viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+          <circle cx="500" cy="100" r="200" stroke="white" strokeWidth="50" fill="none" />
+          <circle cx="60" cy="700" r="180" stroke="white" strokeWidth="40" fill="none" />
+          <circle cx="450" cy="400" r="120" stroke="white" strokeWidth="2" fill="none" />
+          <circle cx="450" cy="400" r="160" stroke="white" strokeWidth="2" fill="none" />
+          <circle cx="450" cy="400" r="200" stroke="white" strokeWidth="2" fill="none" />
+        </svg>
 
-        {/* Top: SI-ALHI label */}
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-              <img src="/logo-alhi.svg" alt="ALHI" width={28} height={28} style={{ objectFit: "contain" }} />
-            </div>
-            <span style={{ color: "rgba(255,255,255,0.9)", fontSize: "13px", fontWeight: "600", letterSpacing: "1px", textTransform: "uppercase" }}>SI-ALHI</span>
-          </div>
+        {/* Big ALHI watermark text */}
+        <div style={{ position: "absolute", bottom: "20px", left: "0", right: "0", textAlign: "center", fontSize: "170px", fontWeight: "900", color: "rgba(255,255,255,0.05)", letterSpacing: "-4px", lineHeight: 1, userSelect: "none", pointerEvents: "none", fontFamily: "Arial Black,Arial,sans-serif" }}>
+          ALHI
         </div>
 
-        {/* Center: logo + name + tagline */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1 }}>
-          <div style={{ marginBottom: "24px", background: "rgba(255,255,255,0.12)", borderRadius: "20px", padding: "20px 28px", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.18)", display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
-            <img src="/logo-alhi.svg" alt="Africa Leadership Higher Institute" width={80} height={80} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+        {/* Top: SI-ALHI badge */}
+        <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ width: "26px", height: "26px", borderRadius: "6px", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.25)" }} />
+          <span style={{ fontSize: "13px", fontWeight: "700", letterSpacing: "1.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.95)" }}>SI-ALHI</span>
+        </div>
+
+        {/* Center logo card */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 2, gap: "20px" }}>
+          {/* Glass logo card */}
+          <div style={{
+            background: "rgba(255,255,255,0.12)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            border: "1px solid rgba(255,255,255,0.22)",
+            borderRadius: "18px",
+            padding: "28px 36px 22px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "14px",
+            minWidth: "230px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
+          }}>
+            {/* ALI box */}
+            <div style={{
+              width: "84px",
+              height: "84px",
+              borderRadius: "10px",
+              background: "rgba(255,255,255,0.18)",
+              border: "1px solid rgba(255,255,255,0.25)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <span style={{ fontSize: "30px", fontWeight: "900", color: "white", letterSpacing: "1px", fontFamily: "'Arial Black','Arial Bold',Arial,sans-serif" }}>ALI</span>
+            </div>
             <div style={{ textAlign: "center" }}>
-              <p style={{ color: "white", fontWeight: "900", fontSize: "16px", letterSpacing: "1px", textTransform: "uppercase", lineHeight: "1.3" }}>Africa Leadership</p>
-              <p style={{ color: "white", fontWeight: "900", fontSize: "16px", letterSpacing: "1px", textTransform: "uppercase", lineHeight: "1.3" }}>Higher Institute</p>
+              <p style={{ color: "white", fontSize: "14px", fontWeight: "800", letterSpacing: "1.3px", lineHeight: 1.3, textTransform: "uppercase" }}>Africa Leadership</p>
+              <p style={{ color: "white", fontSize: "14px", fontWeight: "800", letterSpacing: "1.3px", lineHeight: 1.3, textTransform: "uppercase" }}>Higher Institute</p>
             </div>
           </div>
-          <div style={{ width: "40px", height: "2px", background: "rgba(255,255,255,0.3)", borderRadius: "1px", marginBottom: "16px" }} />
-          <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "14px", textAlign: "center", lineHeight: "1.6", maxWidth: "240px" }}>
-            Systeme d&apos;Information Academique
-          </p>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", textAlign: "center", marginTop: "8px", fontStyle: "italic" }}>
-            Excellence et Leadership en Afrique Centrale
-          </p>
+
+          {/* Divider line */}
+          <div style={{ width: "60px", height: "1px", background: "rgba(255,255,255,0.35)" }} />
+
+          {/* Tagline */}
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.92)", fontWeight: "500", marginBottom: "4px" }}>
+              Systeme d&apos;Information Academique
+            </p>
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)", fontStyle: "italic" }}>
+              Excellence et Leadership in Afrique Centrale
+            </p>
+          </div>
         </div>
 
-        {/* Bottom: contact */}
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ width: "32px", height: "2px", background: "rgba(255,255,255,0.2)", borderRadius: "1px", marginBottom: "14px" }} />
-          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "11.5px", lineHeight: "1.8" }}>
-            Chateau Ngoa Ekele, Yaounde, Cameroun
-          </p>
-          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "11.5px" }}>
-            +237 657 75 54 87 / +237 676 25 85 13
-          </p>
-          <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "10.5px", marginTop: "6px" }}>
-            02 ANS AU CAMEROUN, 03 ANS EN FRANCE. PIGE
-          </p>
+        {/* Bottom: location */}
+        <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px" }}>
+          <Globe style={{ width: "13px", height: "13px", color: "rgba(255,255,255,0.7)" }} />
+          <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.75)" }}>Yaounde, Cameroun</span>
         </div>
+
+        {/* Decorative bottom waves */}
+        <svg style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "120px", opacity: 0.18, pointerEvents: "none" }} viewBox="0 0 600 120" preserveAspectRatio="none">
+          <path d="M 0,80 Q 150,30 300,70 T 600,60 L 600,120 L 0,120 Z" fill="rgba(255,255,255,0.08)" />
+          <path d="M 0,100 Q 150,70 300,95 T 600,85" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" fill="none" />
+          <path d="M 0,90 Q 150,60 300,85 T 600,75" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" fill="none" />
+        </svg>
       </div>
 
-      {/* RIGHT - Form */}
+      {/* RIGHT FORM PANEL */}
       <div style={{
-        flex: 1,
+        flex: "1 1 50%",
         background: "#FAF8F4",
         display: "flex",
         flexDirection: "column",
@@ -104,20 +139,23 @@ export default function LoginPage() {
         minHeight: "100vh",
         position: "relative",
       }}>
-        {/* Mobile logo (hidden on desktop) */}
+        {/* Mobile logo */}
         <div className="login-mobile-logo" style={{ marginBottom: "28px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <img src="/logo-alhi.svg" alt="ALHI" width={56} height={56} style={{ objectFit: "contain" }} />
+          <div style={{ width: "70px", height: "70px", borderRadius: "12px", background: "linear-gradient(135deg, #B91C2F, #6B0D1A)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: "26px", fontWeight: "900", color: "white", letterSpacing: "1px", fontFamily: "'Arial Black',Arial,sans-serif" }}>ALI</span>
+          </div>
           <div>
             <p style={{ fontSize: "13px", fontWeight: "800", color: "#B91C2F", textTransform: "uppercase", letterSpacing: "0.5px" }}>Africa Leadership Higher Institute</p>
           </div>
         </div>
 
-        <div style={{ width: "100%", maxWidth: "400px" }}>
-          <div style={{ marginBottom: "36px" }}>
-            <h1 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text, #111827)", marginBottom: "6px", letterSpacing: "-0.5px" }}>
+        <div style={{ width: "100%", maxWidth: "420px" }}>
+          {/* Heading */}
+          <div style={{ marginBottom: "32px" }}>
+            <h1 style={{ fontSize: "30px", fontWeight: "800", color: "#1A1A1A", marginBottom: "6px", letterSpacing: "-0.5px" }}>
               Bienvenue
             </h1>
-            <p style={{ fontSize: "14px", color: "var(--text-secondary, #4b5563)" }}>
+            <p style={{ fontSize: "14px", color: "#4b5563" }}>
               Connectez-vous a votre espace SI-ALHI
             </p>
           </div>
@@ -132,14 +170,13 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: "20px" }}>
-              <label htmlFor="email" style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "var(--text-secondary, #374151)", marginBottom: "7px" }}>
+            {/* Email */}
+            <div style={{ marginBottom: "18px" }}>
+              <label htmlFor="email" style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
                 Adresse email
               </label>
               <div style={{ position: "relative" }}>
-                <svg style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
+                <Mail style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", width: "16px", height: "16px", color: "#9ca3af", pointerEvents: "none" }} />
                 <input
                   id="email"
                   type="email"
@@ -149,21 +186,20 @@ export default function LoginPage() {
                   required
                   autoComplete="email"
                   className="login-input"
-                  style={{ width: "100%", padding: "12px 14px 12px 42px", border: "1.5px solid var(--border, #e5e7eb)", borderRadius: "10px", fontSize: "14px", color: "var(--text, #111827)", outline: "none", background: "var(--bg-muted, #f9fafb)", boxSizing: "border-box", transition: "border-color 0.15s, box-shadow 0.15s" }}
-                  onFocus={(e) => { e.target.style.borderColor = "#B91C2F"; e.target.style.background = "var(--bg-card,#fff)"; e.target.style.boxShadow = "0 0 0 3px rgba(185,28,47,0.08)"; }}
-                  onBlur={(e) => { e.target.style.borderColor = "var(--border,#e5e7eb)"; e.target.style.background = "var(--bg-muted,#f9fafb)"; e.target.style.boxShadow = "none"; }}
+                  style={{ width: "100%", padding: "13px 14px 13px 42px", border: "1.5px solid #B91C2F", borderRadius: "10px", fontSize: "14px", color: "#111827", outline: "none", background: "#ffffff", boxSizing: "border-box", transition: "border-color 0.15s, box-shadow 0.15s" }}
+                  onFocus={(e) => { e.target.style.boxShadow = "0 0 0 3px rgba(185,28,47,0.10)"; }}
+                  onBlur={(e) => { e.target.style.boxShadow = "none"; }}
                 />
               </div>
             </div>
 
-            <div style={{ marginBottom: "10px" }}>
-              <label htmlFor="password" style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "var(--text-secondary, #374151)", marginBottom: "7px" }}>
+            {/* Password */}
+            <div style={{ marginBottom: "8px" }}>
+              <label htmlFor="password" style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
                 Mot de passe
               </label>
               <div style={{ position: "relative" }}>
-                <svg style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
+                <Lock style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", width: "16px", height: "16px", color: "#9ca3af", pointerEvents: "none" }} />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -172,9 +208,9 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
-                  style={{ width: "100%", padding: "12px 46px 12px 42px", border: "1.5px solid var(--border, #e5e7eb)", borderRadius: "10px", fontSize: "14px", color: "var(--text, #111827)", outline: "none", background: "var(--bg-muted, #f9fafb)", boxSizing: "border-box", transition: "border-color 0.15s, box-shadow 0.15s" }}
-                  onFocus={(e) => { e.target.style.borderColor = "#B91C2F"; e.target.style.background = "var(--bg-card,#fff)"; e.target.style.boxShadow = "0 0 0 3px rgba(185,28,47,0.08)"; }}
-                  onBlur={(e) => { e.target.style.borderColor = "var(--border,#e5e7eb)"; e.target.style.background = "var(--bg-muted,#f9fafb)"; e.target.style.boxShadow = "none"; }}
+                  style={{ width: "100%", padding: "13px 46px 13px 42px", border: "1.5px solid #E5E1D8", borderRadius: "10px", fontSize: "14px", color: "#111827", outline: "none", background: "#F4F0E8", boxSizing: "border-box", transition: "border-color 0.15s, box-shadow 0.15s" }}
+                  onFocus={(e) => { e.target.style.borderColor = "#B91C2F"; e.target.style.background = "#ffffff"; e.target.style.boxShadow = "0 0 0 3px rgba(185,28,47,0.10)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "#E5E1D8"; e.target.style.background = "#F4F0E8"; e.target.style.boxShadow = "none"; }}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: "4px", display: "flex", alignItems: "center" }}>
                   {showPassword ? <EyeOff style={{ width: "16px", height: "16px" }} /> : <Eye style={{ width: "16px", height: "16px" }} />}
@@ -182,18 +218,20 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div style={{ textAlign: "right", marginBottom: "28px" }}>
-              <Link href="/mot-de-passe-oublie" style={{ fontSize: "12.5px", color: "#B91C2F", textDecoration: "none", fontWeight: "500" }}>
+            {/* Forgot password */}
+            <div style={{ textAlign: "right", marginBottom: "24px" }}>
+              <Link href="/mot-de-passe-oublie" style={{ fontSize: "13px", color: "#B91C2F", textDecoration: "none", fontWeight: "500" }}>
                 Mot de passe oublie ?
               </Link>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              style={{ width: "100%", padding: "13px", background: isLoading ? "#d1d5db" : "linear-gradient(135deg, #B91C2F 0%, #8B1222 100%)", color: "white", border: "none", borderRadius: "10px", fontSize: "15px", fontWeight: "700", cursor: isLoading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "opacity 0.15s, transform 0.1s", letterSpacing: "0.3px", boxShadow: isLoading ? "none" : "0 4px 14px rgba(185,28,47,0.35)" }}
-              onMouseEnter={(e) => { if (!isLoading) { (e.currentTarget as HTMLButtonElement).style.opacity = "0.92"; (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; } }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; }}
+              style={{ width: "100%", padding: "14px", background: isLoading ? "#d1d5db" : "#B91C2F", color: "white", border: "none", borderRadius: "10px", fontSize: "15px", fontWeight: "700", cursor: isLoading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "opacity 0.15s, transform 0.1s", letterSpacing: "0.3px", boxShadow: isLoading ? "none" : "0 4px 14px rgba(185,28,47,0.30)" }}
+              onMouseEnter={(e) => { if (!isLoading) { (e.currentTarget as HTMLButtonElement).style.background = "#9b1727"; } }}
+              onMouseLeave={(e) => { if (!isLoading) { (e.currentTarget as HTMLButtonElement).style.background = "#B91C2F"; } }}
             >
               {isLoading ? (
                 <><Loader2 style={{ width: "17px", height: "17px", animation: "spin 1s linear infinite" }} />Connexion en cours...</>
@@ -201,17 +239,32 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div style={{ margin: "28px 0", display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ flex: 1, height: "1px", background: "var(--border, #e5e7eb)" }} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted, #9ca3af)", whiteSpace: "nowrap" }}>AFRICA LEADERSHIP HIGHER INSTITUTE</span>
-            <div style={{ flex: 1, height: "1px", background: "var(--border, #e5e7eb)" }} />
+          {/* Divider with school name */}
+          <div style={{ margin: "32px 0 20px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ flex: 1, height: "1px", background: "#D6D0C2" }} />
+            <span style={{ fontSize: "10.5px", color: "#6b7280", whiteSpace: "nowrap", fontWeight: "600", letterSpacing: "1.5px" }}>AFRICA LEADERSHIP HIGHER INSTITUTE</span>
+            <div style={{ flex: 1, height: "1px", background: "#D6D0C2" }} />
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: "11.5px", color: "var(--text-muted, #9ca3af)", lineHeight: "1.8" }}>
+          {/* Contact info */}
+          <div style={{ textAlign: "center", marginBottom: "22px" }}>
+            <p style={{ fontSize: "12px", color: "#6b7280", lineHeight: "1.8" }}>
               Chateau Ngoa Ekele, Yaounde, Cameroun<br />
-              +237 657 75 54 87 / +237 676 25 85 13
+              +237 657 75 54 87 / +237 678 25 25 13
             </p>
+          </div>
+
+          {/* Flag + tagline */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+            <svg width="22" height="16" viewBox="0 0 60 40" style={{ borderRadius: "2px", flexShrink: 0 }}>
+              <rect x="0" y="0" width="20" height="40" fill="#007A5E" />
+              <rect x="20" y="0" width="20" height="40" fill="#CE1126" />
+              <rect x="40" y="0" width="20" height="40" fill="#FCD116" />
+              <polygon points="30,15 32,21 38,21 33,25 35,31 30,27 25,31 27,25 22,21 28,21" fill="#FCD116" />
+            </svg>
+            <span style={{ fontSize: "13px", color: "#1A1A1A", fontStyle: "italic", fontFamily: "'Georgia',serif" }}>
+              Excellence and Leadership in Central Africa
+            </span>
           </div>
         </div>
       </div>
@@ -224,7 +277,6 @@ export default function LoginPage() {
           .login-brand-panel { display: flex !important; }
           .login-mobile-logo { display: none !important; }
         }
-        html.dark .login-input::placeholder { color: #6b7280; }
       `}</style>
     </div>
   );
