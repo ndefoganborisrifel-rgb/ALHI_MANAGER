@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -35,14 +36,22 @@ interface SidebarProps {
   userRole: string;
   collapsed: boolean;
   onToggle: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-export function Sidebar({ userRole, collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ userRole, collapsed, onToggle, mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const filteredItems = navItems.filter((item) => item.roles.includes(userRole));
 
+  // Close sidebar on navigation (mobile)
+  useEffect(() => {
+    if (onMobileClose) onMobileClose();
+  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <aside
+      className={mobileOpen ? "sidebar-mobile-open" : "sidebar-mobile-closed"}
       style={{
         position: "fixed",
         left: 0,
@@ -53,7 +62,7 @@ export function Sidebar({ userRole, collapsed, onToggle }: SidebarProps) {
         color: "white",
         display: "flex",
         flexDirection: "column",
-        transition: "width 0.3s",
+        transition: "width 0.3s, transform 0.3s",
         width: collapsed ? "64px" : "240px",
       }}
     >

@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
-import { Bell, LogOut, User } from "lucide-react";
+import { Bell, LogOut, User, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface NavbarProps {
   userName: string;
   userRole: string;
+  onMobileMenuToggle?: () => void;
 }
 
 interface Notif {
@@ -27,7 +28,7 @@ const roleLabels: Record<string, string> = {
   PARENT: "Parent",
 };
 
-export function Navbar({ userName, userRole }: NavbarProps) {
+export function Navbar({ userName, userRole, onMobileMenuToggle }: NavbarProps) {
   const [notifs, setNotifs] = useState<Notif[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -83,8 +84,17 @@ export function Navbar({ userName, userRole }: NavbarProps) {
         boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
       }}
     >
-      <div>
-        <p style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "500" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        {/* Hamburger - mobile only */}
+        <button
+          className="md:hidden"
+          onClick={onMobileMenuToggle}
+          style={{ width: "34px", height: "34px", borderRadius: "8px", border: "1.5px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+          aria-label="Menu"
+        >
+          <Menu style={{ width: "16px", height: "16px" }} />
+        </button>
+        <p style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "500" }} className="hidden sm:block">
           Annee academique 2025-2026
         </p>
       </div>

@@ -145,3 +145,36 @@ html.dark [data-slot="card-content"] { color: var(--text) !important; }
 html.dark [data-slot="table-head"] { color: var(--text-muted) !important; background: var(--bg-muted) !important; }
 html.dark [data-slot="table-row"]:hover { background: var(--bg-muted) !important; }
 html.dark [data-slot="table-cell"] { color: var(--text) !important; border-color: var(--border) !important; }
+
+/* ── Mobile / Responsive ── */
+/* Sidebar: hidden off-screen on mobile by default, slides in when open */
+@media (max-width: 767px) {
+  .sidebar-mobile-closed { transform: translateX(-100%); }
+  .sidebar-mobile-open  { transform: translateX(0); }
+}
+@media (min-width: 768px) {
+  /* On desktop, always visible regardless of mobile class */
+  .sidebar-mobile-closed,
+  .sidebar-mobile-open { transform: translateX(0) !important; }
+}
+
+/* Scrollable tables on small screens */
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Make sure Shadcn tables scroll on mobile */
+[data-slot="table"] { min-width: 600px; }
+
+/* Modal full-screen on mobile */
+@media (max-width: 639px) {
+  .fixed.inset-0 > div[style*="max-width"] { max-width: 100% !important; margin: 0 !important; border-radius: 0 !important; height: 100vh !important; max-height: 100vh !important; }
+}
+
+/* Responsive KPI grids */
+@media (max-width: 639px) {
+  .grid { gap: 8px !important; }
+}
+
+/* Ensure main content has no left overflow on mobile */
+@media (max-width: 767px) {
+  main { overflow-x: hidden; }
+}

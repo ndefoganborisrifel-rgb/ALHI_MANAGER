@@ -13,18 +13,33 @@ interface DashboardLayoutClientProps {
 
 export function DashboardLayoutClient({ children, userName, userRole }: DashboardLayoutClientProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <RoleProvider role={userRole}>
       <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+        {/* Mobile overlay */}
+        {mobileOpen && (
+          <div
+            className="md:hidden"
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 35 }}
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
         <Sidebar
           userRole={userRole}
           collapsed={collapsed}
           onToggle={() => setCollapsed(!collapsed)}
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
         />
-        <div className={cn("transition-all duration-300", collapsed ? "ml-16" : "ml-64")}>
-          <Navbar userName={userName} userRole={userRole} />
-          <main className="p-6">{children}</main>
+        <div className={cn("transition-all duration-300", collapsed ? "md:ml-16" : "md:ml-64")}>
+          <Navbar
+            userName={userName}
+            userRole={userRole}
+            onMobileMenuToggle={() => setMobileOpen(!mobileOpen)}
+          />
+          <main className="p-4 md:p-6">{children}</main>
         </div>
       </div>
     </RoleProvider>
