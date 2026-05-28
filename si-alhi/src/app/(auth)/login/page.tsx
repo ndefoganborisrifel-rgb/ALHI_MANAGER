@@ -59,7 +59,10 @@ export default function LoginPage() {
 
         {/* Top: SI-ALHI badge */}
         <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: "26px", height: "26px", borderRadius: "6px", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.25)" }} />
+          <div style={{ width: "26px", height: "26px", borderRadius: "6px", background: "white", display: "flex", alignItems: "center", justifyContent: "center", padding: "2px" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-alhi.svg" alt="ALI" style={{ width: "22px", height: "22px", objectFit: "contain" }} />
+          </div>
           <span style={{ fontSize: "13px", fontWeight: "700", letterSpacing: "1.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.95)" }}>SI-ALHI</span>
         </div>
 
@@ -80,18 +83,19 @@ export default function LoginPage() {
             minWidth: "230px",
             boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
           }}>
-            {/* ALI box */}
+            {/* Real ALI logo */}
             <div style={{
               width: "84px",
               height: "84px",
               borderRadius: "10px",
-              background: "rgba(255,255,255,0.18)",
-              border: "1px solid rgba(255,255,255,0.25)",
+              background: "white",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              padding: "6px",
             }}>
-              <span style={{ fontSize: "30px", fontWeight: "900", color: "white", letterSpacing: "1px", fontFamily: "'Arial Black','Arial Bold',Arial,sans-serif" }}>ALI</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-alhi.svg" alt="ALI" style={{ width: "72px", height: "72px", objectFit: "contain" }} />
             </div>
             <div style={{ textAlign: "center" }}>
               <p style={{ color: "white", fontSize: "14px", fontWeight: "800", letterSpacing: "1.3px", lineHeight: 1.3, textTransform: "uppercase" }}>Africa Leadership</p>
@@ -141,8 +145,9 @@ export default function LoginPage() {
       }}>
         {/* Mobile logo */}
         <div className="login-mobile-logo" style={{ marginBottom: "28px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: "70px", height: "70px", borderRadius: "12px", background: "linear-gradient(135deg, #B91C2F, #6B0D1A)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: "26px", fontWeight: "900", color: "white", letterSpacing: "1px", fontFamily: "'Arial Black',Arial,sans-serif" }}>ALI</span>
+          <div style={{ width: "70px", height: "70px", borderRadius: "12px", background: "white", border: "1.5px solid #B91C2F", display: "flex", alignItems: "center", justifyContent: "center", padding: "5px" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-alhi.svg" alt="ALI" style={{ width: "58px", height: "58px", objectFit: "contain" }} />
           </div>
           <div>
             <p style={{ fontSize: "13px", fontWeight: "800", color: "#B91C2F", textTransform: "uppercase", letterSpacing: "0.5px" }}>Africa Leadership Higher Institute</p>

@@ -46,6 +46,7 @@ export type FiliereMinAggregateOutputType = {
   totalFees: number | null
   responsableId: string | null
   bulletinsPublished: boolean | null
+  pvPublished: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +61,7 @@ export type FiliereMaxAggregateOutputType = {
   totalFees: number | null
   responsableId: string | null
   bulletinsPublished: boolean | null
+  pvPublished: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,6 +76,7 @@ export type FiliereCountAggregateOutputType = {
   totalFees: number
   responsableId: number
   bulletinsPublished: number
+  pvPublished: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -100,6 +103,7 @@ export type FiliereMinAggregateInputType = {
   totalFees?: true
   responsableId?: true
   bulletinsPublished?: true
+  pvPublished?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -114,6 +118,7 @@ export type FiliereMaxAggregateInputType = {
   totalFees?: true
   responsableId?: true
   bulletinsPublished?: true
+  pvPublished?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -128,6 +133,7 @@ export type FiliereCountAggregateInputType = {
   totalFees?: true
   responsableId?: true
   bulletinsPublished?: true
+  pvPublished?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -229,6 +235,7 @@ export type FiliereGroupByOutputType = {
   totalFees: number
   responsableId: string | null
   bulletinsPublished: boolean
+  pvPublished: boolean
   createdAt: Date
   updatedAt: Date
   _count: FiliereCountAggregateOutputType | null
@@ -266,6 +273,7 @@ export type FiliereWhereInput = {
   totalFees?: Prisma.IntFilter<"Filiere"> | number
   responsableId?: Prisma.StringNullableFilter<"Filiere"> | string | null
   bulletinsPublished?: Prisma.BoolFilter<"Filiere"> | boolean
+  pvPublished?: Prisma.BoolFilter<"Filiere"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Filiere"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Filiere"> | Date | string
   responsable?: Prisma.XOR<Prisma.TeacherNullableScalarRelationFilter, Prisma.TeacherWhereInput> | null
@@ -287,6 +295,7 @@ export type FiliereOrderByWithRelationInput = {
   totalFees?: Prisma.SortOrder
   responsableId?: Prisma.SortOrderInput | Prisma.SortOrder
   bulletinsPublished?: Prisma.SortOrder
+  pvPublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   responsable?: Prisma.TeacherOrderByWithRelationInput
@@ -311,6 +320,7 @@ export type FiliereWhereUniqueInput = Prisma.AtLeast<{
   totalFees?: Prisma.IntFilter<"Filiere"> | number
   responsableId?: Prisma.StringNullableFilter<"Filiere"> | string | null
   bulletinsPublished?: Prisma.BoolFilter<"Filiere"> | boolean
+  pvPublished?: Prisma.BoolFilter<"Filiere"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Filiere"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Filiere"> | Date | string
   responsable?: Prisma.XOR<Prisma.TeacherNullableScalarRelationFilter, Prisma.TeacherWhereInput> | null
@@ -332,6 +342,7 @@ export type FiliereOrderByWithAggregationInput = {
   totalFees?: Prisma.SortOrder
   responsableId?: Prisma.SortOrderInput | Prisma.SortOrder
   bulletinsPublished?: Prisma.SortOrder
+  pvPublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.FiliereCountOrderByAggregateInput
@@ -354,6 +365,7 @@ export type FiliereScalarWhereWithAggregatesInput = {
   totalFees?: Prisma.IntWithAggregatesFilter<"Filiere"> | number
   responsableId?: Prisma.StringNullableWithAggregatesFilter<"Filiere"> | string | null
   bulletinsPublished?: Prisma.BoolWithAggregatesFilter<"Filiere"> | boolean
+  pvPublished?: Prisma.BoolWithAggregatesFilter<"Filiere"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Filiere"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Filiere"> | Date | string
 }
@@ -367,6 +379,7 @@ export type FiliereCreateInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
@@ -388,6 +401,7 @@ export type FiliereUncheckedCreateInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
@@ -407,6 +421,7 @@ export type FiliereUpdateInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
@@ -428,6 +443,7 @@ export type FiliereUncheckedUpdateInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
@@ -448,6 +464,7 @@ export type FiliereCreateManyInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -461,6 +478,7 @@ export type FiliereUpdateManyMutationInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -475,6 +493,7 @@ export type FiliereUncheckedUpdateManyInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -489,6 +508,7 @@ export type FiliereCountOrderByAggregateInput = {
   totalFees?: Prisma.SortOrder
   responsableId?: Prisma.SortOrder
   bulletinsPublished?: Prisma.SortOrder
+  pvPublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -508,6 +528,7 @@ export type FiliereMaxOrderByAggregateInput = {
   totalFees?: Prisma.SortOrder
   responsableId?: Prisma.SortOrder
   bulletinsPublished?: Prisma.SortOrder
+  pvPublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -522,6 +543,7 @@ export type FiliereMinOrderByAggregateInput = {
   totalFees?: Prisma.SortOrder
   responsableId?: Prisma.SortOrder
   bulletinsPublished?: Prisma.SortOrder
+  pvPublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -689,6 +711,7 @@ export type FiliereCreateWithoutSpecializationsInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
@@ -709,6 +732,7 @@ export type FiliereUncheckedCreateWithoutSpecializationsInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
@@ -743,6 +767,7 @@ export type FiliereUpdateWithoutSpecializationsInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
@@ -763,6 +788,7 @@ export type FiliereUncheckedUpdateWithoutSpecializationsInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
@@ -781,6 +807,7 @@ export type FiliereCreateWithoutUesInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
@@ -801,6 +828,7 @@ export type FiliereUncheckedCreateWithoutUesInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
@@ -835,6 +863,7 @@ export type FiliereUpdateWithoutUesInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
@@ -855,6 +884,7 @@ export type FiliereUncheckedUpdateWithoutUesInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
@@ -873,6 +903,7 @@ export type FiliereCreateWithoutCoursesInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
@@ -893,6 +924,7 @@ export type FiliereUncheckedCreateWithoutCoursesInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
@@ -927,6 +959,7 @@ export type FiliereUpdateWithoutCoursesInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
@@ -947,6 +980,7 @@ export type FiliereUncheckedUpdateWithoutCoursesInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
@@ -965,6 +999,7 @@ export type FiliereCreateWithoutResponsableInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentCreateNestedManyWithoutFiliereInput
@@ -984,6 +1019,7 @@ export type FiliereUncheckedCreateWithoutResponsableInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
@@ -1032,6 +1068,7 @@ export type FiliereScalarWhereInput = {
   totalFees?: Prisma.IntFilter<"Filiere"> | number
   responsableId?: Prisma.StringNullableFilter<"Filiere"> | string | null
   bulletinsPublished?: Prisma.BoolFilter<"Filiere"> | boolean
+  pvPublished?: Prisma.BoolFilter<"Filiere"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Filiere"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Filiere"> | Date | string
 }
@@ -1045,6 +1082,7 @@ export type FiliereCreateWithoutSchedulesInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
@@ -1065,6 +1103,7 @@ export type FiliereUncheckedCreateWithoutSchedulesInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
@@ -1099,6 +1138,7 @@ export type FiliereUpdateWithoutSchedulesInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
@@ -1119,6 +1159,7 @@ export type FiliereUncheckedUpdateWithoutSchedulesInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
@@ -1137,6 +1178,7 @@ export type FiliereCreateWithoutStudentsInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
@@ -1157,6 +1199,7 @@ export type FiliereUncheckedCreateWithoutStudentsInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   courses?: Prisma.CourseUncheckedCreateNestedManyWithoutFiliereInput
@@ -1191,6 +1234,7 @@ export type FiliereUpdateWithoutStudentsInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
@@ -1211,6 +1255,7 @@ export type FiliereUncheckedUpdateWithoutStudentsInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courses?: Prisma.CourseUncheckedUpdateManyWithoutFiliereNestedInput
@@ -1229,6 +1274,7 @@ export type FiliereCreateWithoutTuitionFeesInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
@@ -1249,6 +1295,7 @@ export type FiliereUncheckedCreateWithoutTuitionFeesInput = {
   totalFees: number
   responsableId?: string | null
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
@@ -1283,6 +1330,7 @@ export type FiliereUpdateWithoutTuitionFeesInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
@@ -1303,6 +1351,7 @@ export type FiliereUncheckedUpdateWithoutTuitionFeesInput = {
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
@@ -1321,6 +1370,7 @@ export type FiliereCreateManyResponsableInput = {
   level?: string | null
   totalFees: number
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1334,6 +1384,7 @@ export type FiliereUpdateWithoutResponsableInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUpdateManyWithoutFiliereNestedInput
@@ -1353,6 +1404,7 @@ export type FiliereUncheckedUpdateWithoutResponsableInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
@@ -1372,6 +1424,7 @@ export type FiliereUncheckedUpdateManyWithoutResponsableInput = {
   level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalFees?: Prisma.IntFieldUpdateOperationsInput | number
   bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1462,6 +1515,7 @@ export type FiliereSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   totalFees?: boolean
   responsableId?: boolean
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   responsable?: boolean | Prisma.Filiere$responsableArgs<ExtArgs>
@@ -1484,6 +1538,7 @@ export type FiliereSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   totalFees?: boolean
   responsableId?: boolean
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   responsable?: boolean | Prisma.Filiere$responsableArgs<ExtArgs>
@@ -1499,6 +1554,7 @@ export type FiliereSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   totalFees?: boolean
   responsableId?: boolean
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   responsable?: boolean | Prisma.Filiere$responsableArgs<ExtArgs>
@@ -1514,11 +1570,12 @@ export type FiliereSelectScalar = {
   totalFees?: boolean
   responsableId?: boolean
   bulletinsPublished?: boolean
+  pvPublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FiliereOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "duration" | "level" | "totalFees" | "responsableId" | "bulletinsPublished" | "createdAt" | "updatedAt", ExtArgs["result"]["filiere"]>
+export type FiliereOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "duration" | "level" | "totalFees" | "responsableId" | "bulletinsPublished" | "pvPublished" | "createdAt" | "updatedAt", ExtArgs["result"]["filiere"]>
 export type FiliereInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   responsable?: boolean | Prisma.Filiere$responsableArgs<ExtArgs>
   students?: boolean | Prisma.Filiere$studentsArgs<ExtArgs>
@@ -1557,6 +1614,7 @@ export type $FilierePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     totalFees: number
     responsableId: string | null
     bulletinsPublished: boolean
+    pvPublished: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["filiere"]>
@@ -1998,6 +2056,7 @@ export interface FiliereFieldRefs {
   readonly totalFees: Prisma.FieldRef<"Filiere", 'Int'>
   readonly responsableId: Prisma.FieldRef<"Filiere", 'String'>
   readonly bulletinsPublished: Prisma.FieldRef<"Filiere", 'Boolean'>
+  readonly pvPublished: Prisma.FieldRef<"Filiere", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Filiere", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Filiere", 'DateTime'>
 }

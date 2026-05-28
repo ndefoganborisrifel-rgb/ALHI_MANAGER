@@ -153,6 +153,7 @@ model Filiere {
   totalFees     Int
   responsableId      String?
   bulletinsPublished Boolean  @default(false)
+  pvPublished        Boolean  @default(false)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

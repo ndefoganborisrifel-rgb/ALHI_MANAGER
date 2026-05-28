@@ -50,85 +50,43 @@ function fmt(n: number | null | undefined): string {
 
 function ProgressChart({ ueResults }: { ueResults: UEResult[] }) {
   const allCourses = ueResults.flatMap((ue) => ue.courses).filter((c) => c.noteFinal != null);
-  if (allCourses.length < 3) return null;
-
-  const cx = 110, cy = 100, r = 78;
-  const n = allCourses.length;
-
-  function polarPt(angle: number, radius: number) {
-    const rad = (angle - 90) * (Math.PI / 180);
-    return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) };
-  }
-
-  const levels = [20, 15, 10, 5];
-  const angleStep = 360 / n;
-
-  const scorePts = allCourses.map((c, i) => {
-    const angle = i * angleStep;
-    const ratio = (c.noteFinal ?? 0) / 20;
-    return polarPt(angle, ratio * r);
-  });
-
-  const scorePath = scorePts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ") + " Z";
+  if (allCourses.length === 0) return null;
 
   return (
-    <div style={{ marginTop: "12px" }}>
-      <div style={{ fontSize: "9px", fontWeight: "bold", color: "#1A1A1A", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-        Profil de performance par matiere
+    <div style={{ marginTop: "8px" }}>
+      <div style={{ fontSize: "8px", fontWeight: "bold", color: "#1A1A1A", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        Performance par matiere
       </div>
-      <svg width="230" height="210" style={{ fontFamily: "Arial, sans-serif", overflow: "visible" }}>
-        {/* Grilles circulaires */}
-        {levels.map((lv) => {
-          const pts = allCourses.map((_, i) => polarPt(i * angleStep, (lv / 20) * r));
-          const path = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ") + " Z";
-          const isThreshold = lv === 10;
+      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+        {allCourses.map((c) => {
+          const score = c.noteFinal ?? 0;
+          const pct = Math.round((score / 20) * 100);
+          const color = score >= 10 ? "#15803d" : "#b91c1c";
           return (
-            <g key={lv}>
-              <path d={path} fill="none" stroke={isThreshold ? "#B91C2F" : "#e5e7eb"} strokeWidth={isThreshold ? 1.2 : 0.7} strokeDasharray={isThreshold ? "3,2" : undefined} />
-              <text x={cx + 3} y={cy - (lv / 20) * r + 3} fontSize="6" fill={isThreshold ? "#B91C2F" : "#aaa"}>{lv}</text>
-            </g>
+            <div key={c.code} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <div style={{ width: "44px", fontSize: "7px", fontFamily: "monospace", color: "#555", flexShrink: 0, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {c.code.slice(-7)}
+              </div>
+              <div style={{ flex: 1, background: "#f0f0f0", borderRadius: "2px", height: "9px", overflow: "hidden", position: "relative" }}>
+                <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: "2px" }} />
+                <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: "1px", background: "rgba(185,28,47,0.35)" }} />
+              </div>
+              <div style={{ width: "24px", fontSize: "7.5px", fontWeight: "bold", color, textAlign: "right", flexShrink: 0 }}>
+                {score.toFixed(1)}
+              </div>
+            </div>
           );
         })}
-        {/* Axes radiaux */}
-        {allCourses.map((c, i) => {
-          const outerPt = polarPt(i * angleStep, r + 4);
-          const labelPt = polarPt(i * angleStep, r + 16);
-          return (
-            <g key={c.code}>
-              <line x1={cx} y1={cy} x2={outerPt.x.toFixed(1)} y2={outerPt.y.toFixed(1)} stroke="#d1d5db" strokeWidth="0.8" />
-              <text
-                x={labelPt.x.toFixed(1)}
-                y={labelPt.y.toFixed(1)}
-                fontSize="5.5"
-                textAnchor="middle"
-                fill={c.noteFinal != null && c.noteFinal >= 10 ? "#15803d" : "#B91C2F"}
-                fontWeight="600"
-              >
-                {c.code.length > 6 ? c.code.slice(-5) : c.code}
-              </text>
-            </g>
-          );
-        })}
-        {/* Surface de score */}
-        <path d={scorePath} fill="rgba(185,28,47,0.12)" stroke="#B91C2F" strokeWidth="1.5" strokeLinejoin="round" />
-        {/* Points */}
-        {scorePts.map((p, i) => {
-          const score = allCourses[i].noteFinal ?? 0;
-          return (
-            <g key={i}>
-              <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3" fill={score >= 10 ? "#15803d" : "#B91C2F"} />
-              <text x={p.x.toFixed(1)} y={(p.y - 5).toFixed(1)} fontSize="5.5" textAnchor="middle" fill={score >= 10 ? "#15803d" : "#B91C2F"} fontWeight="bold">{score.toFixed(1)}</text>
-            </g>
-          );
-        })}
-        {/* Legende */}
-        <circle cx="165" cy="10" r="4" fill="#15803d" />
-        <text x="172" y="13" fontSize="6" fill="#555">Valide (10/20)</text>
-        <circle cx="165" cy="22" r="4" fill="#B91C2F" />
-        <text x="172" y="25" fontSize="6" fill="#555">Ajourne</text>
-        <line x1="161" y1="33" x2="169" y2="33" stroke="#B91C2F" strokeWidth="1" strokeDasharray="2,1" />
-        <text x="172" y="36" fontSize="6" fill="#B91C2F">Seuil 10</text>
-      </svg>
+        <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "1px" }}>
+          <div style={{ width: "44px" }} />
+          <div style={{ flex: 1, display: "flex", justifyContent: "space-between", fontSize: "6px", color: "#aaa", paddingTop: "1px" }}>
+            <span>0</span>
+            <span style={{ color: "#B91C2F", fontWeight: "bold" }}>10</span>
+            <span>20</span>
+          </div>
+          <div style={{ width: "24px" }} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -179,45 +137,48 @@ export default function PrintBulletinPage() {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; margin: 0; }
-          .page { box-shadow: none !important; margin: 0 !important; padding: 10mm 12mm !important; }
-          @page { size: A4 portrait; margin: 8mm; }
+          body { background: white !important; margin: 0; font-size: 9px !important; }
+          .page { box-shadow: none !important; margin: 0 !important; padding: 7mm 9mm !important; }
+          @page { size: A4 portrait; margin: 6mm; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          .ue-row td { background: #B91C2F !important; color: white !important; }
+          th { background: #1A1A1A !important; color: white !important; }
         }
         body {
           background: #d8d8d8;
           font-family: "Times New Roman", Times, serif;
-          font-size: 11px;
+          font-size: 10px;
           color: #1A1A1A;
         }
         .page {
           background: white;
           max-width: 210mm;
-          margin: 18px auto;
-          padding: 14mm 13mm;
+          margin: 16px auto;
+          padding: 11mm 11mm;
           box-shadow: 0 6px 32px rgba(0,0,0,0.22);
         }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 9px; }
         th {
           background: #1A1A1A;
           color: white;
           font-weight: bold;
-          padding: 5px 6px;
+          padding: 4px 5px;
           text-align: center;
           border: 1px solid #1A1A1A;
-          font-size: 9px;
+          font-size: 8px;
           text-transform: uppercase;
           letter-spacing: 0.3px;
         }
         th.left { text-align: left; }
-        td { border: 1px solid #ccc; padding: 3px 6px; text-align: center; vertical-align: middle; }
+        td { border: 1px solid #ccc; padding: 2px 5px; text-align: center; vertical-align: middle; }
         td.left { text-align: left; }
-        td.mono { font-family: monospace; font-size: 9px; color: #555; }
+        td.mono { font-family: monospace; font-size: 8px; color: #555; }
         .ue-row td { background: #B91C2F !important; color: white; font-weight: bold; border-color: #9B1826; }
         tr:nth-child(even) td:not(.ue-row td) { background: #fafafa; }
         .ok { color: #15803d; font-weight: bold; }
         .ko { color: #b91c1c; font-weight: bold; }
         .na { color: #aaa; }
-        .sep { height: 6px; }
+        .sep { height: 4px; }
       `}</style>
 
       {/* Print toolbar */}
@@ -245,7 +206,7 @@ export default function PrintBulletinPage() {
       <div className="page">
 
         {/* ─── EN-TETE OFFICIELLE CAMEROUN 3 COLONNES ─── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 1fr", gap: "12px", paddingBottom: "10px", marginBottom: "8px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 1fr", gap: "8px", paddingBottom: "7px", marginBottom: "6px" }}>
 
           {/* Colonne gauche : version francaise */}
           <div style={{ textAlign: "center", fontSize: "8.5px", lineHeight: "1.55" }}>
@@ -264,18 +225,9 @@ export default function PrintBulletinPage() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.png"
+              src="/logo-alhi.svg"
               alt="ALHI"
-              style={{ width: "72px", height: "72px", objectFit: "contain" }}
-              onError={(e) => {
-                const target = e.currentTarget as HTMLImageElement;
-                target.style.display = "none";
-                const parent = target.parentElement!;
-                const box = document.createElement("div");
-                box.style.cssText = "width:72px;height:72px;background:#B91C2F;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:18px;font-family:Arial;";
-                box.textContent = "ALI";
-                parent.appendChild(box);
-              }}
+              style={{ width: "68px", height: "68px", objectFit: "contain" }}
             />
           </div>
 
@@ -304,7 +256,7 @@ export default function PrintBulletinPage() {
         </div>
 
         {/* Infos etudiant */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "14px", fontSize: "10.5px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "10px", fontSize: "9.5px" }}>
           <div style={{ border: "1.5px solid #B91C2F", borderRadius: "4px", padding: "9px 11px" }}>
             <div style={{ display: "flex", gap: "4px", marginBottom: "5px" }}>
               <span style={{ fontWeight: "bold" }}>Nom(s) et Prenom(s) :</span>
@@ -418,7 +370,7 @@ export default function PrintBulletinPage() {
         </table>
 
         {/* Bilan et decision */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "14px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "10px" }}>
           {/* Gauche : stats + graphique */}
           <div>
             <div style={{ border: "1.5px solid #1A1A1A", borderRadius: "4px", padding: "10px 12px", fontSize: "10.5px", marginBottom: "10px" }}>
@@ -487,10 +439,10 @@ export default function PrintBulletinPage() {
         </div>
 
         {/* Signatures */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "20px", marginTop: "36px", fontSize: "10px", textAlign: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginTop: "20px", fontSize: "9px", textAlign: "center" }}>
           {["Le Directeur Pedagogique", "Le Responsable de Filiere", "Le Secretariat Academique"].map((label) => (
             <div key={label}>
-              <div style={{ borderTop: "1px solid #555", paddingTop: "5px", marginTop: "36px", color: "#333" }}>
+              <div style={{ borderTop: "1px solid #555", paddingTop: "5px", marginTop: "28px", color: "#333" }}>
                 {label}
               </div>
             </div>

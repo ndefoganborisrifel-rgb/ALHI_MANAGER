@@ -88,10 +88,16 @@ export default function PrintTimetablePage() {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; }
-          .page { box-shadow: none !important; margin: 0 !important; padding: 10mm 12mm !important; }
+          body { background: white !important; color: #1A1A1A !important; }
+          .page { box-shadow: none !important; margin: 0 !important; padding: 10mm 12mm !important; background: white !important; }
           @page { size: A4 landscape; margin: 8mm; }
           table { font-size: 9px !important; }
+          th { background: #1A1A1A !important; color: white !important; }
+          td { border-color: #ccc !important; color: #1A1A1A !important; background: white !important; }
+          td.time-col { background: #f3f4f6 !important; color: #555 !important; }
+          .pause-row td { background: #fff7ed !important; }
+          .slot { background: white !important; border: 1px solid #ccc !important; color: #1A1A1A !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           .watermark {
             position: fixed !important;
             top: 50% !important;
@@ -131,7 +137,7 @@ export default function PrintTimetablePage() {
         {/* Filigrane logo oblique */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/logo.png"
+          src="/logo-alhi.svg"
           alt=""
           className="watermark"
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
@@ -150,7 +156,7 @@ export default function PrintTimetablePage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="ALHI" style={{ width: "60px", height: "60px", objectFit: "contain" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+            <img src="/logo-alhi.svg" alt="ALHI" style={{ width: "60px", height: "60px", objectFit: "contain" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
           </div>
           <div style={{ fontSize: "8px", textAlign: "center", lineHeight: "1.6" }}>
             <div style={{ fontWeight: "900", fontSize: "9px", textTransform: "uppercase" }}>REPUBLIC OF CAMEROON</div>

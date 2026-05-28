@@ -11,18 +11,20 @@ export function SchoolLogo({ size = 40, className, wrapperStyle }: SchoolLogoPro
     width: size,
     height: size,
     borderRadius: size * 0.18,
-    background: "linear-gradient(135deg, #B91C2F, #6B0D1A)",
+    background: "white",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
     flexShrink: 0,
+    padding: Math.max(2, size * 0.06),
     ...wrapperStyle,
   };
 
   return (
     <div style={containerStyle} className={className}>
-      <span style={{ fontSize: size * 0.38, fontWeight: 900, color: "white", letterSpacing: "0.5px", lineHeight: 1, fontFamily: "'Arial Black','Arial Bold',Arial,sans-serif" }}>ALI</span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logo-alhi.svg" alt="ALI" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
     </div>
   );
 }

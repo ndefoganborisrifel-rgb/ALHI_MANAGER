@@ -1,11 +1,13 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { calculateGeneralAverage, getMention } from "@/lib/grade-calculator";
-import { Award, Users, CheckCircle, XCircle } from "lucide-react";
+import { Award, Users, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
 
 export default async function DeliberationPage() {
   const session = await auth();
@@ -110,14 +112,23 @@ export default async function DeliberationPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Award className="w-6 h-6 text-[#B91C2F]" />
-          PV de Délibération
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Semestre {SEMESTER}, Année académique {ACADEMIC_YEAR}
-        </p>
+      <div className="flex items-center gap-4">
+        <Link href="/examens">
+          <Button variant="ghost" size="sm">
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Retour
+          </Button>
+        </Link>
+        <div className="h-5 w-px bg-gray-200" />
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Award className="w-6 h-6 text-[#B91C2F]" />
+            PV de Deliberation
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Semestre {SEMESTER}, Annee academique {ACADEMIC_YEAR}
+          </p>
+        </div>
       </div>
 
       {/* Global summary */}

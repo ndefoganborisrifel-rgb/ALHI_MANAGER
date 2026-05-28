@@ -1980,6 +1980,7 @@ export const FiliereScalarFieldEnum = {
   totalFees: 'totalFees',
   responsableId: 'responsableId',
   bulletinsPublished: 'bulletinsPublished',
+  pvPublished: 'pvPublished',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

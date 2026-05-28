@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, ArrowLeft, Printer } from "lucide-react";
+import { PvPublishToggle } from "@/components/ui/PvPublishToggle";
 
 const ALLOWED_ROLES = ["ADMIN", "SCOLARITE", "ENSEIGNANT"] as const;
 type AllowedRole = (typeof ALLOWED_ROLES)[number];
@@ -86,9 +87,16 @@ export default async function PVListPage() {
                 {filiere.code}
               </span>
               {filiere.name}
-              <span className="ml-auto text-xs font-normal text-gray-400">
-                {filiere.courses.length} cours
-              </span>
+              <div className="ml-auto flex items-center gap-3">
+                <PvPublishToggle
+                  filiereId={filiere.id}
+                  initialPublished={filiere.pvPublished}
+                  filiereName={filiere.name}
+                />
+                <span className="text-xs font-normal text-gray-400">
+                  {filiere.courses.length} cours
+                </span>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">

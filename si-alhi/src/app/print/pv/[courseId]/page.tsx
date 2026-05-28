@@ -198,9 +198,9 @@ export default function PrintPVPage() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.png"
+              src="/logo-alhi.svg"
               alt="ALHI"
-              style={{ width: "64px", height: "64px", flexShrink: 0 }}
+              style={{ width: "64px", height: "64px", flexShrink: 0, objectFit: "contain" }}
             />
             <div>
               <div

@@ -73,8 +73,9 @@ export default function ForgotPasswordPage() {
                 marginBottom: "8px",
               }}
             >
-              <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>
-                <span style={{ fontSize: "14px", fontWeight: "900", color: "white", letterSpacing: "0.5px", fontFamily: "'Arial Black',Arial,sans-serif" }}>ALI</span>
+              <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "white", display: "flex", alignItems: "center", justifyContent: "center", padding: "3px", boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo-alhi.svg" alt="ALI" style={{ width: "34px", height: "34px", objectFit: "contain" }} />
               </div>
               <div style={{ textAlign: "left" }}>
                 <div style={{ color: "white", fontWeight: "800", fontSize: "18px", letterSpacing: "0.5px" }}>
