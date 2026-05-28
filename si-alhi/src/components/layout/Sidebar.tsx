@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { SchoolLogo } from "@/components/ui/SchoolLogo";
 import {
   LayoutDashboard, Users, GraduationCap, CreditCard, Calendar,
   BookOpen, ClipboardList, Package, Briefcase, UserCheck,
@@ -77,7 +76,8 @@ export function Sidebar({ userRole, collapsed, onToggle, mobileOpen, onMobileClo
       }}>
         {!collapsed && (
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", minWidth: 0, flex: 1 }}>
-            <SchoolLogo size={36} wrapperStyle={{ boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="ALHI" style={{ height: "34px", width: "auto", maxWidth: "120px", objectFit: "contain" }} />
             <div style={{ minWidth: 0 }}>
               <div style={{ fontWeight: "800", color: "white", fontSize: "12px", letterSpacing: "0.3px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 AFRICA LEADERSHIP
@@ -90,7 +90,8 @@ export function Sidebar({ userRole, collapsed, onToggle, mobileOpen, onMobileClo
         )}
         {collapsed && (
           <Link href="/dashboard">
-            <SchoolLogo size={36} wrapperStyle={{ boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="ALHI" style={{ height: "34px", width: "auto", maxWidth: "120px", objectFit: "contain" }} />
           </Link>
         )}
         <button

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +14,25 @@ export default function NouvelAdmissionPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState(1);
+  const [filieres, setFilieres] = useState<{ code: string; name: string }[]>([]);
   const [form, setForm] = useState({
     firstName: "", lastName: "", dateOfBirth: "", gender: "M",
     phone: "", email: "", city: "", address: "", placeOfBirth: "",
-    filiereCode: "ING", emergencyContact: "", emergencyPhone: "",
+    filiereCode: "", emergencyContact: "", emergencyPhone: "",
     status: "PROSPECT",
   });
+
+  useEffect(() => {
+    fetch("/api/filieres")
+      .then((r) => r.json())
+      .then((data: { code: string; name: string }[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFilieres(data);
+          setForm((f) => ({ ...f, filiereCode: f.filiereCode || data[0].code }));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -124,12 +137,11 @@ export default function NouvelAdmissionPage() {
               <>
                 <div className="space-y-2">
                   <Label>Filière souhaitée *</Label>
-                  <Select value={form.filiereCode} onChange={(e) => update("filiereCode", e.target.value)}>
-                    <option value="ING">Prépa Ingénieur</option>
-                    <option value="CS">Computer School</option>
-                    <option value="BS">Business School</option>
-                    <option value="LP-IT">Licence Pro Technologies de l&apos;Information</option>
-                    <option value="LP-GES">Licence Pro Gestion</option>
+                  <Select value={form.filiereCode} onChange={(e) => update("filiereCode", e.target.value)} required>
+                    {filieres.length === 0 && <option value="">Chargement...</option>}
+                    {filieres.map((f) => (
+                      <option key={f.code} value={f.code}>{f.name} ({f.code})</option>
+                    ))}
                   </Select>
                 </div>
                 <div className="space-y-2">

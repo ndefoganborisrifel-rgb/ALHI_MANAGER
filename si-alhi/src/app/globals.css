@@ -178,3 +178,11 @@ html.dark [data-slot="table-cell"] { color: var(--text) !important; border-color
 @media (max-width: 767px) {
   main { overflow-x: hidden; }
 }
+
+/* Login page responsive panels — defined here to avoid hydration flash */
+.login-brand-panel { display: none !important; }
+.login-mobile-logo { display: flex !important; }
+@media (min-width: 768px) {
+  .login-brand-panel { display: flex !important; }
+  .login-mobile-logo { display: none !important; }
+}

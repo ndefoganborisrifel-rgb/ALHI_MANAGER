@@ -257,12 +257,6 @@ export default function LoginPage() {
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .login-brand-panel { display: none !important; }
-        .login-mobile-logo { display: flex !important; }
-        @media (min-width: 768px) {
-          .login-brand-panel { display: flex !important; }
-          .login-mobile-logo { display: none !important; }
-        }
       `}</style>
     </div>
   );

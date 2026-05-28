@@ -48,6 +48,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [savedAll, setSavedAll] = useState(false);
   const [academicYear] = useState("2025-2026");
+  const [session, setSession] = useState<"NORMALE" | "RATTRAPAGE">("NORMALE");
 
   useEffect(() => {
     const init = async () => {
@@ -69,10 +70,11 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
         const students: Array<{ id: string; matricule: string; firstName: string; lastName: string }> =
           Array.isArray(studentsRes) ? studentsRes : [];
 
-        const grades: Array<{ id: string; studentId: string; cc1: number | null; cc2: number | null; examScore: number | null; noteFinal: number | null }> =
+        const grades: Array<{ id: string; studentId: string; cc1: number | null; cc2: number | null; examScore: number | null; noteFinal: number | null; session: string }> =
           Array.isArray(gradesRes) ? gradesRes : [];
 
-        const gradeMap = new Map(grades.map((g) => [g.studentId, g]));
+        const sessionGrades = grades.filter((g) => g.session === session);
+        const gradeMap = new Map(sessionGrades.map((g) => [g.studentId, g]));
 
         const allRows: StudentRow[] = students.map((s) => {
           const existing = gradeMap.get(s.id);
@@ -98,7 +100,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
       }
     };
     init();
-  }, [courseId]);
+  }, [courseId, session]);
 
   function updateRow(idx: number, field: "cc1" | "cc2" | "examScore", value: string) {
     if (value !== "") {
@@ -135,7 +137,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
           cc1: row.cc1 !== "" ? Number(row.cc1) : null,
           cc2: row.cc2 !== "" ? Number(row.cc2) : null,
           examScore: row.examScore !== "" ? Number(row.examScore) : null,
-          session: "NORMALE",
+          session,
           academicYear,
           semester: course?.semester ?? 1,
         }),
@@ -235,11 +237,44 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
         </div>
       )}
 
+      {/* Session toggle */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <span className="text-sm font-semibold text-gray-600">Session :</span>
+        {(["NORMALE", "RATTRAPAGE"] as const).map((s) => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => setSession(s)}
+            style={{
+              padding: "6px 18px",
+              borderRadius: "8px",
+              border: "1.5px solid",
+              borderColor: session === s ? "#B91C2F" : "#e5e7eb",
+              background: session === s ? "#B91C2F" : "white",
+              color: session === s ? "white" : "#374151",
+              fontWeight: "600",
+              fontSize: "13px",
+              cursor: "pointer",
+            }}
+          >
+            {s === "NORMALE" ? "Normale" : "Rattrapage"}
+          </button>
+        ))}
+        {session === "RATTRAPAGE" && (
+          <span style={{ fontSize: "12px", color: "#d97706", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: "6px", padding: "3px 10px" }}>
+            Seule la note d&apos;examen de rattrapage est saisie
+          </span>
+        )}
+      </div>
+
       {/* Formule */}
       <Card className="border-blue-100 bg-blue-50">
         <CardContent className="p-4 text-sm text-blue-800">
-          <strong>Formule de calcul :</strong> Note finale = CC1 x 20% + CC2 x 20% + Examen x 60%.
-          Si CC2 absent : CC1 x 40% + Examen x 60%. Si CC absents : note examen seule.
+          {session === "NORMALE" ? (
+            <><strong>Formule :</strong> Note finale = CC1 x 20% + CC2 x 20% + Examen x 60%. Si CC2 absent : CC1 x 40% + Examen x 60%. Si CC absents : note examen seule.</>
+          ) : (
+            <><strong>Session de rattrapage :</strong> Seule la note de l&apos;examen de rattrapage est saisie. Note finale = note de l&apos;examen.</>
+          )}
         </CardContent>
       </Card>
 
@@ -264,9 +299,9 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
                 <tr className="border-b bg-gray-50">
                   <th className="text-left px-4 py-3 font-semibold text-gray-700 w-36">Matricule</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-700">Étudiant</th>
-                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC1/20</th>
-                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC2/20</th>
-                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-28">Examen/20</th>
+                  {session === "NORMALE" && <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC1/20</th>}
+                  {session === "NORMALE" && <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC2/20</th>}
+                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-28">{session === "RATTRAPAGE" ? "Exam. Rattrapage/20" : "Examen/20"}</th>
                   <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">Note/20</th>
                   <th className="text-center px-3 py-3 font-semibold text-gray-700 w-28">Résultat</th>
                   {canEdit && <th className="px-3 py-3 w-24" />}
@@ -280,7 +315,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
                     <tr key={row.id} className={`border-b hover:bg-gray-50 ${row.saved ? "bg-green-50/30" : ""}`}>
                       <td className="px-4 py-2 font-mono text-xs text-gray-500">{row.matricule}</td>
                       <td className="px-4 py-2 font-medium text-gray-900">{row.lastName} {row.firstName}</td>
-                      {(["cc1", "cc2", "examScore"] as const).map((field) => (
+                      {(session === "NORMALE" ? (["cc1", "cc2", "examScore"] as const) : (["examScore"] as const)).map((field: "cc1" | "cc2" | "examScore") => (
                         <td key={field} className="px-3 py-2">
                           {canEdit ? (
                             <input

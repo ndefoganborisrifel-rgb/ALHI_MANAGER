@@ -43,22 +43,22 @@ async function main() {
   const [filierePE, filierePB, filiereMBA, filiereBBA] = await Promise.all([
     prisma.filiere.upsert({
       where: { code: "PE" },
-      update: { name: "Prépa Engineering", totalFees: 1500000 },
-      create: { code: "PE", name: "Prépa Engineering", description: "Préparatoire aux grandes écoles d'ingénierie et technologies", duration: 2, totalFees: 1500000 },
+      update: { name: "Prépas Ingénieur", totalFees: 1500000 },
+      create: { code: "PE", name: "Prépas Ingénieur", description: "Préparatoire aux grandes écoles d'ingénierie et technologies", duration: 2, totalFees: 1500000 },
     }),
     prisma.filiere.upsert({
       where: { code: "PB" },
-      update: { name: "Prépa Business", totalFees: 1500000 },
-      create: { code: "PB", name: "Prépa Business", description: "Préparatoire management, entrepreneuriat et commerce", duration: 2, totalFees: 1500000 },
+      update: { name: "Prépas Business", totalFees: 1500000 },
+      create: { code: "PB", name: "Prépas Business", description: "Préparatoire management, entrepreneuriat et commerce", duration: 2, totalFees: 1500000 },
     }),
     prisma.filiere.upsert({
       where: { code: "MBA" },
-      update: {},
+      update: { name: "MBA", totalFees: 1700000 },
       create: { code: "MBA", name: "MBA", description: "Master in Business Administration", duration: 2, totalFees: 1700000 },
     }),
     prisma.filiere.upsert({
       where: { code: "BBA" },
-      update: {},
+      update: { name: "BBA", totalFees: 1700000 },
       create: { code: "BBA", name: "BBA", description: "Bachelor in Business Administration", duration: 3, totalFees: 1700000 },
     }),
   ]);
@@ -299,7 +299,7 @@ async function main() {
   for (let i = 0; i < studentsData.length; i++) {
     const s = studentsData[i];
     const seq = i + 1;
-    const matricule = `ALI\\ING${String(seq).padStart(3, "0")}\\25`;
+    const matricule = `ING/${String(seq).padStart(3, "0")}/25`;
     const slug = `${s.firstName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}.${s.lastName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}`;
     const email = `${slug}@etu.africaleadershipinstitute.com`;
 
@@ -310,8 +310,8 @@ async function main() {
     });
 
     const student = await prisma.student.upsert({
-      where: { matricule },
-      update: {},
+      where: { userId: user.id },
+      update: { matricule, firstName: s.firstName, lastName: s.lastName },
       create: {
         userId: user.id,
         matricule,
@@ -319,7 +319,7 @@ async function main() {
         lastName: s.lastName,
         gender: s.gender,
         filiereId: filierePE.id,
-        specializationId: specsIng[0].id, // Génie Informatique par défaut
+        specializationId: specsIng[0].id,
         promotionYear: 2025,
         level: 1,
         status: "ACTIF",

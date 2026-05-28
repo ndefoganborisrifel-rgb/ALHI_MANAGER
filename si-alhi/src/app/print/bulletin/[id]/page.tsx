@@ -51,41 +51,22 @@ function fmt(n: number | null | undefined): string {
 function ProgressChart({ ueResults }: { ueResults: UEResult[] }) {
   const allCourses = ueResults.flatMap((ue) => ue.courses).filter((c) => c.noteFinal != null);
   if (allCourses.length === 0) return null;
-
   return (
-    <div style={{ marginTop: "8px" }}>
-      <div style={{ fontSize: "8px", fontWeight: "bold", color: "#1A1A1A", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-        Performance par matiere
+    <div style={{ marginTop: "4px" }}>
+      <div style={{ fontSize: "7.5px", fontWeight: "bold", color: "#1A1A1A", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        Recapitulatif des notes
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px" }}>
         {allCourses.map((c) => {
           const score = c.noteFinal ?? 0;
-          const pct = Math.round((score / 20) * 100);
-          const color = score >= 10 ? "#15803d" : "#b91c1c";
+          const ok = score >= 10;
           return (
-            <div key={c.code} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <div style={{ width: "44px", fontSize: "7px", fontFamily: "monospace", color: "#555", flexShrink: 0, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {c.code.slice(-7)}
-              </div>
-              <div style={{ flex: 1, background: "#f0f0f0", borderRadius: "2px", height: "9px", overflow: "hidden", position: "relative" }}>
-                <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: "2px" }} />
-                <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: "1px", background: "rgba(185,28,47,0.35)" }} />
-              </div>
-              <div style={{ width: "24px", fontSize: "7.5px", fontWeight: "bold", color, textAlign: "right", flexShrink: 0 }}>
-                {score.toFixed(1)}
-              </div>
+            <div key={c.code} style={{ display: "flex", alignItems: "center", gap: "4px", padding: "2px 4px", background: ok ? "#f0fdf4" : "#fef2f2", borderRadius: "3px", border: `1px solid ${ok ? "#bbf7d0" : "#fecaca"}` }}>
+              <span style={{ fontSize: "6.5px", fontFamily: "monospace", color: "#555", flexShrink: 0, minWidth: "40px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.code.slice(-8)}</span>
+              <span style={{ fontSize: "8px", fontWeight: "800", color: ok ? "#15803d" : "#b91c1c", marginLeft: "auto" }}>{score.toFixed(1)}</span>
             </div>
           );
         })}
-        <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "1px" }}>
-          <div style={{ width: "44px" }} />
-          <div style={{ flex: 1, display: "flex", justifyContent: "space-between", fontSize: "6px", color: "#aaa", paddingTop: "1px" }}>
-            <span>0</span>
-            <span style={{ color: "#B91C2F", fontWeight: "bold" }}>10</span>
-            <span>20</span>
-          </div>
-          <div style={{ width: "24px" }} />
-        </div>
       </div>
     </div>
   );
@@ -370,10 +351,10 @@ export default function PrintBulletinPage() {
         </table>
 
         {/* Bilan et decision */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "10px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "7px", marginTop: "6px" }}>
           {/* Gauche : stats + graphique */}
           <div>
-            <div style={{ border: "1.5px solid #1A1A1A", borderRadius: "4px", padding: "10px 12px", fontSize: "10.5px", marginBottom: "10px" }}>
+            <div style={{ border: "1.5px solid #1A1A1A", borderRadius: "4px", padding: "6px 8px", fontSize: "9px", marginBottom: "6px" }}>
               <div style={{ marginBottom: "5px" }}>
                 <strong>Credits valides :</strong> {data.totalValidatedCredits} / {data.totalCredits}
               </div>
@@ -408,29 +389,28 @@ export default function PrintBulletinPage() {
           <div style={{
             border: `2.5px solid ${admis ? "#15803d" : "#b91c1c"}`,
             borderRadius: "6px",
-            padding: "14px",
+            padding: "8px",
             textAlign: "center",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: "100px",
           }}>
-            <div style={{ fontSize: "10px", color: "#777", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>
+            <div style={{ fontSize: "8px", color: "#777", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>
               Moyenne Generale / General Average
             </div>
-            <div style={{ fontSize: "32px", fontWeight: "900", color: admis ? "#15803d" : "#b91c1c", lineHeight: 1 }}>
-              {avg != null ? avg.toFixed(2) : "-"}<span style={{ fontSize: "16px" }}>/20</span>
+            <div style={{ fontSize: "22px", fontWeight: "900", color: admis ? "#15803d" : "#b91c1c", lineHeight: 1 }}>
+              {avg != null ? avg.toFixed(2) : "-"}<span style={{ fontSize: "12px" }}>/20</span>
             </div>
             <div style={{
-              marginTop: "12px",
-              fontSize: "16px",
+              marginTop: "6px",
+              fontSize: "12px",
               fontWeight: "900",
               color: admis ? "#15803d" : "#b91c1c",
               textTransform: "uppercase",
-              letterSpacing: "2px",
+              letterSpacing: "1px",
               border: `1.5px solid ${admis ? "#15803d" : "#b91c1c"}`,
-              padding: "5px 16px",
+              padding: "3px 10px",
               borderRadius: "4px",
             }}>
               {data.decision}
@@ -439,10 +419,10 @@ export default function PrintBulletinPage() {
         </div>
 
         {/* Signatures */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginTop: "20px", fontSize: "9px", textAlign: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginTop: "10px", fontSize: "9px", textAlign: "center" }}>
           {["Le Directeur Pedagogique", "Le Responsable de Filiere", "Le Secretariat Academique"].map((label) => (
             <div key={label}>
-              <div style={{ borderTop: "1px solid #555", paddingTop: "5px", marginTop: "28px", color: "#333" }}>
+              <div style={{ borderTop: "1px solid #555", paddingTop: "5px", marginTop: "18px", color: "#333" }}>
                 {label}
               </div>
             </div>
@@ -450,7 +430,7 @@ export default function PrintBulletinPage() {
         </div>
 
         {/* Pied de page */}
-        <div style={{ marginTop: "16px", textAlign: "center", fontSize: "8.5px", color: "#aaa", borderTop: "1px solid #e0e0e0", paddingTop: "7px" }}>
+        <div style={{ marginTop: "8px", textAlign: "center", fontSize: "8.5px", color: "#aaa", borderTop: "1px solid #e0e0e0", paddingTop: "7px" }}>
           Africa Leadership Higher Institute - Chateau Ngoa Ekele, Yaounde, Cameroun - Tel : (+237) 657 75 54 87
           <br />
           Ce document est un releve officiel de notes. Toute falsification est passible de sanctions disciplinaires et penales.

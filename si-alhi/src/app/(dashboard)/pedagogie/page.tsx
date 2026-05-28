@@ -536,30 +536,18 @@ export default function PedagogiePage() {
               </div>
 
               {/* Heure + Semestre */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
-                  <label className="form-label">Heure de debut</label>
+                  <label className="form-label">Creneau horaire</label>
                   <select className="form-input" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}>
                     {TIME_SLOTS.map((t) => (
-                      <option key={t.start} value={t.start}>{t.label}</option>
+                      <option key={t.start} value={t.start}>{t.label} - {t.end}</option>
                     ))}
-                    <option value="custom">Autre heure...</option>
                   </select>
-                  {form.startTime === "custom" && (
-                    <input type="time" className="form-input" style={{ marginTop: "6px" }} value="" onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))} />
-                  )}
-                </div>
-                <div>
-                  <label className="form-label">Heure de fin</label>
-                  <select className="form-input" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}>
-                    {TIME_SLOTS.map((t) => (
-                      <option key={t.endRaw} value={t.endRaw}>{t.end}</option>
-                    ))}
-                    <option value="custom">Autre heure...</option>
-                  </select>
-                  {form.endTime === "custom" && (
-                    <input type="time" className="form-input" style={{ marginTop: "6px" }} value="" onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))} />
-                  )}
+                  {(() => {
+                    const slot = TIME_SLOTS.find((t) => t.start === form.startTime);
+                    return slot ? <p style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "3px" }}>Duree : 2h ({slot.label} a {slot.end})</p> : null;
+                  })()}
                 </div>
                 <div>
                   <label className="form-label">Semestre</label>
@@ -646,10 +634,22 @@ export default function PedagogiePage() {
               )}
 
               {/* Libelle libre (pour FERIER, EXCURSION, AUTRE) */}
-              {(form.type === "FERIER" || form.type === "EXCURSION" || form.type === "AUTRE") && (
+              {(form.type === "FERIER" || form.type === "EXCURSION" || form.type === "AUTRE" || form.type === "PAUSE" || form.type === "EVALUATION") && (
                 <div>
                   <label className="form-label">Intitule / Description</label>
-                  <input type="text" className="form-input" value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder={form.type === "FERIER" ? "ex: Fete Nationale" : form.type === "EXCURSION" ? "ex: Visite entreprise XYZ" : "ex: Rattrapage"} />
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={form.label}
+                    onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
+                    placeholder={
+                      form.type === "EVALUATION" ? "ex: Examen final S1, Devoir surveille N°2..." :
+                      form.type === "PAUSE" ? "ex: Pause cafe, Evenement..." :
+                      form.type === "FERIER" ? "ex: Fete Nationale" :
+                      form.type === "EXCURSION" ? "ex: Visite entreprise XYZ" :
+                      "ex: Rattrapage"
+                    }
+                  />
                 </div>
               )}
 

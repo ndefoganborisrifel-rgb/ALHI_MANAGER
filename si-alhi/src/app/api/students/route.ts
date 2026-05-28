@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     where: { filiereId: filiere.id, promotionYear: academicStartYear },
   });
   const seq = count + 1;
-  const matricule = `ALI\\${matriculeCode}${String(seq).padStart(3, "0")}\\${yearSuffix}`;
+  const matricule = `${matriculeCode}/${String(seq).padStart(3, "0")}/${yearSuffix}`;
 
   const student = await prisma.student.create({
     data: {
