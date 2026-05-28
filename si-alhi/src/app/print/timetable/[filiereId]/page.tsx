@@ -137,7 +137,7 @@ export default function PrintTimetablePage() {
         {/* Filigrane logo oblique */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/logo-alhi.svg"
+          src="/logo.svg"
           alt=""
           className="watermark"
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
@@ -156,7 +156,7 @@ export default function PrintTimetablePage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-alhi.svg" alt="ALHI" style={{ width: "60px", height: "60px", objectFit: "contain" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+            <img src="/logo.svg" alt="ALHI" style={{ width: "60px", height: "60px", objectFit: "contain" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
           </div>
           <div style={{ fontSize: "8px", textAlign: "center", lineHeight: "1.6" }}>
             <div style={{ fontWeight: "900", fontSize: "9px", textTransform: "uppercase" }}>REPUBLIC OF CAMEROON</div>

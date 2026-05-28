@@ -225,7 +225,7 @@ export default function PrintBulletinPage() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-alhi.svg"
+              src="/logo.svg"
               alt="ALHI"
               style={{ width: "68px", height: "68px", objectFit: "contain" }}
             />
