@@ -126,11 +126,21 @@ export default function UsersPage() {
   }
 
   async function handleDeactivate(user: User) {
-    if (!confirm(`Desactiver le compte de ${user.firstName} ${user.lastName} ?`)) return;
+    if (!confirm(`Desactiver le compte de ${user.firstName} ${user.lastName} ? L'utilisateur ne pourra plus se connecter.`)) return;
     await fetch(`/api/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: false }),
+    });
+    loadData();
+  }
+
+  async function handleReactivate(user: User) {
+    if (!confirm(`Reactiver le compte de ${user.firstName} ${user.lastName} ? L'utilisateur pourra de nouveau se connecter.`)) return;
+    await fetch(`/api/users/${user.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive: true }),
     });
     loadData();
   }
@@ -197,7 +207,9 @@ export default function UsersPage() {
                     <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
                       <button onClick={() => openEdit(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}>Modifier</button>
                       <button onClick={() => handleResetPassword(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#d97706", cursor: "pointer" }}>Reinitialiser MDP</button>
-                      {user.isActive && <button onClick={() => handleDeactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Desactiver</button>}
+                      {user.isActive
+                        ? <button onClick={() => handleDeactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Desactiver</button>
+                        : <button onClick={() => handleReactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid #16a34a", background: "#16a34a", color: "white", cursor: "pointer" }}>Reactiver</button>}
                     </div>
                   </td>
                 </tr>
