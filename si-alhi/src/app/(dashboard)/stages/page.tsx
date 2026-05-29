@@ -1,17 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { formatDate, getStatusColor, getStatusLabel } from "@/lib/utils";
+import { Plus, Pencil, Trash2, Briefcase } from "lucide-react";
+import { formatDate, getStatusHex, getStatusLabel } from "@/lib/utils";
 import { useCanManage } from "@/components/providers/RoleProvider";
+import { PageHeader, Panel, PrimaryButton, StatusBadge, EmptyState } from "@/components/ui/PageUI";
 
 type Student = {
   id: string;
@@ -45,6 +42,9 @@ const STATUS_OPTIONS = [
 
 const emptyCreateForm = { studentId: "", companyName: "", topic: "", startDate: "", endDate: "" };
 const emptyUpdateForm = { status: "EN_COURS", defenseDate: "", defenseNote: "", jury: "" };
+
+const th: React.CSSProperties = { padding: "10px 16px", textAlign: "left", fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" };
+const td: React.CSSProperties = { padding: "10px 16px", fontSize: "13px", color: "var(--text)", verticalAlign: "middle" };
 
 export default function StagesPage() {
   const canManage = useCanManage();
@@ -156,93 +156,73 @@ export default function StagesPage() {
     loadData();
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500">Chargement...</div>;
+  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "16rem", color: "var(--text-muted)" }}>Chargement...</div>;
+
+  const STATUS_TONE: Record<string, string> = { EN_RECHERCHE: "#6b7280", CONVENTION_SIGNEE: "#2563eb", EN_COURS: "#d97706", TERMINE: "#16a34a", SOUTENU: "#7c3aed" };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Link href="/dashboard"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
+    <div style={{ maxWidth: "1200px" }}>
+      <PageHeader
+        title="SI-Stage"
+        subtitle="Suivi des stages et conventions"
+        backHref="/dashboard"
+        icon={<Briefcase style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+        actions={canManage ? <PrimaryButton onClick={() => { setCreateForm(emptyCreateForm); setCreateError(""); setShowCreateModal(true); }}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un stage</PrimaryButton> : undefined}
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "12px", marginBottom: "20px" }}>
+        {Object.entries(statusCounts).map(([status, count]) => {
+          const tone = STATUS_TONE[status] ?? "#6b7280";
+          return (
+            <div key={status} style={{ background: "var(--bg-card)", borderRadius: "14px", padding: "16px", border: "1px solid var(--border)", textAlign: "center" }}>
+              <p style={{ fontSize: "26px", fontWeight: 900, color: tone, lineHeight: 1 }}>{count}</p>
+              <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "5px" }}>{getStatusLabel(status)}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      <Panel title={`Conventions de stage (${internships.length})`} icon={<Briefcase style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}>
+        {internships.length === 0 ? (
+          <EmptyState icon={<Briefcase style={{ width: "24px", height: "24px" }} />} message="Aucun stage enregistre." action={canManage ? <PrimaryButton onClick={() => { setCreateForm(emptyCreateForm); setCreateError(""); setShowCreateModal(true); }}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un stage</PrimaryButton> : undefined} />
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "var(--bg-muted)" }}>
+                  <th style={th}>Etudiant</th>
+                  <th style={th}>Entreprise</th>
+                  <th style={th}>Sujet</th>
+                  <th style={th}>Periode</th>
+                  <th style={th}>Statut</th>
+                  <th style={{ ...th, textAlign: "right" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {internships.map((i, idx) => (
+                  <tr key={i.id} className="row-hover" style={{ borderBottom: idx < internships.length - 1 ? "1px solid var(--border-muted)" : "none" }}>
+                    <td style={td}>
+                      <div style={{ fontWeight: 600 }}>{i.student.lastName} {i.student.firstName}</div>
+                      <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{i.student.filiere.name}</div>
+                    </td>
+                    <td style={{ ...td, fontWeight: 600 }}>{i.companyName}</td>
+                    <td style={{ ...td, maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.topic ?? <span style={{ color: "var(--text-muted)", fontStyle: "italic" }}>Non defini</span>}</td>
+                    <td style={{ ...td, color: "var(--text-secondary)", fontSize: "12px" }}>{i.startDate && i.endDate ? `${formatDate(i.startDate)} au ${formatDate(i.endDate)}` : <span style={{ color: "var(--text-muted)" }}>,</span>}</td>
+                    <td style={td}><StatusBadge label={getStatusLabel(i.status)} color={getStatusHex(i.status)} /></td>
+                    <td style={{ ...td, textAlign: "right" }}>
+                      <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                        {canManage && <button onClick={() => openUpdate(i)} style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}><Pencil style={{ width: "12px", height: "12px" }} />Mettre a jour</button>}
+                        {canManage && <button onClick={() => handleDelete(i)} style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}><Trash2 style={{ width: "12px", height: "12px" }} />Supprimer</button>}
+                        {!canManage && <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>Lecture seule</span>}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">SI-Stage</h1>
-          <p className="text-gray-500 text-sm">Suivi des stages et conventions</p>
-        </div>
-        {canManage && (
-          <Button className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={() => { setCreateForm(emptyCreateForm); setCreateError(""); setShowCreateModal(true); }}>
-            <Plus className="w-4 h-4 mr-2" />Ajouter un stage
-          </Button>
         )}
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        {Object.entries(statusCounts).map(([status, count]) => (
-          <Card key={status}>
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-gray-700">{count}</p>
-              <p className="text-xs text-gray-500 mt-1">{getStatusLabel(status)}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader><CardTitle>Conventions de stage ({internships.length})</CardTitle></CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Etudiant</TableHead>
-                <TableHead>Entreprise</TableHead>
-                <TableHead>Sujet</TableHead>
-                <TableHead>Periode</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {internships.map((i) => (
-                <TableRow key={i.id}>
-                  <TableCell>
-                    <div className="font-medium text-sm">{i.student.lastName} {i.student.firstName}</div>
-                    <div className="text-xs text-gray-500">{i.student.filiere.name}</div>
-                  </TableCell>
-                  <TableCell className="font-medium text-sm">{i.companyName}</TableCell>
-                  <TableCell className="text-sm max-w-48 truncate">{i.topic ?? <span className="text-gray-300 italic">Non defini</span>}</TableCell>
-                  <TableCell className="text-sm">
-                    {i.startDate && i.endDate ? `${formatDate(i.startDate)} au ${formatDate(i.endDate)}` : <span className="text-gray-300">-</span>}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(i.status)}>{getStatusLabel(i.status)}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex gap-1 justify-end">
-                      {canManage && (
-                        <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openUpdate(i)}>
-                          <Pencil className="w-3 h-3 mr-1" />Mettre a jour
-                        </Button>
-                      )}
-                      {canManage && (
-                        <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDelete(i)}>
-                          <Trash2 className="w-3 h-3 mr-1" />Supprimer
-                        </Button>
-                      )}
-                      {!canManage && (
-                        <span className="text-xs text-gray-400 italic">Lecture seule</span>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {internships.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-400">Aucun stage enregistre</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      </Panel>
 
       {/* Create Modal */}
       {showCreateModal && (

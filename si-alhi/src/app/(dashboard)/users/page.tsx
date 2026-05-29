@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { UserPlus, Copy, CheckCheck } from "lucide-react";
+import { UserPlus, Copy, CheckCheck, Users } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
+import { PageHeader, Panel, StatusBadge } from "@/components/ui/PageUI";
+
+const th: React.CSSProperties = { padding: "10px 16px", textAlign: "left", fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" };
+const td: React.CSSProperties = { padding: "10px 16px", fontSize: "13px", color: "var(--text)", verticalAlign: "middle" };
+const roleHex: Record<string, string> = { ADMIN: "#dc2626", SCOLARITE: "#2563eb", ENSEIGNANT: "#7c3aed", ETUDIANT: "#16a34a", PARENT: "#d97706" };
 
 type User = {
   id: string;
@@ -29,14 +31,6 @@ const roleLabels: Record<string, string> = {
   ENSEIGNANT: "Enseignant",
   ETUDIANT: "Etudiant",
   PARENT: "Parent",
-};
-
-const roleColors: Record<string, string> = {
-  ADMIN: "bg-red-100 text-red-800",
-  SCOLARITE: "bg-blue-100 text-blue-800",
-  ENSEIGNANT: "bg-purple-100 text-purple-800",
-  ETUDIANT: "bg-green-100 text-green-800",
-  PARENT: "bg-orange-100 text-orange-800",
 };
 
 const emptyEditForm = { firstName: "", lastName: "", email: "", role: "ETUDIANT" as string, isActive: true };
@@ -146,84 +140,72 @@ export default function UsersPage() {
     setPasswordCopied(true);
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500">Chargement...</div>;
+  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "16rem", color: "var(--text-muted)" }}>Chargement...</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des utilisateurs</h1>
-          <p className="text-gray-500 text-sm">{users.length} comptes au total</p>
-        </div>
-        <Link href="/users/nouveau">
-          <Button className="bg-[#B91C2F] hover:bg-[#9b1727] text-white"><UserPlus className="w-4 h-4 mr-2" />Nouveau compte</Button>
-        </Link>
+    <div style={{ maxWidth: "1200px" }}>
+      <PageHeader
+        title="Gestion des utilisateurs"
+        subtitle={`${users.length} comptes au total`}
+        backHref="/dashboard"
+        icon={<Users style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+        actions={(
+          <Link href="/users/nouveau" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "10px 18px", background: "#B91C2F", color: "white", borderRadius: "10px", fontWeight: 700, fontSize: "13px", textDecoration: "none" }}>
+            <UserPlus style={{ width: "15px", height: "15px" }} />Nouveau compte
+          </Link>
+        )}
+      />
+
+      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
+        {Object.entries(roleCounts).map(([role, count]) => {
+          const tone = roleHex[role] ?? "#6b7280";
+          return (
+            <div key={role} style={{ background: "var(--bg-card)", borderRadius: "14px", padding: "16px 22px", border: "1px solid var(--border)", textAlign: "center", minWidth: "120px" }}>
+              <p style={{ fontSize: "24px", fontWeight: 900, color: tone, lineHeight: 1 }}>{count}</p>
+              <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "5px" }}>{roleLabels[role] ?? role}</p>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="flex gap-3 flex-wrap">
-        {Object.entries(roleCounts).map(([role, count]) => (
-          <Card key={role} className="min-w-28">
-            <CardContent className="p-4 text-center">
-              <p className="text-xl font-bold text-gray-800">{count}</p>
-              <p className="text-xs text-gray-500 mt-1">{roleLabels[role] ?? role}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader><CardTitle>Tous les comptes</CardTitle></CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Utilisateur</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>MDP initial</TableHead>
-                <TableHead>Cree le</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id} className={!user.isActive ? "opacity-50" : ""}>
-                  <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
-                  <TableCell className="text-sm text-gray-600">{user.email}</TableCell>
-                  <TableCell>
-                    <Badge className={roleColors[user.role] ?? "bg-gray-100 text-gray-800"}>
-                      {roleLabels[user.role] ?? user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={user.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-                      {user.isActive ? "Actif" : "Inactif"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {user.mustChangePassword ? (
-                      <span className="text-xs text-orange-600">A changer</span>
-                    ) : (
-                      <span className="text-xs text-green-600">Change</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-sm text-gray-500">{formatDate(user.createdAt)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex gap-1 justify-end">
-                      <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openEdit(user)}>Modifier</Button>
-                      <Button variant="outline" size="sm" className="text-xs h-7 text-amber-700" onClick={() => handleResetPassword(user)}>Reinitialiser MDP</Button>
-                      {user.isActive && (
-                        <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDeactivate(user)}>Desactiver</Button>
-                      )}
+      <Panel title="Tous les comptes" icon={<Users style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "var(--bg-muted)" }}>
+                <th style={th}>Utilisateur</th>
+                <th style={th}>Email</th>
+                <th style={th}>Role</th>
+                <th style={th}>Statut</th>
+                <th style={th}>MDP initial</th>
+                <th style={th}>Cree le</th>
+                <th style={{ ...th, textAlign: "right" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user, idx) => (
+                <tr key={user.id} className="row-hover" style={{ borderBottom: idx < users.length - 1 ? "1px solid var(--border-muted)" : "none", opacity: user.isActive ? 1 : 0.5 }}>
+                  <td style={{ ...td, fontWeight: 600 }}>{user.firstName} {user.lastName}</td>
+                  <td style={{ ...td, color: "var(--text-secondary)", fontSize: "12px" }}>{user.email}</td>
+                  <td style={td}><StatusBadge label={roleLabels[user.role] ?? user.role} color={roleHex[user.role] ?? "#6b7280"} dot={false} /></td>
+                  <td style={td}><StatusBadge label={user.isActive ? "Actif" : "Inactif"} color={user.isActive ? "#16a34a" : "#dc2626"} /></td>
+                  <td style={td}>
+                    <span style={{ fontSize: "11px", fontWeight: 600, color: user.mustChangePassword ? "#d97706" : "#16a34a" }}>{user.mustChangePassword ? "A changer" : "Change"}</span>
+                  </td>
+                  <td style={{ ...td, color: "var(--text-muted)", fontSize: "12px" }}>{formatDate(user.createdAt)}</td>
+                  <td style={{ ...td, textAlign: "right" }}>
+                    <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                      <button onClick={() => openEdit(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}>Modifier</button>
+                      <button onClick={() => handleResetPassword(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#d97706", cursor: "pointer" }}>Reinitialiser MDP</button>
+                      {user.isActive && <button onClick={() => handleDeactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Desactiver</button>}
                     </div>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </Panel>
 
       {/* Edit Modal */}
       {showEditModal && editingUser && (
