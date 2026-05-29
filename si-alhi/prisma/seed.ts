@@ -354,7 +354,7 @@ async function main() {
     { lastName: "OLOMO",       firstName: "Luc Bertrand",     gender: "M" },
     { lastName: "ETOGA",       firstName: "Sandrine Josée",   gender: "F" },
   ];
-  await seedStudents(mbaStudentsData, filiereMBA.id, "MBA");
+  const mbaStudentRecords = await seedStudents(mbaStudentsData, filiereMBA.id, "MBA");
 
   // BBA — ALI\BBA001\25 … ALI\BBA005\25
   const bbaStudentsData = [
@@ -364,7 +364,7 @@ async function main() {
     { lastName: "ZANGA",       firstName: "Bertrand Loïc",    gender: "M" },
     { lastName: "EBANG",       firstName: "Miroslava Chloe",  gender: "F" },
   ];
-  await seedStudents(bbaStudentsData, filiereBBA.id, "BBA");
+  const bbaStudentRecords = await seedStudents(bbaStudentsData, filiereBBA.id, "BBA");
 
   console.log("✅ Students created (PE: ING, PB: BUS, MBA: MBA, BBA: BBA)");
 
@@ -491,6 +491,173 @@ async function main() {
     });
   }
   console.log("✅ Tuition fees + échéancier created");
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Donnees academiques pour PB, MBA, BBA : UEs, cours, affectations, notes,
+  // paiements, plannings et emargements. Permet de tester chaque filiere.
+  // ──────────────────────────────────────────────────────────────────────
+  type CourseDef = { code: string; name: string; credits: number; totalHours: number; teacher: string };
+  type UEDef = { code: string; name: string; credits: number; courses: CourseDef[] };
+
+  async function seedFiliereAcademics(
+    filiereId: string,
+    ueDefs: UEDef[],
+    studentsForGrades: { id: string }[],
+    receiptPrefix: string,
+  ) {
+    const createdCourses: { id: string; code: string }[] = [];
+
+    for (const ue of ueDefs) {
+      const ueRow = await prisma.uE.upsert({
+        where: { code_filiereId: { code: ue.code, filiereId } },
+        update: {},
+        create: { code: ue.code, name: ue.name, filiereId, semester: 1, totalCredits: ue.credits },
+      });
+      for (const c of ue.courses) {
+        const course = await prisma.course.upsert({
+          where: { code: c.code },
+          update: {},
+          create: { code: c.code, name: c.name, credits: c.credits, totalHours: c.totalHours, filiereId, semester: 1, ueCode: ue.code, ueName: ue.name, ueId: ueRow.id },
+        });
+        createdCourses.push({ id: course.id, code: c.code });
+
+        // Affectation enseignant
+        const teacher = teacherUsers[c.teacher];
+        if (teacher) {
+          await prisma.courseAssignment.upsert({
+            where: { courseId_teacherId_academicYear_semester: { courseId: course.id, teacherId: teacher.id, academicYear: "2025-2026", semester: 1 } },
+            update: {},
+            create: { courseId: course.id, teacherId: teacher.id, academicYear: "2025-2026", semester: 1 },
+          });
+        }
+      }
+    }
+
+    // Notes : 3 etudiants, notes variees realistes
+    const noteSets = [
+      [14, 15, 13.5, 16, 12.5, 15.5],
+      [11, 9.5, 13, 10.5, 14, 12],
+      [17, 16.5, 18, 15.5, 16, 17.5],
+    ];
+    for (let si = 0; si < Math.min(3, studentsForGrades.length); si++) {
+      const student = studentsForGrades[si];
+      for (let ci = 0; ci < createdCourses.length; ci++) {
+        const base = noteSets[si][ci % noteSets[si].length];
+        const cc1 = Math.min(20, base + 0.5);
+        const cc2 = Math.min(20, base - 0.5);
+        const exam = base;
+        const noteFinal = Math.round(((cc1 + cc2) / 2 * 0.4 + exam * 0.6) * 100) / 100;
+        await prisma.grade.upsert({
+          where: { studentId_courseId_academicYear_semester_session: { studentId: student.id, courseId: createdCourses[ci].id, academicYear: "2025-2026", semester: 1, session: "NORMALE" } },
+          update: {},
+          create: { studentId: student.id, courseId: createdCourses[ci].id, cc1, cc2, examScore: exam, noteFinal, session: "NORMALE", academicYear: "2025-2026", semester: 1 },
+        });
+      }
+    }
+
+    // Paiements : inscription + 1ere tranche pour les 3 premiers etudiants
+    const methods = ["ESPECES", "ORANGE_MONEY", "MTN_MOMO", "VIREMENT"] as const;
+    for (let si = 0; si < Math.min(3, studentsForGrades.length); si++) {
+      const student = studentsForGrades[si];
+      await prisma.payment.upsert({
+        where: { receiptNumber: `${receiptPrefix}-INS-${si + 1}` },
+        update: {},
+        create: { studentId: student.id, amount: 250000, paymentMethod: methods[si % methods.length], receiptNumber: `${receiptPrefix}-INS-${si + 1}`, academicYear: "2025-2026", type: "INSCRIPTION", status: "VALIDE", description: "Frais d'inscription" },
+      });
+      if (si < 2) {
+        await prisma.payment.upsert({
+          where: { receiptNumber: `${receiptPrefix}-T1-${si + 1}` },
+          update: {},
+          create: { studentId: student.id, amount: 400000, paymentMethod: methods[(si + 1) % methods.length], receiptNumber: `${receiptPrefix}-T1-${si + 1}`, academicYear: "2025-2026", type: "TRANCHE1", status: "VALIDE", description: "1ère tranche scolarité" },
+        });
+      }
+    }
+
+    // Planning : un creneau par cours (max 4), avec emargements pour discipline
+    const days = ["LUNDI", "MARDI", "MERCREDI", "JEUDI"] as const;
+    const roomKeys = Object.keys(rooms);
+    for (let ci = 0; ci < Math.min(4, createdCourses.length); ci++) {
+      const assignment = await prisma.courseAssignment.findFirst({ where: { courseId: createdCourses[ci].id, academicYear: "2025-2026" } });
+      if (!assignment) continue;
+      const schedule = await prisma.schedule.create({
+        data: {
+          courseAssignmentId: assignment.id,
+          roomId: rooms[roomKeys[ci % roomKeys.length]]?.id,
+          dayOfWeek: days[ci % days.length],
+          startTime: ci % 2 === 0 ? "08:00" : "10:00",
+          endTime: ci % 2 === 0 ? "10:00" : "12:00",
+          academicYear: "2025-2026",
+          semester: 1,
+          filiereId,
+          type: "COURS",
+          sessionNumber: 1,
+          totalSessions: Math.ceil(createdCourses.length),
+        },
+      });
+      // Emargements : presents, un absent, un retard pour varier les stats discipline
+      for (let si = 0; si < Math.min(3, studentsForGrades.length); si++) {
+        const status = si === 0 && ci === 0 ? "ABSENT" : si === 1 && ci === 1 ? "RETARD" : "PRESENT";
+        await prisma.attendance.upsert({
+          where: { studentId_scheduleId_date: { studentId: studentsForGrades[si].id, scheduleId: schedule.id, date: new Date("2025-10-06") } },
+          update: {},
+          create: { studentId: studentsForGrades[si].id, scheduleId: schedule.id, date: new Date("2025-10-06"), status: status as "PRESENT" | "ABSENT" | "RETARD" },
+        });
+      }
+    }
+  }
+
+  await seedFiliereAcademics(filierePB.id, [
+    { code: "B201", name: "MANAGEMENT FONDAMENTAL", credits: 9, courses: [
+      { code: "B2011", name: "Management général", credits: 4, totalHours: 40, teacher: "BEYALA" },
+      { code: "B2012", name: "Économie générale", credits: 3, totalHours: 30, teacher: "OBIANG" },
+      { code: "B2013", name: "Droit des affaires", credits: 2, totalHours: 20, teacher: "NKANA" },
+    ] },
+    { code: "B202", name: "OUTILS DE GESTION", credits: 12, courses: [
+      { code: "B2021", name: "Comptabilité générale", credits: 4, totalHours: 40, teacher: "FOUDA" },
+      { code: "B2022", name: "Excel avancé", credits: 3, totalHours: 30, teacher: "TCHOUPO" },
+      { code: "B2023", name: "Statistiques", credits: 3, totalHours: 30, teacher: "ATANGANA" },
+    ] },
+  ], pbStudentRecords, "REC-PB-2025");
+  console.log("✅ Donnees academiques PB creees");
+
+  await seedFiliereAcademics(filiereMBA.id, [
+    { code: "M101", name: "STRATEGIC MANAGEMENT", credits: 9, courses: [
+      { code: "M1011", name: "Corporate Strategy", credits: 4, totalHours: 40, teacher: "BEYALA" },
+      { code: "M1012", name: "Finance d'entreprise", credits: 3, totalHours: 30, teacher: "OBIANG" },
+      { code: "M1013", name: "Leadership", credits: 2, totalHours: 20, teacher: "ONANA" },
+    ] },
+    { code: "M102", name: "BUSINESS ANALYTICS", credits: 9, courses: [
+      { code: "M1021", name: "Data Analysis", credits: 4, totalHours: 40, teacher: "MBARGA" },
+      { code: "M1022", name: "Marketing stratégique", credits: 3, totalHours: 30, teacher: "BEYALA" },
+    ] },
+  ], mbaStudentRecords, "REC-MBA-2025");
+  console.log("✅ Donnees academiques MBA creees");
+
+  await seedFiliereAcademics(filiereBBA.id, [
+    { code: "D101", name: "BUSINESS FUNDAMENTALS", credits: 9, courses: [
+      { code: "D1011", name: "Introduction au management", credits: 4, totalHours: 40, teacher: "BEYALA" },
+      { code: "D1012", name: "Microéconomie", credits: 3, totalHours: 30, teacher: "OBIANG" },
+      { code: "D1013", name: "Communication", credits: 2, totalHours: 20, teacher: "BEYALA" },
+    ] },
+  ], bbaStudentRecords, "REC-BBA-2025");
+  console.log("✅ Donnees academiques BBA creees");
+
+  // Stages supplementaires pour MBA et BBA
+  const extraInternships = [
+    { student: mbaStudentRecords[0], name: "Afriland First Bank", address: "Place de l'Indépendance, Yaoundé", phone: "+237 222 23 30 68", topic: "Optimisation de la gestion du portefeuille clients PME", status: "EN_COURS" as const },
+    { student: mbaStudentRecords[1], name: "Cimencam", address: "Bonabéri, Douala", phone: "+237 233 40 51 00", topic: "Analyse de la chaine logistique et reduction des couts", status: "CONVENTION_SIGNEE" as const },
+    { student: bbaStudentRecords[0], name: "Camtel", address: "Immeuble siège, Yaoundé", phone: "+237 222 23 40 65", topic: "Strategie de fidelisation de la clientele mobile", status: "EN_RECHERCHE" as const },
+    { student: bbaStudentRecords[1], name: "Dangote Cement Cameroon", address: "Douala", phone: "+237 233 50 00 00", topic: "Etude de marche pour le lancement d'un nouveau produit", status: "EN_COURS" as const },
+  ];
+  for (const it of extraInternships) {
+    if (!it.student) continue;
+    const exists = await prisma.internship.findFirst({ where: { studentId: it.student.id } });
+    if (exists) continue;
+    await prisma.internship.create({
+      data: { studentId: it.student.id, companyName: it.name, companyAddress: it.address, companyPhone: it.phone, topic: it.topic, status: it.status, startDate: new Date("2026-06-01"), endDate: new Date("2026-08-31") },
+    });
+  }
+  console.log("✅ Stages MBA et BBA crees");
 
   console.log("\n🎉 Seeding terminé avec succès !");
   console.log("\n📋 Comptes de test :");
