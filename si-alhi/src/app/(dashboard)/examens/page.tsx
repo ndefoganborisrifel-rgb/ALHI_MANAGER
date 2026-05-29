@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { BookOpen, FileText, Award, ClipboardList, ArrowRight, GraduationCap } from "lucide-react";
+import { PageHeader, StatCard } from "@/components/ui/PageUI";
 
 export default async function ExamensPage() {
   const session = await auth();
@@ -42,12 +43,6 @@ export default async function ExamensPage() {
     }
   }
 
-  const kpis = [
-    { label: "Notes saisies", value: totalGrades, color: "#2563eb", icon: BookOpen },
-    { label: "Etudiants actifs", value: students, color: "#16a34a", icon: GraduationCap },
-    { label: "Filieres", value: filieres.length, color: "#B91C2F", icon: Award },
-  ];
-
   const actions = [
     ...(canEnterGrades ? [{ label: "Saisir les notes CC1, CC2, Examen", href: "/examens/saisie", icon: BookOpen, desc: "Remplir les notes des etudiants par cours" }] : []),
     ...(canManage ? [{ label: "Consulter et publier les bulletins", href: "/examens/bulletins", icon: FileText, desc: "Bulletins semestriels par etudiant" }] : []),
@@ -59,41 +54,30 @@ export default async function ExamensPage() {
 
   return (
     <div style={{ maxWidth: "1100px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-        <div>
-          <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>SI-Examens et Notes</h1>
-          <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Saisie des notes et generation des bulletins, 2025-2026</p>
-        </div>
-        {canEnterGrades && (
-          <div style={{ display: "flex", gap: "8px" }}>
-            <Link href="/examens/saisie" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 16px", background: "var(--bg-card)", color: "var(--text)", border: "1.5px solid var(--border)", borderRadius: "9px", fontWeight: "600", fontSize: "12px", textDecoration: "none" }}>
+      <PageHeader
+        title="SI-Examens et Notes"
+        subtitle="Saisie des notes et generation des bulletins, 2025-2026"
+        backHref="/dashboard"
+        icon={<BookOpen style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+        actions={canEnterGrades ? (
+          <>
+            <Link href="/examens/saisie" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "10px 16px", background: "var(--bg-card)", color: "var(--text)", border: "1.5px solid var(--border)", borderRadius: "10px", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
               <BookOpen style={{ width: "14px", height: "14px" }} />Saisir les notes
             </Link>
             {canManage && (
-              <Link href="/examens/bulletins" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 16px", background: "#B91C2F", color: "white", borderRadius: "9px", fontWeight: "700", fontSize: "12px", textDecoration: "none" }}>
+              <Link href="/examens/bulletins" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "10px 16px", background: "#B91C2F", color: "white", borderRadius: "10px", fontWeight: 700, fontSize: "13px", textDecoration: "none" }}>
                 <FileText style={{ width: "14px", height: "14px" }} />Bulletins
               </Link>
             )}
-          </div>
-        )}
-      </div>
+          </>
+        ) : undefined}
+      />
 
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "18px" }}>
-        {kpis.map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={kpi.label} style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "18px", border: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "14px" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: `${kpi.color}20`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Icon style={{ width: "22px", height: "22px", color: kpi.color }} />
-              </div>
-              <div>
-                <p style={{ fontSize: "28px", fontWeight: "800", color: kpi.color, lineHeight: 1, marginBottom: "3px" }}>{kpi.value.toLocaleString("fr-FR")}</p>
-                <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{kpi.label}</p>
-              </div>
-            </div>
-          );
-        })}
+        <StatCard label="Notes saisies" value={totalGrades.toLocaleString("fr-FR")} icon={<BookOpen style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="annee 2025-2026" />
+        <StatCard label="Etudiants actifs" value={students.toLocaleString("fr-FR")} icon={<GraduationCap style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="inscrits" />
+        <StatCard label="Filieres" value={filieres.length} icon={<Award style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="programmes" />
       </div>
 
       {/* Student bulletin card */}

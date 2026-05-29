@@ -2,9 +2,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, ClipboardList, UserX, Plus, ArrowLeft } from "lucide-react";
+import { AlertTriangle, ClipboardList, UserX, Plus } from "lucide-react";
+import { PageHeader, StatCard, Panel, EmptyState } from "@/components/ui/PageUI";
 
 export default async function DisciplinePage() {
   const session = await auth();
@@ -17,10 +16,7 @@ export default async function DisciplinePage() {
       where: { status: { in: ["ACTIF", "INSCRIT"] } },
       include: {
         filiere: true,
-        attendances: {
-          orderBy: { date: "desc" },
-          take: 30,
-        },
+        attendances: { orderBy: { date: "desc" }, take: 30 },
       },
       orderBy: { lastName: "asc" },
       take: 30,
@@ -31,105 +27,72 @@ export default async function DisciplinePage() {
   const isStaff = ["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-1 font-medium">
-            <ArrowLeft className="w-4 h-4" />Retour
+    <div style={{ maxWidth: "1100px" }}>
+      <PageHeader
+        title="SI-Discipline"
+        subtitle="Suivi des absences et de l'assiduite"
+        backHref="/dashboard"
+        icon={<ClipboardList style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+        actions={isStaff ? (
+          <Link href="/discipline/absences" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "10px 18px", background: "#B91C2F", color: "white", borderRadius: "10px", fontWeight: 700, fontSize: "13px", textDecoration: "none" }}>
+            <Plus style={{ width: "15px", height: "15px" }} />Saisir des absences
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">SI-Discipline</h1>
-          <p className="text-gray-500 text-sm">Suivi des absences et de l&apos;assiduité</p>
-        </div>
-        {isStaff && (
-          <Link href="/discipline/absences">
-            <Button className="bg-[#B91C2F] text-white hover:bg-[#B91C2F]/90">
-              <Plus className="w-4 h-4 mr-2" />Saisir des absences
-            </Button>
-          </Link>
-        )}
-      </div>
+        ) : undefined}
+      />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-6 text-center">
-            <ClipboardList className="w-6 h-6 mx-auto mb-2 text-blue-500" />
-            <p className="text-2xl font-bold text-blue-600">{totalAttendances}</p>
-            <p className="text-sm text-gray-500 mt-1">Émargements enregistrés</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6 text-center">
-            <UserX className="w-6 h-6 mx-auto mb-2 text-red-500" />
-            <p className="text-2xl font-bold text-red-600">{absentCount}</p>
-            <p className="text-sm text-gray-500 mt-1">Absences totales</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6 text-center">
-            <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-amber-500" />
-            <p className={`text-2xl font-bold ${absentRate > 20 ? "text-red-600" : "text-green-600"}`}>{absentRate}%</p>
-            <p className="text-sm text-gray-500 mt-1">Taux d&apos;absentéisme</p>
-          </CardContent>
-        </Card>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "20px" }}>
+        <StatCard label="Emargements" value={totalAttendances} icon={<ClipboardList style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="seances enregistrees" />
+        <StatCard label="Absences totales" value={absentCount} icon={<UserX style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="toutes filieres" />
+        <StatCard label="Taux absenteisme" value={`${absentRate}%`} icon={<AlertTriangle style={{ width: "18px", height: "18px", color: absentRate > 20 ? "#dc2626" : "#16a34a" }} />} color={absentRate > 20 ? "#dc2626" : "#16a34a"} bg={absentRate > 20 ? "#fef2f2" : "#f0fdf4"} sub="moyenne globale" />
       </div>
 
       {totalAttendances === 0 && isStaff && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "12px", padding: "14px 16px", marginBottom: "20px" }}>
+          <AlertTriangle style={{ width: "18px", height: "18px", color: "#d97706", flexShrink: 0 }} />
           <div>
-            <p className="text-sm text-amber-800 font-medium">Aucun émargement enregistré</p>
-            <p className="text-xs text-amber-700 mt-0.5">
-              Cliquez sur &quot;Saisir des absences&quot; pour enregistrer les présences et absences des étudiants.
-            </p>
+            <p style={{ fontSize: "13px", color: "#b45309", fontWeight: 600 }}>Aucun emargement enregistre</p>
+            <p style={{ fontSize: "12px", color: "#b45309", marginTop: "2px" }}>Cliquez sur "Saisir des absences" pour enregistrer les presences et absences des etudiants.</p>
           </div>
         </div>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="w-5 h-5 text-[#B91C2F]" />
-            Tableau de bord par étudiant
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {students.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">Aucun étudiant actif dans le système.</p>
-          ) : (
-            <div className="space-y-2">
-              {students.map((student) => {
-                const total = student.attendances.length;
-                const absent = student.attendances.filter((a) => a.status === "ABSENT").length;
-                const late = student.attendances.filter((a) => a.status === "RETARD").length;
-                const rate = total > 0 ? Math.round((absent / total) * 100) : 0;
-                const severity = rate > 20 ? "border-red-200 bg-red-50" : rate > 10 ? "border-amber-200 bg-amber-50" : "border-gray-100";
-                return (
-                  <div key={student.id} className={`flex items-center justify-between p-3 rounded-lg border ${severity}`}>
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${rate > 20 ? "bg-red-200 text-red-800" : rate > 10 ? "bg-amber-200 text-amber-800" : "bg-gray-200 text-gray-700"}`}>
-                        {student.firstName.charAt(0)}{student.lastName.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm text-gray-900">{student.lastName} {student.firstName}</p>
-                        <p className="text-xs text-gray-500">{student.filiere.name}, {student.matricule}</p>
-                      </div>
+      <Panel title="Tableau de bord par etudiant" icon={<ClipboardList style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}>
+        {students.length === 0 ? (
+          <EmptyState icon={<UserX style={{ width: "24px", height: "24px" }} />} message="Aucun etudiant actif dans le systeme." />
+        ) : (
+          <div style={{ padding: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
+            {students.map((student) => {
+              const total = student.attendances.length;
+              const absent = student.attendances.filter((a) => a.status === "ABSENT").length;
+              const late = student.attendances.filter((a) => a.status === "RETARD").length;
+              const rate = total > 0 ? Math.round((absent / total) * 100) : 0;
+              const tone = rate > 20 ? "#dc2626" : rate > 10 ? "#d97706" : "#16a34a";
+              const rowBg = rate > 20 ? "var(--red-bg)" : rate > 10 ? "#fff7ed" : "var(--bg-muted)";
+              return (
+                <div key={student.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderRadius: "10px", background: rowBg, border: "1px solid var(--border-muted)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ width: "34px", height: "34px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800, background: `${tone}20`, color: tone, flexShrink: 0 }}>
+                      {student.firstName.charAt(0)}{student.lastName.charAt(0)}
                     </div>
-                    <div className="text-right text-sm">
-                      <p className={`font-bold ${rate > 20 ? "text-red-600" : rate > 10 ? "text-amber-600" : "text-green-600"}`}>
-                        {absent} absence{absent !== 1 ? "s" : ""}
-                        {late > 0 ? `, ${late} retard${late !== 1 ? "s" : ""}` : ""}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {total > 0 ? `${rate}% sur ${total} séances` : "Aucune séance enregistrée"}
-                      </p>
+                    <div>
+                      <p style={{ fontWeight: 600, fontSize: "13px", color: "var(--text)" }}>{student.lastName} {student.firstName}</p>
+                      <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>{student.filiere.name}, {student.matricule}</p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{ fontWeight: 700, fontSize: "13px", color: tone }}>
+                      {absent} absence{absent !== 1 ? "s" : ""}{late > 0 ? `, ${late} retard${late !== 1 ? "s" : ""}` : ""}
+                    </p>
+                    <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                      {total > 0 ? `${rate}% sur ${total} seances` : "Aucune seance enregistree"}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Panel>
     </div>
   );
 }

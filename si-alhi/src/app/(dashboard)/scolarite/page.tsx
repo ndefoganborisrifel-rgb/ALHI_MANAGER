@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { formatCFA } from "@/lib/utils";
 import { CreditCard, AlertCircle, CheckCircle, TrendingUp } from "lucide-react";
+import { PageHeader, StatCard } from "@/components/ui/PageUI";
 
 export default async function ScolaritePage() {
   const students = await prisma.student.findMany({
@@ -18,10 +19,12 @@ export default async function ScolaritePage() {
 
   return (
     <div style={{ maxWidth: "1200px" }}>
-      <div style={{ marginBottom: "20px" }}>
-        <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>SI-Scolarite</h1>
-        <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Gestion des paiements et du recouvrement, 2025-2026</p>
-      </div>
+      <PageHeader
+        title="SI-Scolarite"
+        subtitle="Gestion des paiements et du recouvrement, 2025-2026"
+        backHref="/dashboard"
+        icon={<CreditCard style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {/* Progress bar */}
       <div style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "18px 20px", marginBottom: "16px", border: "1px solid var(--border)" }}>
@@ -39,26 +42,11 @@ export default async function ScolaritePage() {
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "18px" }}>
-        {[
-          { label: "Total collecte", value: formatCFA(totalCollected), icon: CheckCircle, color: "#16a34a" },
-          { label: "Taux recouvrement", value: `${recoveryRate}%`, icon: TrendingUp, color: "#2563eb" },
-          { label: "Etudiants a jour", value: fullySolved, icon: CreditCard, color: "#B91C2F" },
-          { label: "Avec solde restant", value: studentsWithDebt, icon: AlertCircle, color: "#d97706" },
-        ].map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={kpi.label} style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "16px", border: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{ width: "36px", height: "36px", borderRadius: "9px", background: `${kpi.color}20`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Icon style={{ width: "18px", height: "18px", color: kpi.color }} />
-              </div>
-              <div>
-                <p style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "2px" }}>{kpi.label}</p>
-                <p style={{ fontSize: "18px", fontWeight: "800", color: kpi.color, lineHeight: 1 }}>{typeof kpi.value === "number" ? kpi.value.toLocaleString("fr-FR") : kpi.value}</p>
-              </div>
-            </div>
-          );
-        })}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "18px" }}>
+        <StatCard label="Total collecte" value={formatCFA(totalCollected)} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="paiements valides" />
+        <StatCard label="Taux recouvrement" value={`${recoveryRate}%`} icon={<TrendingUp style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="de l'objectif" />
+        <StatCard label="Etudiants a jour" value={fullySolved} icon={<CreditCard style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="solde regle" />
+        <StatCard label="Avec solde restant" value={studentsWithDebt} icon={<AlertCircle style={{ width: "18px", height: "18px", color: "#d97706" }} />} color="#d97706" bg="#fff7ed" sub="a relancer" />
       </div>
 
       {/* Table */}
