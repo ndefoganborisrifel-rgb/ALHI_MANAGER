@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Plus, Users, UserCheck, UserX, Wallet, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { formatCFA, getStatusLabel, getStatusColor } from "@/lib/utils";
+import { Plus, Users, UserCheck, UserX, Wallet, UserCog } from "lucide-react";
+import { PageHeader, StatCard, Panel, PrimaryButton, StatusBadge, EmptyState } from "@/components/ui/PageUI";
+import { formatCFA, getStatusLabel, getStatusHex } from "@/lib/utils";
 import { useCanManage } from "@/components/providers/RoleProvider";
 
 type Teacher = {
@@ -51,6 +48,9 @@ const MONTHS = ["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout"
 const emptyTeacherForm: { firstName: string; lastName: string; email: string; phone: string; speciality: string; type: "PERMANENT" | "VACATAIRE"; hourlyRate: string; courseIds: string[] } = { firstName: "", lastName: "", email: "", phone: "", speciality: "", type: "VACATAIRE", hourlyRate: "", courseIds: [] };
 const emptyPayForm = { teacherId: "", month: String(new Date().getMonth() + 1), year: String(new Date().getFullYear()), hoursValidated: "" };
 
+const th: React.CSSProperties = { padding: "10px 16px", textAlign: "left", fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" };
+const td: React.CSSProperties = { padding: "10px 16px", fontSize: "13px", color: "var(--text)", verticalAlign: "middle" };
+
 export default function RHPage() {
   const canManage = useCanManage();
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -59,14 +59,12 @@ export default function RHPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"enseignants" | "vacations">("enseignants");
 
-  // Teacher modal
   const [showTeacherModal, setShowTeacherModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [teacherForm, setTeacherForm] = useState(emptyTeacherForm);
   const [teacherSubmitting, setTeacherSubmitting] = useState(false);
   const [teacherError, setTeacherError] = useState("");
 
-  // Payment modal
   const [showPayModal, setShowPayModal] = useState(false);
   const [payForm, setPayForm] = useState(emptyPayForm);
   const [paySubmitting, setPaySubmitting] = useState(false);
@@ -199,244 +197,156 @@ export default function RHPage() {
     loadData();
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500">Chargement...</div>;
+  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "16rem", color: "var(--text-muted)" }}>Chargement...</div>;
+
+  const tabBtn = (active: boolean): React.CSSProperties => ({
+    padding: "8px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "none", cursor: "pointer",
+    background: active ? "var(--bg-card)" : "transparent", color: active ? "var(--text)" : "var(--text-muted)",
+    boxShadow: active ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+  });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <Link href="/dashboard"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900">SI-RH et Vacations</h1>
-        <p className="text-gray-500 text-sm">Gestion des formateurs et des vacations</p>
+    <div style={{ maxWidth: "1280px" }}>
+      <PageHeader
+        title="SI-RH et Vacations"
+        subtitle="Gestion des formateurs et des vacations"
+        backHref="/dashboard"
+        icon={<UserCog style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "20px" }}>
+        <StatCard label="Enseignants" value={teachers.length} icon={<Users style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="corps enseignant" />
+        <StatCard label="Permanents" value={permanents} icon={<UserCheck style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="contrat fixe" />
+        <StatCard label="Vacataires" value={vacataires} icon={<UserX style={{ width: "18px", height: "18px", color: "#7c3aed" }} />} color="#7c3aed" bg="#f5f3ff" sub="payes a l'heure" />
+        <StatCard label="Total vacations" value={formatCFA(totalPayments)} icon={<Wallet style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="cumul 2025-2026" />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-50 rounded-xl"><Users className="w-5 h-5 text-blue-600" /></div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{teachers.length}</p>
-                <p className="text-xs text-gray-500">Enseignants</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-green-50 rounded-xl"><UserCheck className="w-5 h-5 text-green-600" /></div>
-              <div>
-                <p className="text-2xl font-bold text-green-600">{permanents}</p>
-                <p className="text-xs text-gray-500">Permanents</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-purple-50 rounded-xl"><UserX className="w-5 h-5 text-purple-600" /></div>
-              <div>
-                <p className="text-2xl font-bold text-purple-600">{vacataires}</p>
-                <p className="text-xs text-gray-500">Vacataires</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-red-50 rounded-xl"><Wallet className="w-5 h-5 text-[#B91C2F]" /></div>
-              <div>
-                <p className="text-lg font-bold text-[#B91C2F]">{formatCFA(totalPayments)}</p>
-                <p className="text-xs text-gray-500">Total vacations</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
-        <button
-          onClick={() => setActiveTab("enseignants")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "enseignants" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
-        >
-          Enseignants
-        </button>
-        <button
-          onClick={() => setActiveTab("vacations")}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "vacations" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
-        >
-          Vacations
-        </button>
+      <div style={{ display: "flex", gap: "4px", background: "var(--bg-muted)", borderRadius: "10px", padding: "4px", width: "fit-content", marginBottom: "16px" }}>
+        <button onClick={() => setActiveTab("enseignants")} style={tabBtn(activeTab === "enseignants")}>Enseignants</button>
+        <button onClick={() => setActiveTab("vacations")} style={tabBtn(activeTab === "vacations")}>Vacations</button>
       </div>
 
       {activeTab === "enseignants" && (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Liste des enseignants</CardTitle>
-            {canManage && (
-              <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={openAddTeacher}>
-                <Plus className="w-4 h-4 mr-1" />Ajouter un enseignant
-              </Button>
-            )}
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Enseignant</TableHead>
-                  <TableHead>Specialite</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Taux horaire</TableHead>
-                  <TableHead>Cours assignes</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {teachers.map((teacher) => (
-                  <TableRow key={teacher.id} className={!teacher.user.isActive ? "opacity-50" : ""}>
-                    <TableCell className="font-medium">{teacher.firstName} {teacher.lastName}</TableCell>
-                    <TableCell className="text-sm text-gray-600">{teacher.speciality ?? <span className="text-gray-300 text-xs italic">Non renseigne</span>}</TableCell>
-                    <TableCell>
-                      <Badge className={teacher.type === "PERMANENT" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}>
-                        {getStatusLabel(teacher.type)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {teacher.type === "VACATAIRE" ? (
-                        <span className="text-sm font-medium">{formatCFA(teacher.hourlyRate)}/h</span>
-                      ) : <span className="text-gray-300 text-xs italic">Fixe</span>}
-                    </TableCell>
-                    <TableCell>
-                      {teacher.assignments.length === 0 ? (
-                        <span className="text-gray-300 text-xs italic">Aucune</span>
-                      ) : (
-                        <div className="flex flex-wrap gap-1 max-w-[220px]">
-                          {teacher.assignments.slice(0, 4).map((a) => (
-                            <span key={a.id} className="text-[10px] font-medium bg-gray-100 text-gray-700 rounded px-1.5 py-0.5">
-                              {a.course.code ?? a.course.name}
-                            </span>
-                          ))}
-                          {teacher.assignments.length > 4 && (
-                            <span className="text-[10px] text-gray-400">+{teacher.assignments.length - 4}</span>
-                          )}
+        <Panel
+          title="Liste des enseignants"
+          icon={<Users style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}
+          action={canManage && <PrimaryButton onClick={openAddTeacher}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un enseignant</PrimaryButton>}
+        >
+          {teachers.length === 0 ? (
+            <EmptyState icon={<Users style={{ width: "24px", height: "24px" }} />} message="Aucun enseignant enregistre." action={canManage ? <PrimaryButton onClick={openAddTeacher}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un enseignant</PrimaryButton> : undefined} />
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ background: "var(--bg-muted)" }}>
+                    <th style={th}>Enseignant</th>
+                    <th style={th}>Specialite</th>
+                    <th style={th}>Type</th>
+                    <th style={th}>Taux horaire</th>
+                    <th style={th}>Cours assignes</th>
+                    <th style={th}>Contact</th>
+                    <th style={{ ...th, textAlign: "right" }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teachers.map((teacher, i) => (
+                    <tr key={teacher.id} className="row-hover" style={{ borderBottom: i < teachers.length - 1 ? "1px solid var(--border-muted)" : "none", opacity: teacher.user.isActive ? 1 : 0.5 }}>
+                      <td style={{ ...td, fontWeight: 600 }}>{teacher.firstName} {teacher.lastName}</td>
+                      <td style={{ ...td, color: "var(--text-secondary)" }}>{teacher.speciality ?? <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Non renseigne</span>}</td>
+                      <td style={td}><StatusBadge label={getStatusLabel(teacher.type)} color={getStatusHex(teacher.type)} dot={false} /></td>
+                      <td style={td}>
+                        {teacher.type === "VACATAIRE" ? <span style={{ fontWeight: 600 }}>{formatCFA(teacher.hourlyRate)}/h</span> : <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Fixe</span>}
+                      </td>
+                      <td style={td}>
+                        {teacher.assignments.length === 0 ? (
+                          <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Aucune</span>
+                        ) : (
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", maxWidth: "220px" }}>
+                            {teacher.assignments.slice(0, 4).map((a) => (
+                              <span key={a.id} style={{ fontSize: "10px", fontWeight: 600, background: "var(--bg-muted)", color: "var(--text-secondary)", borderRadius: "5px", padding: "2px 6px" }}>{a.course.code ?? a.course.name}</span>
+                            ))}
+                            {teacher.assignments.length > 4 && <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>+{teacher.assignments.length - 4}</span>}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ ...td, color: "var(--text-muted)", fontSize: "12px" }}>{teacher.email ?? teacher.user.email}</td>
+                      <td style={{ ...td, textAlign: "right" }}>
+                        <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                          {canManage && <button onClick={() => openEditTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}>Modifier</button>}
+                          {canManage && teacher.user.isActive && <button onClick={() => handleDisableTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Desactiver</button>}
+                          {canManage && !teacher.user.isActive && <button onClick={() => handleReactivateTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#16a34a", cursor: "pointer" }}>Reactiver</button>}
+                          {!canManage && <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>Lecture seule</span>}
                         </div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm text-gray-500">{teacher.email ?? teacher.user.email}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-1 justify-end">
-                        {canManage && (
-                          <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openEditTeacher(teacher)}>Modifier</Button>
-                        )}
-                        {canManage && teacher.user.isActive && (
-                          <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDisableTeacher(teacher)}>Desactiver</Button>
-                        )}
-                        {canManage && !teacher.user.isActive && (
-                          <Button variant="outline" size="sm" className="text-xs h-7 text-green-600 hover:text-green-700" onClick={() => handleReactivateTeacher(teacher)}>Reactiver</Button>
-                        )}
-                        {!canManage && (
-                          <span className="text-xs text-gray-400 italic">Lecture seule</span>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Panel>
       )}
 
       {activeTab === "vacations" && (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Fiches de vacation</CardTitle>
-            <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={() => { setPayForm(emptyPayForm); setPayError(""); setShowPayModal(true); }}>
-              <Plus className="w-4 h-4 mr-1" />Enregistrer heures
-            </Button>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Enseignant</TableHead>
-                  <TableHead>Periode</TableHead>
-                  <TableHead>Heures validees</TableHead>
-                  <TableHead>Taux horaire</TableHead>
-                  <TableHead>Montant</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {payments.map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.teacher.firstName} {p.teacher.lastName}</TableCell>
-                    <TableCell className="text-sm">{MONTHS[p.month - 1]} {p.year}</TableCell>
-                    <TableCell className="text-sm">{p.hoursValidated}h</TableCell>
-                    <TableCell className="text-sm">{formatCFA(p.hourlyRate)}/h</TableCell>
-                    <TableCell className="font-semibold">{formatCFA(p.totalAmount)}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(p.status)}>{getStatusLabel(p.status)}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-1 justify-end">
-                        {p.status === "BROUILLON" && (
-                          <Button variant="outline" size="sm" className="text-xs h-7 text-green-700" onClick={() => handlePaymentStatus(p, "VALIDE")}>Valider</Button>
-                        )}
-                        {p.status === "VALIDE" && (
-                          <Button variant="outline" size="sm" className="text-xs h-7 text-blue-700" onClick={() => handlePaymentStatus(p, "PAYE")}>Marquer paye</Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {payments.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-gray-400">Aucune vacation enregistree</TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <Panel
+          title="Fiches de vacation"
+          icon={<Wallet style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}
+          action={<PrimaryButton onClick={() => { setPayForm(emptyPayForm); setPayError(""); setShowPayModal(true); }}><Plus style={{ width: "15px", height: "15px" }} />Enregistrer heures</PrimaryButton>}
+        >
+          {payments.length === 0 ? (
+            <EmptyState icon={<Wallet style={{ width: "24px", height: "24px" }} />} message="Aucune vacation enregistree." />
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ background: "var(--bg-muted)" }}>
+                    <th style={th}>Enseignant</th>
+                    <th style={th}>Periode</th>
+                    <th style={th}>Heures validees</th>
+                    <th style={th}>Taux horaire</th>
+                    <th style={th}>Montant</th>
+                    <th style={th}>Statut</th>
+                    <th style={{ ...th, textAlign: "right" }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.map((p, i) => (
+                    <tr key={p.id} className="row-hover" style={{ borderBottom: i < payments.length - 1 ? "1px solid var(--border-muted)" : "none" }}>
+                      <td style={{ ...td, fontWeight: 600 }}>{p.teacher.firstName} {p.teacher.lastName}</td>
+                      <td style={td}>{MONTHS[p.month - 1]} {p.year}</td>
+                      <td style={td}>{p.hoursValidated}h</td>
+                      <td style={td}>{formatCFA(p.hourlyRate)}/h</td>
+                      <td style={{ ...td, fontWeight: 700 }}>{formatCFA(p.totalAmount)}</td>
+                      <td style={td}><StatusBadge label={getStatusLabel(p.status)} color={getStatusHex(p.status)} /></td>
+                      <td style={{ ...td, textAlign: "right" }}>
+                        <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                          {p.status === "BROUILLON" && <button onClick={() => handlePaymentStatus(p, "VALIDE")} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#16a34a", cursor: "pointer" }}>Valider</button>}
+                          {p.status === "VALIDE" && <button onClick={() => handlePaymentStatus(p, "PAYE")} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#2563eb", cursor: "pointer" }}>Marquer paye</button>}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Panel>
       )}
 
       {/* Teacher Modal */}
       {showTeacherModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowTeacherModal(false)}>
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 mb-5">{editingTeacher ? "Modifier l'enseignant" : "Ajouter un enseignant"}</h2>
+          <div style={{ background: "var(--bg-card)", borderRadius: "16px", boxShadow: "0 24px 80px rgba(0,0,0,0.3)", width: "100%", maxWidth: "32rem", padding: "24px" }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text)", marginBottom: "20px" }}>{editingTeacher ? "Modifier l'enseignant" : "Ajouter un enseignant"}</h2>
             <form onSubmit={handleTeacherSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="t-firstname">Prenom</Label>
-                  <Input id="t-firstname" value={teacherForm.firstName} onChange={(e) => setTeacherForm((f) => ({ ...f, firstName: e.target.value }))} required />
-                </div>
-                <div>
-                  <Label htmlFor="t-lastname">Nom</Label>
-                  <Input id="t-lastname" value={teacherForm.lastName} onChange={(e) => setTeacherForm((f) => ({ ...f, lastName: e.target.value }))} required />
-                </div>
+                <div><Label htmlFor="t-firstname">Prenom</Label><Input id="t-firstname" value={teacherForm.firstName} onChange={(e) => setTeacherForm((f) => ({ ...f, firstName: e.target.value }))} required /></div>
+                <div><Label htmlFor="t-lastname">Nom</Label><Input id="t-lastname" value={teacherForm.lastName} onChange={(e) => setTeacherForm((f) => ({ ...f, lastName: e.target.value }))} required /></div>
               </div>
-              <div>
-                <Label htmlFor="t-email">Email</Label>
-                <Input id="t-email" type="email" value={teacherForm.email} onChange={(e) => setTeacherForm((f) => ({ ...f, email: e.target.value }))} required disabled={!!editingTeacher} />
-              </div>
+              <div><Label htmlFor="t-email">Email</Label><Input id="t-email" type="email" value={teacherForm.email} onChange={(e) => setTeacherForm((f) => ({ ...f, email: e.target.value }))} required disabled={!!editingTeacher} /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="t-phone">Telephone</Label>
-                  <Input id="t-phone" value={teacherForm.phone} onChange={(e) => setTeacherForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+225 07..." />
-                </div>
-                <div>
-                  <Label htmlFor="t-speciality">Specialite</Label>
-                  <Input id="t-speciality" value={teacherForm.speciality} onChange={(e) => setTeacherForm((f) => ({ ...f, speciality: e.target.value }))} placeholder="Mathematiques" />
-                </div>
+                <div><Label htmlFor="t-phone">Telephone</Label><Input id="t-phone" value={teacherForm.phone} onChange={(e) => setTeacherForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+237 6.." /></div>
+                <div><Label htmlFor="t-speciality">Specialite</Label><Input id="t-speciality" value={teacherForm.speciality} onChange={(e) => setTeacherForm((f) => ({ ...f, speciality: e.target.value }))} placeholder="Mathematiques" /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -446,38 +356,34 @@ export default function RHPage() {
                     <option value="PERMANENT">Permanent</option>
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="t-rate">Taux horaire (FCFA)</Label>
-                  <Input id="t-rate" type="number" min={0} value={teacherForm.hourlyRate} onChange={(e) => setTeacherForm((f) => ({ ...f, hourlyRate: e.target.value }))} placeholder="5000" />
-                </div>
+                <div><Label htmlFor="t-rate">Taux horaire (FCFA)</Label><Input id="t-rate" type="number" min={0} value={teacherForm.hourlyRate} onChange={(e) => setTeacherForm((f) => ({ ...f, hourlyRate: e.target.value }))} placeholder="5000" /></div>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <Label>Matieres enseignees</Label>
-                  <span className="text-xs text-gray-400">{teacherForm.courseIds.length} selectionnee{teacherForm.courseIds.length > 1 ? "s" : ""}</span>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{teacherForm.courseIds.length} selectionnee{teacherForm.courseIds.length > 1 ? "s" : ""}</span>
                 </div>
                 {courses.length === 0 ? (
-                  <p className="text-xs text-gray-400 italic py-2">Aucune matiere disponible. Creez des matieres dans Pedagogie.</p>
+                  <p style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic", padding: "8px 0" }}>Aucune matiere disponible. Creez des matieres dans Pedagogie.</p>
                 ) : (
-                  <div className="max-h-44 overflow-y-auto rounded-lg border border-gray-200 divide-y divide-gray-100">
+                  <div style={{ maxHeight: "11rem", overflowY: "auto", borderRadius: "8px", border: "1px solid var(--border)" }}>
                     {courses.map((c) => {
                       const checked = teacherForm.courseIds.includes(c.id);
                       return (
-                        <label key={c.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors">
+                        <label key={c.id} className="card-hover" style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", cursor: "pointer", borderBottom: "1px solid var(--border-muted)" }}>
                           <input type="checkbox" checked={checked} onChange={() => toggleCourse(c.id)} className="accent-[#B91C2F] w-4 h-4" />
-                          <span className="text-sm text-gray-700 flex-1 min-w-0">
-                            <span className="font-medium">{c.code}</span>
-                            <span className="text-gray-500"> · {c.name}</span>
+                          <span style={{ fontSize: "13px", color: "var(--text-secondary)", flex: 1, minWidth: 0 }}>
+                            <span style={{ fontWeight: 600 }}>{c.code}</span><span style={{ color: "var(--text-muted)" }}> : {c.name}</span>
                           </span>
-                          {c.filiere && <span className="text-[10px] text-gray-400 shrink-0">{c.filiere.code}</span>}
+                          {c.filiere && <span style={{ fontSize: "10px", color: "var(--text-muted)", flexShrink: 0 }}>{c.filiere.code}</span>}
                         </label>
                       );
                     })}
                   </div>
                 )}
-                <p className="text-[11px] text-gray-400 mt-1.5">Un enseignant ne peut saisir des notes que pour les matieres qui lui sont assignees ici.</p>
+                <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>Un enseignant ne peut saisir des notes que pour les matieres qui lui sont assignees ici.</p>
               </div>
-              {teacherError && <p className="text-sm text-red-600">{teacherError}</p>}
+              {teacherError && <p style={{ fontSize: "13px", color: "#dc2626" }}>{teacherError}</p>}
               <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" className="flex-1" onClick={() => setShowTeacherModal(false)}>Annuler</Button>
                 <Button type="submit" className="flex-1 bg-[#B91C2F] hover:bg-[#9b1727] text-white" disabled={teacherSubmitting}>
@@ -492,8 +398,8 @@ export default function RHPage() {
       {/* Payment Modal */}
       {showPayModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowPayModal(false)}>
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 mb-5">Enregistrer des heures de vacation</h2>
+          <div style={{ background: "var(--bg-card)", borderRadius: "16px", boxShadow: "0 24px 80px rgba(0,0,0,0.3)", width: "100%", maxWidth: "28rem", padding: "24px" }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text)", marginBottom: "20px" }}>Enregistrer des heures de vacation</h2>
             <form onSubmit={handlePaySubmit} className="space-y-4">
               <div>
                 <Label htmlFor="pay-teacher">Enseignant</Label>
@@ -508,21 +414,13 @@ export default function RHPage() {
                 <div>
                   <Label htmlFor="pay-month">Mois</Label>
                   <Select id="pay-month" value={payForm.month} onChange={(e) => setPayForm((f) => ({ ...f, month: e.target.value }))}>
-                    {MONTHS.map((m, i) => (
-                      <option key={i} value={String(i + 1)}>{m}</option>
-                    ))}
+                    {MONTHS.map((m, i) => (<option key={i} value={String(i + 1)}>{m}</option>))}
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="pay-year">Annee</Label>
-                  <Input id="pay-year" type="number" min={2020} max={2030} value={payForm.year} onChange={(e) => setPayForm((f) => ({ ...f, year: e.target.value }))} required />
-                </div>
+                <div><Label htmlFor="pay-year">Annee</Label><Input id="pay-year" type="number" min={2020} max={2030} value={payForm.year} onChange={(e) => setPayForm((f) => ({ ...f, year: e.target.value }))} required /></div>
               </div>
-              <div>
-                <Label htmlFor="pay-hours">Heures validees</Label>
-                <Input id="pay-hours" type="number" min={0} step={0.5} value={payForm.hoursValidated} onChange={(e) => setPayForm((f) => ({ ...f, hoursValidated: e.target.value }))} required placeholder="20" />
-              </div>
-              {payError && <p className="text-sm text-red-600">{payError}</p>}
+              <div><Label htmlFor="pay-hours">Heures validees</Label><Input id="pay-hours" type="number" min={0} step={0.5} value={payForm.hoursValidated} onChange={(e) => setPayForm((f) => ({ ...f, hoursValidated: e.target.value }))} required placeholder="20" /></div>
+              {payError && <p style={{ fontSize: "13px", color: "#dc2626" }}>{payError}</p>}
               <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" className="flex-1" onClick={() => setShowPayModal(false)}>Annuler</Button>
                 <Button type="submit" className="flex-1 bg-[#B91C2F] hover:bg-[#9b1727] text-white" disabled={paySubmitting}>

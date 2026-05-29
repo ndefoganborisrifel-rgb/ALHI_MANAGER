@@ -79,6 +79,37 @@ export function getStatusLabel(status: string): string {
   return labels[status] ?? status;
 }
 
+/** Couleur hexadecimale d'un statut, pour les badges en styles inline. */
+export function getStatusHex(status: string): string {
+  const colors: Record<string, string> = {
+    ACTIF: "#16a34a",
+    INSCRIT: "#2563eb",
+    ACCEPTE: "#059669",
+    ENTRETIEN: "#ca8a04",
+    DOSSIER_RECU: "#ea580c",
+    PROSPECT: "#6b7280",
+    SUSPENDU: "#dc2626",
+    DIPLOME: "#7c3aed",
+    VALIDE: "#16a34a",
+    EN_ATTENTE: "#ca8a04",
+    ANNULE: "#dc2626",
+    FONCTIONNEL: "#16a34a",
+    EN_PANNE: "#dc2626",
+    EN_MAINTENANCE: "#ca8a04",
+    REFORME: "#6b7280",
+    PAYE: "#16a34a",
+    BROUILLON: "#6b7280",
+    PERMANENT: "#2563eb",
+    VACATAIRE: "#7c3aed",
+    EN_RECHERCHE: "#6b7280",
+    CONVENTION_SIGNEE: "#2563eb",
+    EN_COURS: "#ca8a04",
+    TERMINE: "#16a34a",
+    SOUTENU: "#7c3aed",
+  };
+  return colors[status] ?? "#6b7280";
+}
+
 export function getStatusColor(status: string): string {
   const colors: Record<string, string> = {
     ACTIF: "bg-green-100 text-green-800",

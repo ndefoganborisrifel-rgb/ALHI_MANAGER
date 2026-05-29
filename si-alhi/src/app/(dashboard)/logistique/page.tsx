@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { AlertTriangle, Monitor, Building2, Projector, Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { getStatusColor, getStatusLabel, formatDate } from "@/lib/utils";
+import { AlertTriangle, Monitor, Building2, Projector, Plus, Pencil, Trash2, Package, CheckCircle2, XCircle } from "lucide-react";
+import { PageHeader, StatCard, Panel, PrimaryButton, StatusBadge, EmptyState } from "@/components/ui/PageUI";
+import { getStatusHex, getStatusLabel, formatDate } from "@/lib/utils";
 
 type Room = {
   id: string;
@@ -42,20 +39,21 @@ type Equipment = {
 const emptyRoomForm = { code: "", name: "", capacity: "", building: "", floor: "", hasProjector: false, hasComputers: false };
 const emptyEqForm = { code: "", name: "", category: "", brand: "", roomId: "", status: "FONCTIONNEL", purchasePrice: "" };
 
+const th: React.CSSProperties = { padding: "10px 16px", textAlign: "left", fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" };
+const td: React.CSSProperties = { padding: "10px 16px", fontSize: "13px", color: "var(--text)", verticalAlign: "middle" };
+
 export default function LogistiquePage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Room modal state
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [roomForm, setRoomForm] = useState(emptyRoomForm);
   const [roomSubmitting, setRoomSubmitting] = useState(false);
   const [roomError, setRoomError] = useState("");
 
-  // Equipment modal state
   const [showEqModal, setShowEqModal] = useState(false);
   const [editingEq, setEditingEq] = useState<Equipment | null>(null);
   const [eqForm, setEqForm] = useState(emptyEqForm);
@@ -72,7 +70,7 @@ export default function LogistiquePage() {
       setRooms(await roomsRes.json());
       setEquipment(await eqRes.json());
     } catch {
-      setError("Impossible de charger les données.");
+      setError("Impossible de charger les donnees.");
     } finally {
       setLoading(false);
     }
@@ -109,7 +107,7 @@ export default function LogistiquePage() {
   }
 
   async function handleDeleteRoom(room: Room) {
-    if (!confirm(`Supprimer la salle ${room.code} ? Cette action est irréversible.`)) return;
+    if (!confirm(`Supprimer la salle ${room.code} ? Cette action est irreversible.`)) return;
     const res = await fetch(`/api/rooms/${room.id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -172,7 +170,7 @@ export default function LogistiquePage() {
   }
 
   async function handleDeleteEq(eq: Equipment) {
-    if (!confirm(`Supprimer "${eq.name}" ? Cette action est irréversible.`)) return;
+    if (!confirm(`Supprimer "${eq.name}" ? Cette action est irreversible.`)) return;
     const res = await fetch(`/api/equipment/${eq.id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -212,209 +210,164 @@ export default function LogistiquePage() {
     }
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500">Chargement...</div>;
-  if (error) return <div className="text-red-600 p-4">{error}</div>;
+  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "16rem", color: "var(--text-muted)" }}>Chargement...</div>;
+  if (error) return <div style={{ color: "#dc2626", padding: "1rem" }}>{error}</div>;
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Link href="/dashboard"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">SI-Logistique</h1>
-          <p className="text-gray-500 text-sm">Inventaire du patrimoine et gestion des salles</p>
-        </div>
-      </div>
+    <div style={{ maxWidth: "1280px" }}>
+      <PageHeader
+        title="SI-Logistique"
+        subtitle="Inventaire du patrimoine et gestion des salles"
+        backHref="/dashboard"
+        icon={<Package style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-50 rounded-xl"><Monitor className="w-5 h-5 text-blue-600" /></div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{equipment.length}</p>
-                <p className="text-xs text-gray-500">Equipements</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-green-50 rounded-xl"><Monitor className="w-5 h-5 text-green-600" /></div>
-              <div>
-                <p className="text-2xl font-bold text-green-600">{fonctionnel}</p>
-                <p className="text-xs text-gray-500">Fonctionnels</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-red-50 rounded-xl"><Monitor className="w-5 h-5 text-red-600" /></div>
-              <div>
-                <p className="text-2xl font-bold text-red-600">{enPanne}</p>
-                <p className="text-xs text-gray-500">En panne</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className={maintenanceDue > 0 ? "border-orange-300" : ""}>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-orange-50 rounded-xl"><AlertTriangle className="w-5 h-5 text-orange-600" /></div>
-              <div>
-                <p className="text-2xl font-bold text-orange-600">{maintenanceDue}</p>
-                <p className="text-xs text-gray-500">Maintenance due</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "20px" }}>
+        <StatCard label="Equipements" value={equipment.length} icon={<Monitor style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="parc total" />
+        <StatCard label="Fonctionnels" value={fonctionnel} icon={<CheckCircle2 style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="en service" />
+        <StatCard label="En panne" value={enPanne} icon={<XCircle style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="a reparer" />
+        <StatCard label="Maintenance due" value={maintenanceDue} icon={<AlertTriangle style={{ width: "18px", height: "18px", color: "#d97706" }} />} color="#d97706" bg="#fff7ed" sub="entretien a prevoir" />
       </div>
 
       {maintenanceDue > 0 && (
-        <div className="flex items-center gap-3 bg-orange-50 border border-orange-200 rounded-xl p-4">
-          <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0" />
-          <p className="text-sm text-orange-700 font-medium">{maintenanceDue} equipement(s) necessitent une maintenance preventive.</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "12px", padding: "14px 16px", marginBottom: "20px" }}>
+          <AlertTriangle style={{ width: "18px", height: "18px", color: "#d97706", flexShrink: 0 }} />
+          <p style={{ fontSize: "13px", color: "#b45309", fontWeight: 500 }}>{maintenanceDue} equipement(s) necessitent une maintenance preventive.</p>
         </div>
       )}
 
       {/* Salles */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-[#B91C2F]" />
-            Salles et Espaces ({rooms.length}), {roomsAvailable} disponibles
+      <div style={{ marginBottom: "24px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+          <h2 style={{ fontSize: "15px", fontWeight: 700, color: "var(--text)", display: "flex", alignItems: "center", gap: "8px" }}>
+            <Building2 style={{ width: "17px", height: "17px", color: "#B91C2F" }} />
+            Salles et espaces ({rooms.length}), {roomsAvailable} disponibles
           </h2>
-          <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={openAddRoom}>
-            <Plus className="w-4 h-4 mr-1" />Ajouter une salle
-          </Button>
+          <PrimaryButton onClick={openAddRoom}><Plus style={{ width: "15px", height: "15px" }} />Ajouter une salle</PrimaryButton>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {rooms.map((room) => (
-            <Card key={room.id} className="overflow-hidden hover:shadow-md transition-shadow">
-              <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-[#1A1A1A] to-[#2d2d2d] text-white p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-bold text-lg">{room.code}</p>
-                      <p className="text-gray-300 text-sm">{room.name}</p>
+
+        {rooms.length === 0 ? (
+          <Panel><EmptyState icon={<Building2 style={{ width: "24px", height: "24px" }} />} message="Aucune salle enregistree pour le moment." action={<PrimaryButton onClick={openAddRoom}><Plus style={{ width: "15px", height: "15px" }} />Ajouter une salle</PrimaryButton>} /></Panel>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "14px" }}>
+            {rooms.map((room) => (
+              <div key={room.id} className="lift" style={{ background: "var(--bg-card)", borderRadius: "14px", border: "1px solid var(--border)", overflow: "hidden" }}>
+                <div style={{ background: "linear-gradient(135deg, #1A1A1A 0%, #2d2d2d 100%)", color: "white", padding: "16px 18px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "10px" }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontWeight: 800, fontSize: "18px", lineHeight: 1.1 }}>{room.code}</p>
+                      <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "13px", marginTop: "2px" }}>{room.name}</p>
                     </div>
-                    <Badge className={room.isAvailable ? "bg-green-500 text-white" : "bg-red-500 text-white"}>
+                    <span style={{ fontSize: "10px", fontWeight: 700, padding: "3px 9px", borderRadius: "20px", background: room.isAvailable ? "rgba(34,197,94,0.9)" : "rgba(239,68,68,0.9)", color: "white", whiteSpace: "nowrap" }}>
                       {room.isAvailable ? "Disponible" : "Indisponible"}
-                    </Badge>
+                    </span>
                   </div>
                 </div>
-                <div className="p-4 space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Capacite</span>
-                    <span className="font-semibold text-gray-900">{room.capacity} places</span>
+                <div style={{ padding: "16px 18px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px" }}>
+                    <span style={{ color: "var(--text-muted)" }}>Capacite</span>
+                    <span style={{ fontWeight: 600, color: "var(--text)" }}>{room.capacity} places</span>
                   </div>
                   {room.building && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Batiment</span>
-                      <span className="font-medium text-gray-700">{room.building}{room.floor ? `, ${room.floor}` : ""}</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px" }}>
+                      <span style={{ color: "var(--text-muted)" }}>Batiment</span>
+                      <span style={{ fontWeight: 500, color: "var(--text-secondary)" }}>{room.building}{room.floor ? `, ${room.floor}` : ""}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-3 pt-1">
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                     {room.hasProjector && (
-                      <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                        <Projector className="w-3 h-3" />Projecteur
-                      </div>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#2563eb", background: "#eff6ff", padding: "3px 8px", borderRadius: "20px" }}>
+                        <Projector style={{ width: "12px", height: "12px" }} />Projecteur
+                      </span>
                     )}
                     {room.hasComputers && (
-                      <div className="flex items-center gap-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
-                        <Monitor className="w-3 h-3" />Ordinateurs
-                      </div>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#7c3aed", background: "#f5f3ff", padding: "3px 8px", borderRadius: "20px" }}>
+                        <Monitor style={{ width: "12px", height: "12px" }} />Ordinateurs
+                      </span>
                     )}
                   </div>
-                  <div className="flex items-center justify-between text-sm border-t pt-3">
-                    <span className="text-gray-500">{room._count.schedules} cours planifies</span>
-                    <span className="text-gray-500">{room._count.equipment} equip.</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "var(--text-muted)", borderTop: "1px solid var(--border-muted)", paddingTop: "10px" }}>
+                    <span>{room._count.schedules} cours planifies</span>
+                    <span>{room._count.equipment} equip.</span>
                   </div>
-                  <div className="flex gap-2 pt-1">
-                    <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={() => openEditRoom(room)}>
-                      <Pencil className="w-3 h-3 mr-1" />Modifier
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1 text-xs text-red-600 hover:text-red-700" onClick={() => handleDeleteRoom(room)}>
-                      <Trash2 className="w-3 h-3 mr-1" />Supprimer
-                    </Button>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button onClick={() => openEditRoom(room)} style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "12px", fontWeight: 600, padding: "7px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}>
+                      <Pencil style={{ width: "12px", height: "12px" }} />Modifier
+                    </button>
+                    <button onClick={() => handleDeleteRoom(room)} style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "4px", fontSize: "12px", fontWeight: 600, padding: "7px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>
+                      <Trash2 style={{ width: "12px", height: "12px" }} />Supprimer
+                    </button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Equipements */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Inventaire des equipements ({equipment.length})</h2>
-          <Button size="sm" className="bg-[#B91C2F] hover:bg-[#9b1727] text-white" onClick={openAddEq}>
-            <Plus className="w-4 h-4 mr-1" />Ajouter un equipement
-          </Button>
-        </div>
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead>Code</TableHead>
-                  <TableHead>Equipement</TableHead>
-                  <TableHead>Categorie</TableHead>
-                  <TableHead>Salle</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Prochain entretien</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {equipment.map((eq) => {
-                  const maintenanceOverdue = eq.nextMaintenanceDate && new Date(eq.nextMaintenanceDate) < now;
+      <Panel
+        title={`Inventaire des equipements (${equipment.length})`}
+        icon={<Monitor style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}
+        action={<PrimaryButton onClick={openAddEq}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un equipement</PrimaryButton>}
+      >
+        {equipment.length === 0 ? (
+          <EmptyState icon={<Monitor style={{ width: "24px", height: "24px" }} />} message="Aucun equipement enregistre." />
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "var(--bg-muted)" }}>
+                  <th style={th}>Code</th>
+                  <th style={th}>Equipement</th>
+                  <th style={th}>Categorie</th>
+                  <th style={th}>Salle</th>
+                  <th style={th}>Statut</th>
+                  <th style={th}>Prochain entretien</th>
+                  <th style={{ ...th, textAlign: "right" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {equipment.map((eq, i) => {
+                  const overdue = eq.nextMaintenanceDate && new Date(eq.nextMaintenanceDate) < now;
                   return (
-                    <TableRow key={eq.id} className={maintenanceOverdue ? "bg-orange-50/40" : ""}>
-                      <TableCell className="font-mono text-xs text-gray-500">{eq.code}</TableCell>
-                      <TableCell>
-                        <div className="font-medium text-sm text-gray-900">{eq.name}</div>
-                        {eq.brand && <div className="text-xs text-gray-400">{eq.brand}</div>}
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{eq.category}</span>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-600">{eq.room?.name ?? <span className="text-gray-300">-</span>}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(eq.status)}>{getStatusLabel(eq.status)}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className={`text-sm ${maintenanceOverdue ? "text-orange-600 font-medium" : "text-gray-500"}`}>
-                          {eq.nextMaintenanceDate ? formatDate(eq.nextMaintenanceDate) : <span className="text-gray-300">-</span>}
-                          {maintenanceOverdue && " !"}
+                    <tr key={eq.id} className="row-hover" style={{ borderBottom: i < equipment.length - 1 ? "1px solid var(--border-muted)" : "none", background: overdue ? "var(--red-bg)" : "transparent" }}>
+                      <td style={{ ...td, fontFamily: "monospace", fontSize: "11px", color: "var(--text-muted)" }}>{eq.code}</td>
+                      <td style={td}>
+                        <div style={{ fontWeight: 600, color: "var(--text)" }}>{eq.name}</div>
+                        {eq.brand && <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{eq.brand}</div>}
+                      </td>
+                      <td style={td}>
+                        <span style={{ fontSize: "11px", background: "var(--bg-muted)", color: "var(--text-secondary)", padding: "2px 8px", borderRadius: "20px" }}>{eq.category}</span>
+                      </td>
+                      <td style={{ ...td, color: "var(--text-secondary)" }}>{eq.room?.name ?? <span style={{ color: "var(--text-muted)" }}>,</span>}</td>
+                      <td style={td}><StatusBadge label={getStatusLabel(eq.status)} color={getStatusHex(eq.status)} /></td>
+                      <td style={td}>
+                        <span style={{ fontSize: "12px", color: overdue ? "#d97706" : "var(--text-muted)", fontWeight: overdue ? 600 : 400 }}>
+                          {eq.nextMaintenanceDate ? formatDate(eq.nextMaintenanceDate) : ","}{overdue && " !"}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex gap-1 justify-end">
-                          <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openEditEq(eq)}>Modifier</Button>
-                          <Button variant="outline" size="sm" className="text-xs h-7 text-red-600 hover:text-red-700" onClick={() => handleDeleteEq(eq)}>Supprimer</Button>
+                      </td>
+                      <td style={{ ...td, textAlign: "right" }}>
+                        <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                          <button onClick={() => openEditEq(eq)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}>Modifier</button>
+                          <button onClick={() => handleDeleteEq(eq)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Supprimer</button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
 
       {/* Room Modal */}
       {showRoomModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowRoomModal(false)}>
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 mb-5">{editingRoom ? "Modifier la salle" : "Ajouter une salle"}</h2>
+          <div style={{ background: "var(--bg-card)", borderRadius: "16px", boxShadow: "0 24px 80px rgba(0,0,0,0.3)", width: "100%", maxWidth: "32rem", padding: "24px" }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text)", marginBottom: "20px" }}>{editingRoom ? "Modifier la salle" : "Ajouter une salle"}</h2>
             <form onSubmit={handleRoomSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -442,15 +395,15 @@ export default function LogistiquePage() {
               </div>
               <div className="flex gap-6">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={roomForm.hasProjector} onChange={(e) => setRoomForm((f) => ({ ...f, hasProjector: e.target.checked }))} className="rounded" />
-                  <span className="text-sm text-gray-700">Projecteur</span>
+                  <input type="checkbox" checked={roomForm.hasProjector} onChange={(e) => setRoomForm((f) => ({ ...f, hasProjector: e.target.checked }))} className="accent-[#B91C2F]" />
+                  <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Projecteur</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={roomForm.hasComputers} onChange={(e) => setRoomForm((f) => ({ ...f, hasComputers: e.target.checked }))} className="rounded" />
-                  <span className="text-sm text-gray-700">Ordinateurs</span>
+                  <input type="checkbox" checked={roomForm.hasComputers} onChange={(e) => setRoomForm((f) => ({ ...f, hasComputers: e.target.checked }))} className="accent-[#B91C2F]" />
+                  <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Ordinateurs</span>
                 </label>
               </div>
-              {roomError && <p className="text-sm text-red-600">{roomError}</p>}
+              {roomError && <p style={{ fontSize: "13px", color: "#dc2626" }}>{roomError}</p>}
               <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" className="flex-1" onClick={() => setShowRoomModal(false)}>Annuler</Button>
                 <Button type="submit" className="flex-1 bg-[#B91C2F] hover:bg-[#9b1727] text-white" disabled={roomSubmitting}>
@@ -465,8 +418,8 @@ export default function LogistiquePage() {
       {/* Equipment Modal */}
       {showEqModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowEqModal(false)}>
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 mb-5">{editingEq ? "Modifier l'equipement" : "Ajouter un equipement"}</h2>
+          <div style={{ background: "var(--bg-card)", borderRadius: "16px", boxShadow: "0 24px 80px rgba(0,0,0,0.3)", width: "100%", maxWidth: "32rem", padding: "24px" }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text)", marginBottom: "20px" }}>{editingEq ? "Modifier l'equipement" : "Ajouter un equipement"}</h2>
             <form onSubmit={handleEqSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -488,7 +441,7 @@ export default function LogistiquePage() {
                   <Input id="eq-brand" value={eqForm.brand} onChange={(e) => setEqForm((f) => ({ ...f, brand: e.target.value }))} placeholder="Dell" />
                 </div>
                 <div>
-                  <Label htmlFor="eq-price">Prix d'achat (FCFA)</Label>
+                  <Label htmlFor="eq-price">Prix d&apos;achat (FCFA)</Label>
                   <Input id="eq-price" type="number" min={0} value={eqForm.purchasePrice} onChange={(e) => setEqForm((f) => ({ ...f, purchasePrice: e.target.value }))} placeholder="250000" />
                 </div>
               </div>
@@ -498,7 +451,7 @@ export default function LogistiquePage() {
                   <Select id="eq-room" value={eqForm.roomId} onChange={(e) => setEqForm((f) => ({ ...f, roomId: e.target.value }))}>
                     <option value="">Aucune salle</option>
                     {rooms.map((r) => (
-                      <option key={r.id} value={r.id}>{r.code} - {r.name}</option>
+                      <option key={r.id} value={r.id}>{r.code}, {r.name}</option>
                     ))}
                   </Select>
                 </div>
@@ -512,7 +465,7 @@ export default function LogistiquePage() {
                   </Select>
                 </div>
               </div>
-              {eqError && <p className="text-sm text-red-600">{eqError}</p>}
+              {eqError && <p style={{ fontSize: "13px", color: "#dc2626" }}>{eqError}</p>}
               <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" className="flex-1" onClick={() => setShowEqModal(false)}>Annuler</Button>
                 <Button type="submit" className="flex-1 bg-[#B91C2F] hover:bg-[#9b1727] text-white" disabled={eqSubmitting}>
