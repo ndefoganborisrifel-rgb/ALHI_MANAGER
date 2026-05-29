@@ -139,22 +139,27 @@ export default function PedagogiePage() {
   useEffect(() => { loadData(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Detection des collisions : meme jour, meme creneau, meme semestre.
-  // On NE compte PAS comme collision les creneaux mutualises (meme matiere
-  // partagee par plusieurs filieres) : ils partagent un sharedGroupId.
+  // Regles d exemption (pas une vraie collision) :
+  //   1. sharedGroupId identique       : creneaux mutualises crees ensemble
+  //   2. courseAssignmentId identique  : meme affectation cours/prof, plusieurs filieres
+  //      (couvre les anciens creneaux crees avant le champ sharedGroupId)
   const collisions = new Set<string>();
   for (let i = 0; i < schedules.length; i++) {
     for (let j = i + 1; j < schedules.length; j++) {
       const a = schedules[i], b = schedules[j];
       if (a.dayOfWeek !== b.dayOfWeek || a.startTime !== b.startTime || a.semester !== b.semester) continue;
-      // Creneaux mutualises (meme cours commun) : ce n'est pas une collision
+      // Meme groupe mutualise (nouveau systeme)
       if (a.sharedGroupId && a.sharedGroupId === b.sharedGroupId) continue;
+      // Meme affectation cours/prof sur plusieurs filieres (ancien systeme ou mutualisé)
+      if (a.courseAssignmentId && a.courseAssignmentId === b.courseAssignmentId) continue;
       // Collision salle (physiquement impossible)
       if (a.roomId && a.roomId === b.roomId) { collisions.add(a.id); collisions.add(b.id); }
-      // Collision enseignant (deux cours differents en meme temps)
+      // Collision enseignant : seulement si les deux creneaux sont dans des filieres DIFFERENTES
+      // (meme filiere + meme prof = collision reelle gere par la regle filiere ci-dessous)
       const ta = a.courseAssignment?.teacher?.id;
       const tb = b.courseAssignment?.teacher?.id;
-      if (ta && ta === tb) { collisions.add(a.id); collisions.add(b.id); }
-      // Collision filiere (meme groupe d'etudiants, deux creneaux a la meme heure)
+      if (ta && ta === tb && a.filiereId !== b.filiereId) { collisions.add(a.id); collisions.add(b.id); }
+      // Collision filiere (meme groupe d etudiants, deux creneaux differents a la meme heure)
       if (a.filiereId === b.filiereId) { collisions.add(a.id); collisions.add(b.id); }
     }
   }

@@ -9,17 +9,14 @@ interface RouteParams {
 export async function PATCH(req: Request, { params }: RouteParams) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
-  const role = session.user.role;
-  if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(role)) {
+  if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
     return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
   }
 
   const { id } = await params;
   const body = await req.json() as Record<string, unknown>;
 
-  const adminFields = ["bulletinsPublished", "pvPublished", "coursesPublished", "name", "description", "totalFees"];
-  const teacherFields = ["pvPublished", "bulletinsPublished"];
-  const allowedFields = role === "ENSEIGNANT" ? teacherFields : adminFields;
+  const allowedFields = ["bulletinsPublished", "pvPublished", "coursesPublished", "name", "description", "totalFees"];
   const data: Record<string, unknown> = {};
   for (const key of allowedFields) {
     if (key in body) data[key] = body[key];
