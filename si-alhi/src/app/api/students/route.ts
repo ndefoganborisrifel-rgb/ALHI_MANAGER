@@ -27,8 +27,13 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const filiereId = searchParams.get("filiereId");
 
+  const noAccount = searchParams.get("noAccount") === "true";
+
   const students = await prisma.student.findMany({
-    where: filiereId ? { filiereId } : undefined,
+    where: {
+      ...(filiereId ? { filiereId } : {}),
+      ...(noAccount ? { userId: null } : {}),
+    },
     include: { filiere: true },
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
     take: 200,
