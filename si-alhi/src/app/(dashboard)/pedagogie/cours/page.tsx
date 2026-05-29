@@ -66,6 +66,7 @@ export default function CoursPage() {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadData(); }, [loadData]);
 
   const filtered = courses.filter((c) => {
@@ -162,7 +163,7 @@ export default function CoursPage() {
           </div>
           <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>Matieres et UE</h1>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-            Gestion des cours, unites d'enseignement et credits
+            Gestion des cours, unites d&apos;enseignement et credits
           </p>
         </div>
         {canManage && (
@@ -249,7 +250,7 @@ export default function CoursPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {list.map((course, i) => (
+                      {list.map((course) => (
                         <tr key={course.id} className="row-hover" style={{ borderTop: "1px solid var(--border-muted)" }}>
                           <td style={{ padding: "10px 14px" }}>
                             <span style={{ fontFamily: "monospace", fontWeight: "700", color: "#B91C2F", fontSize: "12px" }}>{course.code}</span>

@@ -51,7 +51,7 @@ export default async function DisciplinePage() {
           <AlertTriangle style={{ width: "18px", height: "18px", color: "#d97706", flexShrink: 0 }} />
           <div>
             <p style={{ fontSize: "13px", color: "#b45309", fontWeight: 600 }}>Aucun emargement enregistre</p>
-            <p style={{ fontSize: "12px", color: "#b45309", marginTop: "2px" }}>Cliquez sur "Saisir des absences" pour enregistrer les presences et absences des etudiants.</p>
+            <p style={{ fontSize: "12px", color: "#b45309", marginTop: "2px" }}>Cliquez sur Saisir des absences pour enregistrer les presences et absences des etudiants.</p>
           </div>
         </div>
       )}

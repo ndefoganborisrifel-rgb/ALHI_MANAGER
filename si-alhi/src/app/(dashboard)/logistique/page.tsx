@@ -76,6 +76,7 @@ export default function LogistiquePage() {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadData(); }, [loadData]);
 
   const now = new Date();

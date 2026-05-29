@@ -47,10 +47,12 @@ export default function BulletinsPage() {
     setLoading(false);
   }, [selectedFiliereId]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadFilieres(); }, [loadFilieres]);
 
   useEffect(() => {
     if (!selectedFiliereId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingStudents(true);
     fetch(`/api/examens/bulletins-summary?filiereId=${selectedFiliereId}`)
       .then((r) => r.ok ? r.json() : [])

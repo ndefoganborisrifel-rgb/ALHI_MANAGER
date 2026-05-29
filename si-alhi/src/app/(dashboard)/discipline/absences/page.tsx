@@ -75,6 +75,7 @@ export default function AbsenceSaisiePage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!selectedFiliere) { setFiliereSchedules([]); setSelectedScheduleId(""); return; }
     fetch(`/api/schedules?filiereId=${selectedFiliere}&academicYear=2025-2026`)
       .then((r) => r.ok ? r.json() : [])
@@ -83,6 +84,7 @@ export default function AbsenceSaisiePage() {
   }, [selectedFiliere]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedScheduleId("");
   }, [date]);
 

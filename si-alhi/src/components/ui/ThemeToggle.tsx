@@ -6,6 +6,9 @@ export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
+    // Synchronise l'etat avec la classe appliquee par le script inline du layout,
+    // une fois l'hydratation terminee. Lecture unique d'un etat externe (le DOM).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDark(document.documentElement.classList.contains("dark"));
   }, []);
 
@@ -13,7 +16,7 @@ export function ThemeToggle() {
     const html = document.documentElement;
     const nowDark = html.classList.toggle("dark");
     setIsDark(nowDark);
-    try { localStorage.setItem("alhi-theme", nowDark ? "dark" : "light"); } catch(e) {}
+    try { localStorage.setItem("alhi-theme", nowDark ? "dark" : "light"); } catch { /* localStorage indisponible */ }
   }
 
   return (

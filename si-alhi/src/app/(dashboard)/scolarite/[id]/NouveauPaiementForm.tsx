@@ -15,7 +15,7 @@ interface Props {
   balance: number;
 }
 
-export function NouveauPaiementForm({ studentId, studentName, balance }: Props) {
+export function NouveauPaiementForm({ studentId, balance }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
