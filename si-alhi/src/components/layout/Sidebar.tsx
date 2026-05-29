@@ -1,11 +1,11 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, GraduationCap, CreditCard, Calendar,
   BookOpen, ClipboardList, Package, Briefcase, UserCheck,
-  Settings, ChevronLeft, ChevronRight, UserPlus, BookMarked
+  Settings, ChevronLeft, ChevronRight, UserPlus, BookMarked, MessageSquare
 } from "lucide-react";
 
 interface NavItem {
@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
   { href: "/scolarite", label: "Scolarite", icon: CreditCard, roles: ["ADMIN", "SCOLARITE"] },
   { href: "/pedagogie", label: "Pedagogie", icon: Calendar, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT"] },
   { href: "/pedagogie/cours", label: "Matieres", icon: BookMarked, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
-  { href: "/pedagogie/matieres", label: "Mes Matieres", icon: BookMarked, roles: ["ETUDIANT", "PARENT"] },
+  { href: "/pedagogie/matieres", label: "Mes matieres", icon: BookMarked, roles: ["ETUDIANT", "PARENT"] },
   { href: "/examens", label: "Examens et Notes", icon: BookOpen, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { href: "/discipline", label: "Discipline", icon: ClipboardList, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { href: "/logistique", label: "Logistique", icon: Package, roles: ["ADMIN"] },
@@ -29,6 +29,7 @@ const navItems: NavItem[] = [
   { href: "/rh", label: "RH et Vacations", icon: UserCheck, roles: ["ADMIN", "ENSEIGNANT"] },
   { href: "/parent", label: "Espace Parent", icon: GraduationCap, roles: ["PARENT"] },
   { href: "/users", label: "Utilisateurs", icon: Users, roles: ["ADMIN"] },
+  { href: "/messages", label: "Messagerie", icon: MessageSquare, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
 ];
 
 interface SidebarProps {
@@ -42,6 +43,18 @@ interface SidebarProps {
 export function Sidebar({ userRole, collapsed, onToggle, mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const filteredItems = navItems.filter((item) => item.roles.includes(userRole));
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    const fetchUnread = () => {
+      fetch("/api/messages").then((r) => r.ok ? r.json() : []).then((convs: Array<{ unread: number }>) => {
+        setUnreadMessages(convs.reduce((sum: number, c) => sum + (c.unread ?? 0), 0));
+      }).catch(() => {});
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Close sidebar on navigation (mobile)
   useEffect(() => {
@@ -141,8 +154,22 @@ export function Sidebar({ userRole, collapsed, onToggle, mobileOpen, onMobileClo
               }}
               className={!isActive ? "hover:!bg-white/10 hover:!text-white" : ""}
             >
-              <Icon className="w-[18px] h-[18px] shrink-0" />
-              {!collapsed && <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+              <span style={{ position: "relative", flexShrink: 0 }}>
+                <Icon className="w-[18px] h-[18px]" />
+                {item.href === "/messages" && unreadMessages > 0 && (
+                  <span style={{ position: "absolute", top: "-5px", right: "-5px", width: "14px", height: "14px", borderRadius: "50%", background: "#B91C2F", color: "white", fontSize: "8px", fontWeight: "800", display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #1A1A1A" }}>
+                    {unreadMessages > 9 ? "9+" : unreadMessages}
+                  </span>
+                )}
+              </span>
+              {!collapsed && (
+                <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{item.label}</span>
+              )}
+              {!collapsed && item.href === "/messages" && unreadMessages > 0 && (
+                <span style={{ background: "#B91C2F", color: "white", borderRadius: "20px", fontSize: "9px", fontWeight: "800", padding: "1px 5px", flexShrink: 0 }}>
+                  {unreadMessages}
+                </span>
+              )}
             </Link>
           );
         })}

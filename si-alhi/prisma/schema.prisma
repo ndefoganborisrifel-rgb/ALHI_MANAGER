@@ -127,10 +127,12 @@ model User {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
-  student       Student?
-  teacher       Teacher?
-  parent        Parent?
-  notifications Notification[]
+  student                  Student?
+  teacher                  Teacher?
+  parent                   Parent?
+  notifications            Notification[]
+  conversationParticipants ConversationParticipant[]
+  sentMessages             Message[]                 @relation("MessageSender")
 }
 
 model AcademicYear {
@@ -196,19 +198,21 @@ model UE {
 }
 
 model Course {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  name        String
-  description String?
-  credits     Int
-  totalHours  Int
-  filiereId   String
-  semester    Int
-  ueCode      String
-  ueName      String
-  ueId        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  code                  String   @unique
+  name                  String
+  description           String?
+  credits               Int
+  totalHours            Int
+  filiereId             String
+  semester              Int
+  ueCode                String
+  ueName                String
+  ueId                  String?
+  pvNormalePublished    Boolean  @default(false)
+  pvRattrapagePublished Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   filiere     Filiere           @relation(fields: [filiereId], references: [id])
   ue          UE?               @relation(fields: [ueId], references: [id])
@@ -498,4 +502,36 @@ model Notification {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String    @id @default(cuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("MessageSender", fields: [senderId], references: [id])
 }

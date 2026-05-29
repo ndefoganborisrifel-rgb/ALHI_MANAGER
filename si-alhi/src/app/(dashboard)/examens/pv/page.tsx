@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Printer } from "lucide-react";
-import { PvPublishToggle } from "@/components/ui/PvPublishToggle";
+import { CoursePvToggle } from "@/components/ui/CoursePvToggle";
 import { PageHeader } from "@/components/ui/PageUI";
 
 const ALLOWED_ROLES = ["ADMIN", "SCOLARITE", "ENSEIGNANT"] as const;
@@ -36,10 +36,14 @@ export default async function PVListPage() {
     <div className="space-y-6" style={{ maxWidth: "1200px" }}>
       <PageHeader
         title="Proces-Verbaux de Notes"
-        subtitle={`Generez et imprimez les PV officiels par cours. Annee ${currentYear}.`}
+        subtitle={`Generez et publiez les PV officiels par cours. Annee ${currentYear}.`}
         backHref="/examens"
         icon={<FileText style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />
+
+      <div style={{ padding: "12px 16px", background: "var(--bg-card)", borderRadius: "10px", border: "1px solid var(--border)", fontSize: "12px", color: "var(--text-muted)" }}>
+        Utilisez les boutons <strong style={{ color: "var(--text)" }}>Publier</strong> pour rendre les notes visibles aux etudiants par cours et par session. Les boutons <strong style={{ color: "var(--text)" }}>PV Normale/Rattrapage</strong> ouvrent la version imprimable.
+      </div>
 
       {filieres.length === 0 && (
         <Card>
@@ -67,16 +71,9 @@ export default async function PVListPage() {
                 {filiere.code}
               </span>
               {filiere.name}
-              <div className="ml-auto flex items-center gap-3">
-                <PvPublishToggle
-                  filiereId={filiere.id}
-                  initialPublished={filiere.pvPublished}
-                  filiereName={filiere.name}
-                />
-                <span className="text-xs font-normal text-gray-400">
-                  {filiere.courses.length} cours
-                </span>
-              </div>
+              <span className="ml-auto text-xs font-normal text-gray-400">
+                {filiere.courses.length} cours
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -89,21 +86,12 @@ export default async function PVListPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-100 bg-gray-50">
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Code
-                      </th>
-                      <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Cours
-                      </th>
-                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Sem.
-                      </th>
-                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Cred.
-                      </th>
-                      <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
+                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Code</th>
+                      <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cours</th>
+                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Sem.</th>
+                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Normale</th>
+                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rattrapage</th>
+                      <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Imprimer</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -117,16 +105,23 @@ export default async function PVListPage() {
                         <td className="px-4 py-3">
                           <div className="font-medium text-gray-800">{course.name}</div>
                           {course.ue && (
-                            <div className="text-xs text-gray-400 mt-0.5">
-                              UE : {course.ue.code}
-                            </div>
+                            <div className="text-xs text-gray-400 mt-0.5">UE : {course.ue.code}</div>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-center text-gray-600">
-                          S{course.semester}
+                        <td className="px-4 py-3 text-center text-gray-600">S{course.semester}</td>
+                        <td className="px-4 py-3 text-center">
+                          <CoursePvToggle
+                            courseId={course.id}
+                            session="NORMALE"
+                            initialPublished={course.pvNormalePublished}
+                          />
                         </td>
-                        <td className="px-4 py-3 text-center text-gray-600">
-                          {course.credits}
+                        <td className="px-4 py-3 text-center">
+                          <CoursePvToggle
+                            courseId={course.id}
+                            session="RATTRAPAGE"
+                            initialPublished={course.pvRattrapagePublished}
+                          />
                         </td>
                         <td className="px-6 py-3">
                           <div className="flex items-center justify-end gap-2">

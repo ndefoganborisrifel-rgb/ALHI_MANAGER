@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { FileText, Printer, BookOpen, ToggleLeft, ToggleRight, ExternalLink } from "lucide-react";
+import { FileText, Printer, BookOpen, ToggleLeft, ToggleRight, ExternalLink, ArrowLeft } from "lucide-react";
 
 type Filiere = {
   id: string;
@@ -94,7 +94,11 @@ export default function BulletinsPage() {
   return (
     <div style={{ maxWidth: "1100px" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+      <div style={{ marginBottom: "20px" }}>
+        <Link href="/examens" style={{ display: "inline-flex", alignItems: "center", gap: "5px", color: "var(--text-muted)", fontSize: "12px", fontWeight: 600, textDecoration: "none", marginBottom: "10px" }}>
+          <ArrowLeft style={{ width: "13px", height: "13px" }} />Retour
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
         <div>
           <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>Bulletins de notes</h1>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Releves semestriels, Semestre 1, 2025-2026</p>
@@ -121,6 +125,7 @@ export default function BulletinsPage() {
             </button>
           </div>
         )}
+        </div>
       </div>
 
       {/* Publication notice */}

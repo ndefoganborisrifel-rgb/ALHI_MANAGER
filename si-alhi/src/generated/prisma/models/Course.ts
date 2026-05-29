@@ -50,6 +50,8 @@ export type CourseMinAggregateOutputType = {
   ueCode: string | null
   ueName: string | null
   ueId: string | null
+  pvNormalePublished: boolean | null
+  pvRattrapagePublished: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +68,8 @@ export type CourseMaxAggregateOutputType = {
   ueCode: string | null
   ueName: string | null
   ueId: string | null
+  pvNormalePublished: boolean | null
+  pvRattrapagePublished: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -82,6 +86,8 @@ export type CourseCountAggregateOutputType = {
   ueCode: number
   ueName: number
   ueId: number
+  pvNormalePublished: number
+  pvRattrapagePublished: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -112,6 +118,8 @@ export type CourseMinAggregateInputType = {
   ueCode?: true
   ueName?: true
   ueId?: true
+  pvNormalePublished?: true
+  pvRattrapagePublished?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -128,6 +136,8 @@ export type CourseMaxAggregateInputType = {
   ueCode?: true
   ueName?: true
   ueId?: true
+  pvNormalePublished?: true
+  pvRattrapagePublished?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +154,8 @@ export type CourseCountAggregateInputType = {
   ueCode?: true
   ueName?: true
   ueId?: true
+  pvNormalePublished?: true
+  pvRattrapagePublished?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -247,6 +259,8 @@ export type CourseGroupByOutputType = {
   ueCode: string
   ueName: string
   ueId: string | null
+  pvNormalePublished: boolean
+  pvRattrapagePublished: boolean
   createdAt: Date
   updatedAt: Date
   _count: CourseCountAggregateOutputType | null
@@ -286,6 +300,8 @@ export type CourseWhereInput = {
   ueCode?: Prisma.StringFilter<"Course"> | string
   ueName?: Prisma.StringFilter<"Course"> | string
   ueId?: Prisma.StringNullableFilter<"Course"> | string | null
+  pvNormalePublished?: Prisma.BoolFilter<"Course"> | boolean
+  pvRattrapagePublished?: Prisma.BoolFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   filiere?: Prisma.XOR<Prisma.FiliereScalarRelationFilter, Prisma.FiliereWhereInput>
@@ -307,6 +323,8 @@ export type CourseOrderByWithRelationInput = {
   ueCode?: Prisma.SortOrder
   ueName?: Prisma.SortOrder
   ueId?: Prisma.SortOrderInput | Prisma.SortOrder
+  pvNormalePublished?: Prisma.SortOrder
+  pvRattrapagePublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   filiere?: Prisma.FiliereOrderByWithRelationInput
@@ -331,6 +349,8 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   ueCode?: Prisma.StringFilter<"Course"> | string
   ueName?: Prisma.StringFilter<"Course"> | string
   ueId?: Prisma.StringNullableFilter<"Course"> | string | null
+  pvNormalePublished?: Prisma.BoolFilter<"Course"> | boolean
+  pvRattrapagePublished?: Prisma.BoolFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   filiere?: Prisma.XOR<Prisma.FiliereScalarRelationFilter, Prisma.FiliereWhereInput>
@@ -352,6 +372,8 @@ export type CourseOrderByWithAggregationInput = {
   ueCode?: Prisma.SortOrder
   ueName?: Prisma.SortOrder
   ueId?: Prisma.SortOrderInput | Prisma.SortOrder
+  pvNormalePublished?: Prisma.SortOrder
+  pvRattrapagePublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CourseCountOrderByAggregateInput
@@ -376,6 +398,8 @@ export type CourseScalarWhereWithAggregatesInput = {
   ueCode?: Prisma.StringWithAggregatesFilter<"Course"> | string
   ueName?: Prisma.StringWithAggregatesFilter<"Course"> | string
   ueId?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  pvNormalePublished?: Prisma.BoolWithAggregatesFilter<"Course"> | boolean
+  pvRattrapagePublished?: Prisma.BoolWithAggregatesFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
 }
@@ -390,6 +414,8 @@ export type CourseCreateInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   filiere: Prisma.FiliereCreateNestedOneWithoutCoursesInput
@@ -411,6 +437,8 @@ export type CourseUncheckedCreateInput = {
   ueCode: string
   ueName: string
   ueId?: string | null
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   assignments?: Prisma.CourseAssignmentUncheckedCreateNestedManyWithoutCourseInput
@@ -428,6 +456,8 @@ export type CourseUpdateInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   filiere?: Prisma.FiliereUpdateOneRequiredWithoutCoursesNestedInput
@@ -449,6 +479,8 @@ export type CourseUncheckedUpdateInput = {
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
   ueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignments?: Prisma.CourseAssignmentUncheckedUpdateManyWithoutCourseNestedInput
@@ -468,6 +500,8 @@ export type CourseCreateManyInput = {
   ueCode: string
   ueName: string
   ueId?: string | null
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -482,6 +516,8 @@ export type CourseUpdateManyMutationInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -498,6 +534,8 @@ export type CourseUncheckedUpdateManyInput = {
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
   ueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -524,6 +562,8 @@ export type CourseCountOrderByAggregateInput = {
   ueCode?: Prisma.SortOrder
   ueName?: Prisma.SortOrder
   ueId?: Prisma.SortOrder
+  pvNormalePublished?: Prisma.SortOrder
+  pvRattrapagePublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -546,6 +586,8 @@ export type CourseMaxOrderByAggregateInput = {
   ueCode?: Prisma.SortOrder
   ueName?: Prisma.SortOrder
   ueId?: Prisma.SortOrder
+  pvNormalePublished?: Prisma.SortOrder
+  pvRattrapagePublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -562,6 +604,8 @@ export type CourseMinOrderByAggregateInput = {
   ueCode?: Prisma.SortOrder
   ueName?: Prisma.SortOrder
   ueId?: Prisma.SortOrder
+  pvNormalePublished?: Prisma.SortOrder
+  pvRattrapagePublished?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -713,6 +757,8 @@ export type CourseCreateWithoutFiliereInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   ue?: Prisma.UECreateNestedOneWithoutCoursesInput
@@ -732,6 +778,8 @@ export type CourseUncheckedCreateWithoutFiliereInput = {
   ueCode: string
   ueName: string
   ueId?: string | null
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   assignments?: Prisma.CourseAssignmentUncheckedCreateNestedManyWithoutCourseInput
@@ -779,6 +827,8 @@ export type CourseScalarWhereInput = {
   ueCode?: Prisma.StringFilter<"Course"> | string
   ueName?: Prisma.StringFilter<"Course"> | string
   ueId?: Prisma.StringNullableFilter<"Course"> | string | null
+  pvNormalePublished?: Prisma.BoolFilter<"Course"> | boolean
+  pvRattrapagePublished?: Prisma.BoolFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
 }
@@ -793,6 +843,8 @@ export type CourseCreateWithoutUeInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   filiere: Prisma.FiliereCreateNestedOneWithoutCoursesInput
@@ -812,6 +864,8 @@ export type CourseUncheckedCreateWithoutUeInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   assignments?: Prisma.CourseAssignmentUncheckedCreateNestedManyWithoutCourseInput
@@ -854,6 +908,8 @@ export type CourseCreateWithoutCourseFilieresInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   filiere: Prisma.FiliereCreateNestedOneWithoutCoursesInput
@@ -874,6 +930,8 @@ export type CourseUncheckedCreateWithoutCourseFilieresInput = {
   ueCode: string
   ueName: string
   ueId?: string | null
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   assignments?: Prisma.CourseAssignmentUncheckedCreateNestedManyWithoutCourseInput
@@ -906,6 +964,8 @@ export type CourseUpdateWithoutCourseFilieresInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   filiere?: Prisma.FiliereUpdateOneRequiredWithoutCoursesNestedInput
@@ -926,6 +986,8 @@ export type CourseUncheckedUpdateWithoutCourseFilieresInput = {
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
   ueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignments?: Prisma.CourseAssignmentUncheckedUpdateManyWithoutCourseNestedInput
@@ -942,6 +1004,8 @@ export type CourseCreateWithoutAssignmentsInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   filiere: Prisma.FiliereCreateNestedOneWithoutCoursesInput
@@ -962,6 +1026,8 @@ export type CourseUncheckedCreateWithoutAssignmentsInput = {
   ueCode: string
   ueName: string
   ueId?: string | null
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   grades?: Prisma.GradeUncheckedCreateNestedManyWithoutCourseInput
@@ -994,6 +1060,8 @@ export type CourseUpdateWithoutAssignmentsInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   filiere?: Prisma.FiliereUpdateOneRequiredWithoutCoursesNestedInput
@@ -1014,6 +1082,8 @@ export type CourseUncheckedUpdateWithoutAssignmentsInput = {
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
   ueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   grades?: Prisma.GradeUncheckedUpdateManyWithoutCourseNestedInput
@@ -1030,6 +1100,8 @@ export type CourseCreateWithoutGradesInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   filiere: Prisma.FiliereCreateNestedOneWithoutCoursesInput
@@ -1050,6 +1122,8 @@ export type CourseUncheckedCreateWithoutGradesInput = {
   ueCode: string
   ueName: string
   ueId?: string | null
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   assignments?: Prisma.CourseAssignmentUncheckedCreateNestedManyWithoutCourseInput
@@ -1082,6 +1156,8 @@ export type CourseUpdateWithoutGradesInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   filiere?: Prisma.FiliereUpdateOneRequiredWithoutCoursesNestedInput
@@ -1102,6 +1178,8 @@ export type CourseUncheckedUpdateWithoutGradesInput = {
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
   ueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignments?: Prisma.CourseAssignmentUncheckedUpdateManyWithoutCourseNestedInput
@@ -1119,6 +1197,8 @@ export type CourseCreateManyFiliereInput = {
   ueCode: string
   ueName: string
   ueId?: string | null
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1133,6 +1213,8 @@ export type CourseUpdateWithoutFiliereInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ue?: Prisma.UEUpdateOneWithoutCoursesNestedInput
@@ -1152,6 +1234,8 @@ export type CourseUncheckedUpdateWithoutFiliereInput = {
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
   ueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignments?: Prisma.CourseAssignmentUncheckedUpdateManyWithoutCourseNestedInput
@@ -1170,6 +1254,8 @@ export type CourseUncheckedUpdateManyWithoutFiliereInput = {
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
   ueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1185,6 +1271,8 @@ export type CourseCreateManyUeInput = {
   semester: number
   ueCode: string
   ueName: string
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1199,6 +1287,8 @@ export type CourseUpdateWithoutUeInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   filiere?: Prisma.FiliereUpdateOneRequiredWithoutCoursesNestedInput
@@ -1218,6 +1308,8 @@ export type CourseUncheckedUpdateWithoutUeInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignments?: Prisma.CourseAssignmentUncheckedUpdateManyWithoutCourseNestedInput
@@ -1236,6 +1328,8 @@ export type CourseUncheckedUpdateManyWithoutUeInput = {
   semester?: Prisma.IntFieldUpdateOperationsInput | number
   ueCode?: Prisma.StringFieldUpdateOperationsInput | string
   ueName?: Prisma.StringFieldUpdateOperationsInput | string
+  pvNormalePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvRattrapagePublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1301,6 +1395,8 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   ueCode?: boolean
   ueName?: boolean
   ueId?: boolean
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   filiere?: boolean | Prisma.FiliereDefaultArgs<ExtArgs>
@@ -1323,6 +1419,8 @@ export type CourseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   ueCode?: boolean
   ueName?: boolean
   ueId?: boolean
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   filiere?: boolean | Prisma.FiliereDefaultArgs<ExtArgs>
@@ -1341,6 +1439,8 @@ export type CourseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   ueCode?: boolean
   ueName?: boolean
   ueId?: boolean
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   filiere?: boolean | Prisma.FiliereDefaultArgs<ExtArgs>
@@ -1359,11 +1459,13 @@ export type CourseSelectScalar = {
   ueCode?: boolean
   ueName?: boolean
   ueId?: boolean
+  pvNormalePublished?: boolean
+  pvRattrapagePublished?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "credits" | "totalHours" | "filiereId" | "semester" | "ueCode" | "ueName" | "ueId" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
+export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "credits" | "totalHours" | "filiereId" | "semester" | "ueCode" | "ueName" | "ueId" | "pvNormalePublished" | "pvRattrapagePublished" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
 export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   filiere?: boolean | Prisma.FiliereDefaultArgs<ExtArgs>
   ue?: boolean | Prisma.Course$ueArgs<ExtArgs>
@@ -1402,6 +1504,8 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     ueCode: string
     ueName: string
     ueId: string | null
+    pvNormalePublished: boolean
+    pvRattrapagePublished: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["course"]>
@@ -1843,6 +1947,8 @@ export interface CourseFieldRefs {
   readonly ueCode: Prisma.FieldRef<"Course", 'String'>
   readonly ueName: Prisma.FieldRef<"Course", 'String'>
   readonly ueId: Prisma.FieldRef<"Course", 'String'>
+  readonly pvNormalePublished: Prisma.FieldRef<"Course", 'Boolean'>
+  readonly pvRattrapagePublished: Prisma.FieldRef<"Course", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Course", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Course", 'DateTime'>
 }

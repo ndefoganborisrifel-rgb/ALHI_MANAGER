@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { User, KeyRound, Calendar, BookOpen, Settings, Shield, ArrowLeft } from "lucide-react";
+import { ChangePasswordForm } from "@/components/ui/ChangePasswordForm";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -45,7 +45,7 @@ export default async function SettingsPage() {
             <Settings className="w-5 h-5 text-[#B91C2F]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Parametres</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Parametres du compte</h1>
             <p className="text-gray-500 text-sm">Gerez votre compte et les preferences du systeme</p>
           </div>
         </div>
@@ -100,17 +100,12 @@ export default async function SettingsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <div>
-              <p className="text-sm font-medium text-gray-800">Mot de passe</p>
-              <p className="text-xs text-gray-500 mt-0.5">Changez votre mot de passe pour sécuriser votre compte</p>
+          <div style={{ background: "var(--bg-muted)", borderRadius: "10px", border: "1px solid var(--border)", padding: "16px" }}>
+            <div style={{ marginBottom: "12px" }}>
+              <p style={{ fontSize: "14px", fontWeight: "600", color: "var(--text)", marginBottom: "3px" }}>Mot de passe</p>
+              <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>Changez votre mot de passe pour securiser votre compte.</p>
             </div>
-            <Link href="/changer-mot-de-passe">
-              <Button variant="outline" size="sm">
-                <KeyRound className="w-3.5 h-3.5 mr-1.5" />
-                Changer
-              </Button>
-            </Link>
+            <ChangePasswordForm />
           </div>
         </CardContent>
       </Card>

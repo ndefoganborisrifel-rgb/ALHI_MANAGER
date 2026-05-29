@@ -21,26 +21,70 @@ export default async function ExamensPage() {
 
   type DelibResult = { average: number | null; mention: string; decision: string; credits: number };
 
+  type CourseGradeRow = {
+    courseId: string;
+    courseName: string;
+    courseCode: string;
+    semester: number;
+    credits: number;
+    session: string;
+    cc1: number | null;
+    cc2: number | null;
+    examScore: number | null;
+    noteFinal: number | null;
+    pvNormalePublished: boolean;
+    pvRattrapagePublished: boolean;
+  };
+
   // For students: find their own student record to link to their bulletin + PV
   let myStudent: { id: string; filiereId: string; bulletinsPublished: boolean } | null = null;
   let myDelib: DelibResult | null = null;
+  let myCourseGrades: CourseGradeRow[] = [];
   if (role === "ETUDIANT" && userId) {
     const s = await prisma.student.findFirst({
       where: { userId },
       select: {
         id: true, filiereId: true,
         filiere: { select: { bulletinsPublished: true, pvPublished: true } },
-        grades: { where: { academicYear: "2025-2026", semester: 1 }, include: { course: { select: { credits: true } } } },
+        grades: {
+          where: { academicYear: "2025-2026" },
+          include: {
+            course: {
+              select: { credits: true, name: true, code: true, semester: true, pvNormalePublished: true, pvRattrapagePublished: true },
+            },
+          },
+        },
       },
     });
     if (s) {
       myStudent = { id: s.id, filiereId: s.filiereId, bulletinsPublished: s.filiere.bulletinsPublished };
-      if (s.filiere.pvPublished && s.grades.length > 0) {
-        const gradeData = s.grades.map((g) => ({ average: g.noteFinal, credits: g.course.credits }));
+      const sem1Grades = s.grades.filter((g) => g.semester === 1);
+      if (s.filiere.pvPublished && sem1Grades.length > 0) {
+        const gradeData = sem1Grades.map((g) => ({ average: g.noteFinal, credits: g.course.credits }));
         const avg = calculateGeneralAverage(gradeData);
-        const credits = s.grades.filter((g) => (g.noteFinal ?? 0) >= 10).reduce((sum, g) => sum + g.course.credits, 0);
+        const credits = sem1Grades.filter((g) => (g.noteFinal ?? 0) >= 10).reduce((sum, g) => sum + g.course.credits, 0);
         myDelib = { average: avg, mention: getMention(avg), decision: avg !== null && avg >= 10 ? "Admis" : "Ajourné", credits };
       }
+      // Per-course grades visible when course PV is published
+      myCourseGrades = s.grades
+        .filter((g) =>
+          (g.session === "NORMALE" && g.course.pvNormalePublished) ||
+          (g.session === "RATTRAPAGE" && g.course.pvRattrapagePublished)
+        )
+        .map((g) => ({
+          courseId: g.courseId,
+          courseName: g.course.name,
+          courseCode: g.course.code,
+          semester: g.course.semester,
+          credits: g.course.credits,
+          session: g.session,
+          cc1: g.cc1,
+          cc2: g.cc2,
+          examScore: g.examScore,
+          noteFinal: g.noteFinal,
+          pvNormalePublished: g.course.pvNormalePublished,
+          pvRattrapagePublished: g.course.pvRattrapagePublished,
+        }));
     }
   }
 
@@ -77,7 +121,7 @@ export default async function ExamensPage() {
     ...(canEnterGrades ? [{ label: "Saisir les notes CC1, CC2, Examen", href: "/examens/saisie", icon: BookOpen, desc: "Remplir les notes des etudiants par cours" }] : []),
     ...(canManage ? [{ label: "Consulter et publier les bulletins", href: "/examens/bulletins", icon: FileText, desc: "Bulletins semestriels par etudiant" }] : []),
     ...(canEnterGrades ? [
-      { label: "PV de notes (CC et Examen)", href: "/examens/pv", icon: ClipboardList, desc: "Proces-verbal officiel des notes" },
+      { label: "PV de notes par cours", href: "/examens/pv", icon: ClipboardList, desc: "Publiez les PV par matiere et par session" },
     ] : []),
     ...(canManage ? [{ label: "PV de deliberation", href: "/examens/deliberation", icon: Award, desc: "Deliberation et decisions du jury" }] : []),
   ];
@@ -86,7 +130,7 @@ export default async function ExamensPage() {
     <div style={{ maxWidth: "1100px" }}>
       <PageHeader
         title="SI-Examens et Notes"
-        subtitle="Saisie des notes et generation des bulletins, 2025-2026"
+        subtitle="Saisie des notes et generation des bulletins, 2025-2026."
         backHref="/dashboard"
         icon={<BookOpen style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
         actions={canEnterGrades ? (
@@ -107,7 +151,7 @@ export default async function ExamensPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "18px" }}>
         <StatCard label="Notes saisies" value={totalGrades.toLocaleString("fr-FR")} icon={<BookOpen style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="annee 2025-2026" />
         <StatCard label="Etudiants actifs" value={students.toLocaleString("fr-FR")} icon={<GraduationCap style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="inscrits" />
-        <StatCard label="Filieres" value={filieres.length} icon={<Award style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="programmes" />
+        <StatCard label="Filieres" value={filieres.length} icon={<Award style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="filières" />
       </div>
 
       {/* Student bulletin card */}
@@ -133,6 +177,58 @@ export default async function ExamensPage() {
               Non publie
             </span>
           )}
+        </div>
+      )}
+
+      {/* Student per-course grades */}
+      {role === "ETUDIANT" && myCourseGrades.length > 0 && (
+        <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", marginBottom: "16px", overflow: "hidden" }}>
+          <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "8px" }}>
+            <GraduationCap style={{ width: "15px", height: "15px", color: "#B91C2F" }} />
+            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Mes notes publiees par cours</span>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ background: "var(--bg-muted)" }}>
+                  {["Matiere", "Session", "CC1", "CC2", "Examen", "Note finale", "Resultat"].map((h) => (
+                    <th key={h} style={{ padding: "8px 14px", textAlign: "left", fontWeight: "600", color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {myCourseGrades.map((g, i) => {
+                  const passed = (g.noteFinal ?? 0) >= 10;
+                  return (
+                    <tr key={`${g.courseId}-${g.session}`} style={{ borderTop: i > 0 ? "1px solid var(--border-muted)" : "none" }}>
+                      <td style={{ padding: "10px 14px" }}>
+                        <p style={{ fontWeight: "600", color: "var(--text)", fontSize: "12px" }}>{g.courseName}</p>
+                        <p style={{ fontSize: "10px", color: "var(--text-muted)", fontFamily: "monospace" }}>{g.courseCode} - S{g.semester}</p>
+                      </td>
+                      <td style={{ padding: "10px 14px" }}>
+                        <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px", background: g.session === "NORMALE" ? "#16a34a18" : "#7c3aed18", color: g.session === "NORMALE" ? "#16a34a" : "#7c3aed" }}>
+                          {g.session === "NORMALE" ? "Normale" : "Rattrapage"}
+                        </span>
+                      </td>
+                      <td style={{ padding: "10px 14px", color: "var(--text-secondary)", textAlign: "center" }}>{g.cc1 != null ? g.cc1.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>-</span>}</td>
+                      <td style={{ padding: "10px 14px", color: "var(--text-secondary)", textAlign: "center" }}>{g.cc2 != null ? g.cc2.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>-</span>}</td>
+                      <td style={{ padding: "10px 14px", color: "var(--text-secondary)", textAlign: "center" }}>{g.examScore != null ? g.examScore.toFixed(1) : <span style={{ color: "var(--text-muted)" }}>-</span>}</td>
+                      <td style={{ padding: "10px 14px", textAlign: "center" }}>
+                        {g.noteFinal != null ? (
+                          <span style={{ fontWeight: "800", fontSize: "14px", color: passed ? "#16a34a" : "#B91C2F" }}>{g.noteFinal.toFixed(2)}</span>
+                        ) : <span style={{ color: "var(--text-muted)" }}>-</span>}
+                      </td>
+                      <td style={{ padding: "10px 14px", textAlign: "center" }}>
+                        <span style={{ padding: "2px 9px", borderRadius: "20px", fontSize: "10px", fontWeight: "600", background: passed ? "#16a34a18" : "#B91C2F18", color: passed ? "#16a34a" : "#B91C2F" }}>
+                          {passed ? "Valide" : "Ajourne"}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

@@ -34,12 +34,14 @@ const updateSchema = z.object({
   ueName: z.string().min(1).optional(),
   filiereId: z.string().min(1).optional(),
   filiereIds: z.array(z.string().min(1)).optional(),
+  pvNormalePublished: z.boolean().optional(),
+  pvRattrapagePublished: z.boolean().optional(),
 }).partial();
 
 export async function PATCH(req: Request, { params }: RouteParams) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
-  if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
+  if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role)) {
     return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
   }
   const { id } = await params;

@@ -146,3 +146,18 @@ export type TeacherPayment = Prisma.TeacherPaymentModel
  * 
  */
 export type Notification = Prisma.NotificationModel
+/**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model ConversationParticipant
+ * 
+ */
+export type ConversationParticipant = Prisma.ConversationParticipantModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
