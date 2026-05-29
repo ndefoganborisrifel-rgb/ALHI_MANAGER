@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { href: "/scolarite", label: "Scolarite", icon: CreditCard, roles: ["ADMIN", "SCOLARITE"] },
   { href: "/pedagogie", label: "Pedagogie", icon: Calendar, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT"] },
   { href: "/pedagogie/cours", label: "Matieres", icon: BookMarked, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
+  { href: "/pedagogie/matieres", label: "Mes Matieres", icon: BookMarked, roles: ["ETUDIANT", "PARENT"] },
   { href: "/examens", label: "Examens et Notes", icon: BookOpen, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { href: "/discipline", label: "Discipline", icon: ClipboardList, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { href: "/logistique", label: "Logistique", icon: Package, roles: ["ADMIN"] },

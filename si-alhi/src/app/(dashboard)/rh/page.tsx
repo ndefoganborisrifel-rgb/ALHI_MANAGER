@@ -8,7 +8,7 @@ import { Select } from "@/components/ui/select";
 import { Plus, Users, UserCheck, UserX, Wallet, UserCog } from "lucide-react";
 import { PageHeader, StatCard, Panel, PrimaryButton, StatusBadge, EmptyState } from "@/components/ui/PageUI";
 import { formatCFA, getStatusLabel, getStatusHex } from "@/lib/utils";
-import { useCanManage } from "@/components/providers/RoleProvider";
+import { useCanManage, useRole } from "@/components/providers/RoleProvider";
 
 type Teacher = {
   id: string;
@@ -53,6 +53,8 @@ const td: React.CSSProperties = { padding: "10px 16px", fontSize: "13px", color:
 
 export default function RHPage() {
   const canManage = useCanManage();
+  const role = useRole();
+  const isTeacher = role === "ENSEIGNANT";
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [payments, setPayments] = useState<TeacherPayment[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -214,16 +216,16 @@ export default function RHPage() {
         icon={<UserCog style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${isTeacher ? 3 : 4}, 1fr)`, gap: "14px", marginBottom: "20px" }}>
         <StatCard label="Enseignants" value={teachers.length} icon={<Users style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="corps enseignant" />
         <StatCard label="Permanents" value={permanents} icon={<UserCheck style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="contrat fixe" />
         <StatCard label="Vacataires" value={vacataires} icon={<UserX style={{ width: "18px", height: "18px", color: "#7c3aed" }} />} color="#7c3aed" bg="#f5f3ff" sub="payes a l'heure" />
-        <StatCard label="Total vacations" value={formatCFA(totalPayments)} icon={<Wallet style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="cumul 2025-2026" />
+        {!isTeacher && <StatCard label="Total vacations" value={formatCFA(totalPayments)} icon={<Wallet style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="cumul 2025-2026" />}
       </div>
 
       <div style={{ display: "flex", gap: "4px", background: "var(--bg-muted)", borderRadius: "10px", padding: "4px", width: "fit-content", marginBottom: "16px" }}>
         <button onClick={() => setActiveTab("enseignants")} style={tabBtn(activeTab === "enseignants")}>Enseignants</button>
-        <button onClick={() => setActiveTab("vacations")} style={tabBtn(activeTab === "vacations")}>Vacations</button>
+        {!isTeacher && <button onClick={() => setActiveTab("vacations")} style={tabBtn(activeTab === "vacations")}>Vacations</button>}
       </div>
 
       {activeTab === "enseignants" && (
@@ -242,7 +244,7 @@ export default function RHPage() {
                     <th style={th}>Enseignant</th>
                     <th style={th}>Specialite</th>
                     <th style={th}>Type</th>
-                    <th style={th}>Taux horaire</th>
+                    {!isTeacher && <th style={th}>Taux horaire</th>}
                     <th style={th}>Cours assignes</th>
                     <th style={th}>Contact</th>
                     <th style={{ ...th, textAlign: "right" }}>Actions</th>
@@ -254,9 +256,11 @@ export default function RHPage() {
                       <td style={{ ...td, fontWeight: 600 }}>{teacher.firstName} {teacher.lastName}</td>
                       <td style={{ ...td, color: "var(--text-secondary)" }}>{teacher.speciality ?? <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Non renseigne</span>}</td>
                       <td style={td}><StatusBadge label={getStatusLabel(teacher.type)} color={getStatusHex(teacher.type)} dot={false} /></td>
-                      <td style={td}>
-                        {teacher.type === "VACATAIRE" ? <span style={{ fontWeight: 600 }}>{formatCFA(teacher.hourlyRate)}/h</span> : <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Fixe</span>}
-                      </td>
+                      {!isTeacher && (
+                        <td style={td}>
+                          {teacher.type === "VACATAIRE" ? <span style={{ fontWeight: 600 }}>{formatCFA(teacher.hourlyRate)}/h</span> : <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Fixe</span>}
+                        </td>
+                      )}
                       <td style={td}>
                         {teacher.assignments.length === 0 ? (
                           <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Aucune</span>
@@ -287,7 +291,7 @@ export default function RHPage() {
         </Panel>
       )}
 
-      {activeTab === "vacations" && (
+      {activeTab === "vacations" && !isTeacher && (
         <Panel
           title="Fiches de vacation"
           icon={<Wallet style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}

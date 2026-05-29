@@ -16,7 +16,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
   const { id } = await params;
   const body = await req.json() as Record<string, unknown>;
 
-  const allowedFields = ["bulletinsPublished", "pvPublished", "name", "description", "totalFees"];
+  const allowedFields = ["bulletinsPublished", "pvPublished", "coursesPublished", "name", "description", "totalFees"];
   const data: Record<string, unknown> = {};
   for (const key of allowedFields) {
     if (key in body) data[key] = body[key];
@@ -29,7 +29,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
   // Check current state before updating (for notifications)
   const currentFiliere = await prisma.filiere.findUnique({
     where: { id },
-    select: { name: true, bulletinsPublished: true, pvPublished: true },
+    select: { name: true, bulletinsPublished: true, pvPublished: true, coursesPublished: true },
   });
 
   const filiere = await prisma.filiere.update({ where: { id }, data });
@@ -44,10 +44,15 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     await sendNotifications(id, currentFiliere?.name ?? "la filiere", "pv");
   }
 
+  // Send notifications when coursesPublished becomes true
+  if (data.coursesPublished === true && !currentFiliere?.coursesPublished) {
+    await sendNotifications(id, currentFiliere?.name ?? "la filiere", "courses");
+  }
+
   return NextResponse.json(filiere);
 }
 
-async function sendNotifications(filiereId: string, filiereName: string, type: "bulletins" | "pv") {
+async function sendNotifications(filiereId: string, filiereName: string, type: "bulletins" | "pv" | "courses") {
   const students = await prisma.student.findMany({
     where: { filiereId, status: { in: ["ACTIF", "INSCRIT"] } },
     include: { parent: { include: { user: true } } },
@@ -59,8 +64,8 @@ async function sendNotifications(filiereId: string, filiereName: string, type: "
     distinct: ["teacherId"],
   });
 
-  const title = type === "bulletins" ? "Bulletins disponibles" : "PV de notes disponibles";
-  const studentLink = "/examens";
+  const title = type === "bulletins" ? "Bulletins disponibles" : type === "pv" ? "PV de notes disponibles" : "Matieres disponibles";
+  const studentLink = type === "courses" ? "/pedagogie/matieres" : "/examens";
   const teacherLink = type === "bulletins" ? "/examens/bulletins" : "/examens/pv";
 
   const notifications: { userId: string; title: string; message: string; type: string; link: string }[] = [];
@@ -69,15 +74,24 @@ async function sendNotifications(filiereId: string, filiereName: string, type: "
     if (!student.userId) continue;
     const msg = type === "bulletins"
       ? `Les bulletins de notes de ${filiereName} sont maintenant disponibles.`
-      : `Les PV de notes de ${filiereName} ont ete publies. Consultez vos resultats.`;
+      : type === "pv"
+      ? `Les PV de notes de ${filiereName} ont ete publies. Consultez vos resultats.`
+      : `La liste des matieres de ${filiereName} est maintenant disponible.`;
     notifications.push({ userId: student.userId, title, message: msg, type: "INFO", link: studentLink });
 
     if (student.parent?.userId) {
       const parentMsg = type === "bulletins"
         ? `Les bulletins de notes de ${filiereName} pour ${student.firstName} ${student.lastName} sont disponibles.`
-        : `Les PV de notes de ${filiereName} pour ${student.firstName} ${student.lastName} ont ete publies.`;
+        : type === "pv"
+        ? `Les PV de notes de ${filiereName} pour ${student.firstName} ${student.lastName} ont ete publies.`
+        : `La liste des matieres de ${filiereName} pour ${student.firstName} ${student.lastName} est disponible.`;
       notifications.push({ userId: student.parent.userId, title, message: parentMsg, type: "INFO", link: studentLink });
     }
+  }
+
+  if (type === "courses") {
+    if (notifications.length > 0) await prisma.notification.createMany({ data: notifications });
+    return;
   }
 
   for (const a of assignments) {
@@ -88,7 +102,5 @@ async function sendNotifications(filiereId: string, filiereName: string, type: "
     notifications.push({ userId: a.teacher.userId, title: teacherTitle, message: teacherMsg, type: "INFO", link: teacherLink });
   }
 
-  if (notifications.length > 0) {
-    await prisma.notification.createMany({ data: notifications });
-  }
+  if (notifications.length > 0) await prisma.notification.createMany({ data: notifications });
 }

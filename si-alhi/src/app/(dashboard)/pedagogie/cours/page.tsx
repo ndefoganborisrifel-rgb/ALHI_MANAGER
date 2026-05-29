@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Plus, Pencil, Trash2, X, BookOpen, Search, GraduationCap, ArrowLeft } from "lucide-react";
 import { useCanManage } from "@/components/providers/RoleProvider";
 
-type Filiere = { id: string; code: string; name: string };
+type Filiere = { id: string; code: string; name: string; coursesPublished?: boolean };
 type UE = { id: string; code: string; name: string };
 type Course = {
   id: string;
@@ -47,6 +47,7 @@ export default function CoursPage() {
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [publishLoading, setPublishLoading] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -128,6 +129,25 @@ export default function CoursPage() {
       await loadData();
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function togglePublish(filiere: Filiere) {
+    const willPublish = !filiere.coursesPublished;
+    const confirmMsg = willPublish
+      ? `Publier la liste des matieres de ${filiere.name} ? Les etudiants et parents pourront la consulter.`
+      : `Retirer la publication des matieres de ${filiere.name} ?`;
+    if (!confirm(confirmMsg)) return;
+    setPublishLoading(true);
+    try {
+      const res = await fetch(`/api/filieres/${filiere.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coursesPublished: willPublish }),
+      });
+      if (res.ok) await loadData();
+    } finally {
+      setPublishLoading(false);
     }
   }
 
@@ -221,6 +241,30 @@ export default function CoursPage() {
             <option key={f.id} value={f.id}>{f.code} - {f.name}</option>
           ))}
         </select>
+        {canManage && filterFiliereId && (() => {
+          const sel = filieres.find((f) => f.id === filterFiliereId);
+          if (!sel) return null;
+          return (
+            <button
+              onClick={() => togglePublish(sel)}
+              disabled={publishLoading}
+              style={{
+                padding: "8px 16px",
+                borderRadius: "8px",
+                fontSize: "12px",
+                fontWeight: "700",
+                border: "none",
+                cursor: publishLoading ? "not-allowed" : "pointer",
+                opacity: publishLoading ? 0.7 : 1,
+                background: sel.coursesPublished ? "#16a34a" : "#B91C2F",
+                color: "white",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {sel.coursesPublished ? "Matieres publiees" : "Publier les matieres"}
+            </button>
+          );
+        })()}
       </div>
 
       {loading ? (

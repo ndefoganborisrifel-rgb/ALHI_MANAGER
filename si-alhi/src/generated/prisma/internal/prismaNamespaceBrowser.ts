@@ -128,6 +128,7 @@ export const FiliereScalarFieldEnum = {
   responsableId: 'responsableId',
   bulletinsPublished: 'bulletinsPublished',
   pvPublished: 'pvPublished',
+  coursesPublished: 'coursesPublished',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
