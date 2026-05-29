@@ -226,7 +226,7 @@ export default function UsersPage() {
               <div>
                 <Label htmlFor="u-email">Email</Label>
                 <Input id="u-email" type="email" value={editForm.email} disabled className="bg-gray-50 text-gray-500" />
-                <p className="text-xs text-gray-400 mt-1">L'email ne peut pas etre modifie</p>
+                <p className="text-xs text-gray-400 mt-1">L&apos;email ne peut pas etre modifie</p>
               </div>
               <div>
                 <Label htmlFor="u-role">Role</Label>
@@ -268,7 +268,7 @@ export default function UsersPage() {
                 {passwordCopied ? <CheckCheck className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
               </Button>
             </div>
-            <p className="text-xs text-orange-600 mb-5">Communiquez ce mot de passe a l'utilisateur. Il devra le changer a la prochaine connexion.</p>
+            <p className="text-xs text-orange-600 mb-5">Communiquez ce mot de passe a l&apos;utilisateur. Il devra le changer a la prochaine connexion.</p>
             <Button className="w-full" onClick={() => setShowPasswordDialog(false)}>Fermer</Button>
           </div>
         </div>
