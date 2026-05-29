@@ -4,8 +4,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, KeyRound, Calendar, BookOpen, Settings, Shield, ArrowLeft } from "lucide-react";
+import { User, KeyRound, Calendar, BookOpen, Settings, Shield, ArrowLeft, Wrench } from "lucide-react";
 import { ChangePasswordForm } from "@/components/ui/ChangePasswordForm";
+import { MigrateSchedulesButton } from "@/components/ui/MigrateSchedulesButton";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -136,6 +137,19 @@ export default async function SettingsPage() {
                   En cours
                 </Badge>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Maintenance */}
+          <Card>
+            <CardHeader className="border-b border-gray-100">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Wrench className="w-4 h-4 text-[#B91C2F]" />
+                Maintenance
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <MigrateSchedulesButton />
             </CardContent>
           </Card>
 
