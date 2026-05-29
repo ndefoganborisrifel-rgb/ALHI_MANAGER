@@ -30,6 +30,10 @@ function AuthLoading() {
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (session?.user) redirect("/dashboard");
+  const mustChange = (session?.user as { mustChangePassword?: boolean } | undefined)?.mustChangePassword;
+  // Only send logged-in users away if they do not need to change their password.
+  // Users with mustChangePassword=true must reach /changer-mot-de-passe; redirecting
+  // them to /dashboard creates a loop with the middleware.
+  if (session?.user && !mustChange) redirect("/dashboard");
   return <Suspense fallback={<AuthLoading />}>{children}</Suspense>;
 }
