@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Users, GraduationCap, TrendingUp, AlertCircle, UserPlus, BookOpen, CreditCard, ArrowRight } from "lucide-react";
 import { formatCFA, getStatusLabel } from "@/lib/utils";
-import { SchoolLogo } from "@/components/ui/SchoolLogo";
 
 interface AdminDashboardProps {
   studentCount: number;
@@ -47,7 +46,8 @@ export function AdminDashboard({ studentCount, teacherCount, totalCollected, rec
         gap: "16px",
       }}>
         <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "180px", height: "180px", borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
-        <SchoolLogo size={48} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="ALHI" style={{ width: "48px", height: "48px", objectFit: "contain", filter: "brightness(0) invert(1)", flexShrink: 0 }} />
         <div>
           <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "11px", marginBottom: "3px", textTransform: "uppercase", letterSpacing: "1px" }}>
             Annee academique 2025-2026

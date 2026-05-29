@@ -62,26 +62,19 @@ export default function LoginPage() {
           <span style={{ fontSize: "13px", fontWeight: "700", letterSpacing: "1.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.95)" }}>SI-ALHI</span>
         </div>
 
-        {/* Center logo */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 2, gap: "18px" }}>
-          {/* Real ALI logo, transparent bg, rendered white to pop on red panel */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="ALI"
-            style={{ width: "240px", height: "240px", objectFit: "contain", filter: "brightness(0) invert(1)" }}
-          />
-
-          {/* Divider line */}
-          <div style={{ width: "60px", height: "1px", background: "rgba(255,255,255,0.35)" }} />
-
-          {/* Tagline */}
-          <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.92)", fontWeight: "500", marginBottom: "4px" }}>
-              Systeme d&apos;Information Academique
-            </p>
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)", fontStyle: "italic" }}>
-              Excellence et Leadership in Afrique Centrale
+        {/* Center: school name decorative */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 2, gap: "16px", textAlign: "center" }}>
+          <div style={{ fontSize: "52px", fontWeight: "900", color: "rgba(255,255,255,0.12)", letterSpacing: "-2px", lineHeight: 1, fontFamily: "Arial Black, Arial, sans-serif", userSelect: "none" }}>ALHI</div>
+          <div style={{ width: "48px", height: "2px", background: "rgba(255,255,255,0.25)", borderRadius: "2px" }} />
+          <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.90)", fontWeight: "700", letterSpacing: "0.5px" }}>
+            Africa Leadership<br />Higher Institute
+          </p>
+          <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.60)", fontStyle: "italic" }}>
+            Excellence et Leadership en Afrique Centrale
+          </p>
+          <div style={{ marginTop: "8px", padding: "8px 18px", border: "1px solid rgba(255,255,255,0.20)", borderRadius: "20px" }}>
+            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.70)", letterSpacing: "1.5px", textTransform: "uppercase" }}>
+              Systeme d&apos;Information
             </p>
           </div>
         </div>
@@ -112,19 +105,17 @@ export default function LoginPage() {
         minHeight: "100vh",
         position: "relative",
       }}>
-        {/* Mobile logo */}
-        <div className="login-mobile-logo" style={{ marginBottom: "28px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+        {/* Logo - toujours visible sur le panneau blanc */}
+        <div style={{ marginBottom: "24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="ALI" style={{ width: "90px", height: "90px", objectFit: "contain" }} />
-          <div>
-            <p style={{ fontSize: "13px", fontWeight: "800", color: "#B91C2F", textTransform: "uppercase", letterSpacing: "0.5px" }}>Africa Leadership Higher Institute</p>
-          </div>
+          <img src="/logo.png" alt="ALI" style={{ width: "80px", height: "80px", objectFit: "contain" }} />
+          <p style={{ fontSize: "11px", fontWeight: "700", color: "#B91C2F", textTransform: "uppercase", letterSpacing: "1px" }}>Africa Leadership Higher Institute</p>
         </div>
 
         <div style={{ width: "100%", maxWidth: "420px" }}>
           {/* Heading */}
           <div style={{ marginBottom: "32px" }}>
-            <h1 style={{ fontSize: "30px", fontWeight: "800", color: "#1A1A1A", marginBottom: "6px", letterSpacing: "-0.5px" }}>
+            <h1 style={{ fontSize: "28px", fontWeight: "800", color: "#1A1A1A", marginBottom: "6px", letterSpacing: "-0.5px" }}>
               Bienvenue
             </h1>
             <p style={{ fontSize: "14px", color: "#4b5563" }}>
