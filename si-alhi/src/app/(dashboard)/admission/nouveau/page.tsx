@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Loader2, UserPlus } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageUI";
 
 export default function NouvelAdmissionPage() {
   const router = useRouter();
@@ -57,13 +57,12 @@ export default function NouvelAdmissionPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href="/admission"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nouveau candidat</h1>
-          <p className="text-sm text-gray-500">Étape {step}/2</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Nouveau candidat"
+        subtitle={`Etape ${step}/2`}
+        backHref="/admission"
+        icon={<UserPlus style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {/* Steps indicator */}
       <div className="flex gap-2">

@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, BookOpen, PenLine, Info, Eye } from "lucide-react";
+import { BookOpen, PenLine, Info, Eye } from "lucide-react";
 import { getTeacherCourseIds } from "@/lib/authz";
+import { PageHeader } from "@/components/ui/PageUI";
 
 export default async function SaisieNotesPage() {
   const session = await auth();
@@ -51,20 +52,13 @@ export default async function SaisieNotesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Link href="/examens">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Retour
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Saisie des notes</h1>
-          <p className="text-gray-500 text-sm">Année académique 2025-2026</p>
-        </div>
-      </div>
+    <div className="space-y-6" style={{ maxWidth: "1200px" }}>
+      <PageHeader
+        title="Saisie des notes"
+        subtitle="Annee academique 2025-2026"
+        backHref="/examens"
+        icon={<PenLine style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {/* Info banner */}
       <Card className="border-blue-200 bg-blue-50">

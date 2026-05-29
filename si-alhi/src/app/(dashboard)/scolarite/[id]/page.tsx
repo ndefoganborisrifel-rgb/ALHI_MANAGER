@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCFA, formatDate, getStatusColor, getStatusLabel } from "@/lib/utils";
-import { ArrowLeft, Download } from "lucide-react";
+import { Download, CreditCard, CheckCircle, AlertCircle } from "lucide-react";
 import { NouveauPaiementForm } from "./NouveauPaiementForm";
+import { PageHeader, StatCard } from "@/components/ui/PageUI";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -32,36 +33,18 @@ export default async function ScolariteStudentPage({ params }: PageProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href="/scolarite"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button></Link>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">{student.lastName} {student.firstName}</h1>
-          <p className="text-sm text-gray-500">{student.matricule}, {student.filiere.name}</p>
-        </div>
-      </div>
+      <PageHeader
+        title={`${student.lastName} ${student.firstName}`}
+        subtitle={`${student.matricule}, ${student.filiere.name}`}
+        backHref="/scolarite"
+        icon={<CreditCard style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {/* Financial Summary */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="border-blue-200">
-          <CardContent className="p-4 text-center">
-            <p className="text-xs text-gray-500">Frais totaux</p>
-            <p className="text-xl font-bold text-blue-600">{formatCFA(student.filiere.totalFees)}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-green-200">
-          <CardContent className="p-4 text-center">
-            <p className="text-xs text-gray-500">Payé</p>
-            <p className="text-xl font-bold text-green-600">{formatCFA(totalPaid)}</p>
-          </CardContent>
-        </Card>
-        <Card className={`${balance > 0 ? "border-red-200" : "border-green-200"}`}>
-          <CardContent className="p-4 text-center">
-            <p className="text-xs text-gray-500">Solde restant</p>
-            <p className={`text-xl font-bold ${balance > 0 ? "text-red-600" : "text-green-600"}`}>
-              {balance <= 0 ? "Soldé ✓" : formatCFA(balance)}
-            </p>
-          </CardContent>
-        </Card>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px" }}>
+        <StatCard label="Frais totaux" value={formatCFA(student.filiere.totalFees)} icon={<CreditCard style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="scolarite annuelle" />
+        <StatCard label="Paye" value={formatCFA(totalPaid)} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="versements valides" />
+        <StatCard label="Solde restant" value={balance <= 0 ? "Solde" : formatCFA(balance)} icon={<AlertCircle style={{ width: "18px", height: "18px", color: balance > 0 ? "#dc2626" : "#16a34a" }} />} color={balance > 0 ? "#dc2626" : "#16a34a"} bg={balance > 0 ? "#fef2f2" : "#f0fdf4"} sub={balance > 0 ? "a regler" : "compte solde"} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

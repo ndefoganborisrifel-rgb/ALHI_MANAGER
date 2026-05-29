@@ -1,13 +1,12 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { calculateGeneralAverage, getMention } from "@/lib/grade-calculator";
-import { Award, Users, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
+import { Award, Users, CheckCircle, XCircle } from "lucide-react";
+import { PageHeader, StatCard } from "@/components/ui/PageUI";
 
 export default async function DeliberationPage() {
   const session = await auth();
@@ -110,53 +109,19 @@ export default async function DeliberationPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/examens">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Retour
-          </Button>
-        </Link>
-        <div className="h-5 w-px bg-gray-200" />
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Award className="w-6 h-6 text-[#B91C2F]" />
-            PV de Deliberation
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Semestre {SEMESTER}, Annee academique {ACADEMIC_YEAR}
-          </p>
-        </div>
-      </div>
+    <div className="space-y-8" style={{ maxWidth: "1200px" }}>
+      <PageHeader
+        title="PV de Deliberation"
+        subtitle={`Semestre ${SEMESTER}, Annee academique ${ACADEMIC_YEAR}`}
+        backHref="/examens"
+        icon={<Award style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {/* Global summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-5 text-center">
-            <Users className="w-5 h-5 text-blue-500 mx-auto mb-2" />
-            <p className="text-3xl font-bold text-blue-600">{totalAll}</p>
-            <p className="text-sm text-gray-500 mt-1">Étudiants délibérés</p>
-          </CardContent>
-        </Card>
-        <Card className="border-green-200">
-          <CardContent className="p-5 text-center">
-            <CheckCircle className="w-5 h-5 text-green-500 mx-auto mb-2" />
-            <p className="text-3xl font-bold text-green-600">{totalAdmis}</p>
-            <p className="text-sm text-gray-500 mt-1">Admis</p>
-            <p className="text-xs text-gray-400">
-              {totalAll > 0 ? Math.round((totalAdmis / totalAll) * 100) : 0}% taux de réussite
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-red-200">
-          <CardContent className="p-5 text-center">
-            <XCircle className="w-5 h-5 text-red-500 mx-auto mb-2" />
-            <p className="text-3xl font-bold text-red-600">{totalAjourne}</p>
-            <p className="text-sm text-gray-500 mt-1">Ajournés</p>
-          </CardContent>
-        </Card>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px" }}>
+        <StatCard label="Etudiants deliberes" value={totalAll} icon={<Users style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="toutes filieres" />
+        <StatCard label="Admis" value={totalAdmis} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub={`${totalAll > 0 ? Math.round((totalAdmis / totalAll) * 100) : 0}% de reussite`} />
+        <StatCard label="Ajournes" value={totalAjourne} icon={<XCircle style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="a rattraper" />
       </div>
 
       {/* Per-filiere PV */}

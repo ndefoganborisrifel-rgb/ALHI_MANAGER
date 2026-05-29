@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, ArrowLeft, Printer } from "lucide-react";
+import { FileText, Printer } from "lucide-react";
 import { PvPublishToggle } from "@/components/ui/PvPublishToggle";
+import { PageHeader } from "@/components/ui/PageUI";
 
 const ALLOWED_ROLES = ["ADMIN", "SCOLARITE", "ENSEIGNANT"] as const;
 type AllowedRole = (typeof ALLOWED_ROLES)[number];
@@ -32,34 +33,13 @@ export default async function PVListPage() {
   const currentYear = "2025-2026";
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/examens">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour aux examens
-          </Button>
-        </Link>
-        <div className="h-5 w-px bg-gray-200" />
-        <nav className="text-sm text-gray-500">
-          <span>Examens</span>
-          <span className="mx-2">/</span>
-          <span className="text-gray-800 font-medium">PV de notes</span>
-        </nav>
-      </div>
-
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Proces-Verbaux de Notes</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Generez et imprimez les PV officiels par cours. Annee {currentYear}.
-          </p>
-        </div>
-        <div className="p-3 bg-red-50 rounded-xl">
-          <FileText className="w-6 h-6 text-[#B91C2F]" />
-        </div>
-      </div>
+    <div className="space-y-6" style={{ maxWidth: "1200px" }}>
+      <PageHeader
+        title="Proces-Verbaux de Notes"
+        subtitle={`Generez et imprimez les PV officiels par cours. Annee ${currentYear}.`}
+        backHref="/examens"
+        icon={<FileText style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {filieres.length === 0 && (
         <Card>

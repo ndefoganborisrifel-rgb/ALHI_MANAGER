@@ -169,12 +169,17 @@ export default function AdmissionDetailPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3 flex-wrap">
-        <Link href="/admission">
-          <Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button>
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">{student.lastName} {student.firstName}</h1>
-          <p className="text-sm text-gray-500 font-mono">{student.matricule}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
+          <Link href="/admission" style={{ display: "inline-flex", alignItems: "center", gap: "5px", color: "var(--text-muted)", fontSize: "12px", fontWeight: 600, textDecoration: "none" }}>
+            <ArrowLeft style={{ width: "14px", height: "14px" }} />Retour
+          </Link>
+          <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: "var(--red-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <User style={{ width: "22px", height: "22px", color: "#B91C2F" }} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <h1 style={{ fontSize: "22px", fontWeight: 800, color: "var(--text)", letterSpacing: "-0.5px" }}>{student.lastName} {student.firstName}</h1>
+            <p style={{ fontSize: "13px", color: "var(--text-muted)", fontFamily: "monospace" }}>{student.matricule}</p>
+          </div>
         </div>
         <Badge className={currentStatusData?.color ?? "bg-gray-100 text-gray-700"}>
           {currentStatusData?.label ?? student.status}

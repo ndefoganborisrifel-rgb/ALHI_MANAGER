@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, UserPlus, Eye, EyeOff, Copy, CheckCircle } from "lucide-react";
+import { UserPlus, Eye, EyeOff, Copy, CheckCircle } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageUI";
 
 const ROLES = [
   { value: "ADMIN", label: "Administrateur" },
@@ -72,15 +73,12 @@ export default function NouveauUtilisateurPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href="/users">
-          <Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" />Retour</Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nouveau compte utilisateur</h1>
-          <p className="text-sm text-gray-500">Créer un accès à l&apos;application</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Nouveau compte utilisateur"
+        subtitle="Creer un acces a l'application"
+        backHref="/users"
+        icon={<UserPlus style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+      />
 
       {success && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 text-green-700">
