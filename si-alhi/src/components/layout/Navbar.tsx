@@ -69,6 +69,23 @@ export function Navbar({ userName, userRole, onMobileMenuToggle }: NavbarProps) 
   }
 
   return (
+    <>
+      <style>{`
+        @keyframes bellRing {
+          0%   { transform: rotate(0deg); }
+          8%   { transform: rotate(-18deg); }
+          16%  { transform: rotate(18deg); }
+          24%  { transform: rotate(-14deg); }
+          32%  { transform: rotate(14deg); }
+          40%  { transform: rotate(-8deg); }
+          48%  { transform: rotate(8deg); }
+          56%  { transform: rotate(-4deg); }
+          64%  { transform: rotate(4deg); }
+          72%  { transform: rotate(0deg); }
+          100% { transform: rotate(0deg); }
+        }
+        .bell-ringing { animation: bellRing 1.8s ease-in-out 0.5s 3; transform-origin: top center; }
+      `}</style>
     <header
       style={{
         position: "sticky",
@@ -120,7 +137,10 @@ export function Navbar({ userName, userRole, onMobileMenuToggle }: NavbarProps) 
               position: "relative",
             }}
           >
-            <Bell style={{ width: "16px", height: "16px" }} />
+            <Bell
+              className={unreadCount > 0 && !open ? "bell-ringing" : ""}
+              style={{ width: "16px", height: "16px" }}
+            />
             {unreadCount > 0 && (
               <span style={{
                 position: "absolute",
@@ -242,5 +262,6 @@ export function Navbar({ userName, userRole, onMobileMenuToggle }: NavbarProps) 
         </button>
       </div>
     </header>
+    </>
   );
 }

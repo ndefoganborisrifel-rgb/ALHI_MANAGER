@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { calculateGeneralAverage, getMention } from "@/lib/grade-calculator";
 import { Award, Users, CheckCircle, XCircle } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/ui/PageUI";
+import { PublishPvButton } from "./PublishPvButton";
 
 export default async function DeliberationPage() {
   const session = await auth();
@@ -44,8 +45,10 @@ export default async function DeliberationPage() {
   };
 
   type FiliereResult = {
+    filiereId: string;
     filiereName: string;
     filiereCode: string;
+    pvPublished: boolean;
     students: StudentResult[];
     totalStudents: number;
     admisCount: number;
@@ -85,8 +88,10 @@ export default async function DeliberationPage() {
     const admisCount = ranked.filter((s) => s.decision === "Admis").length;
 
     return {
+      filiereId: filiere.id,
       filiereName: filiere.name,
       filiereCode: filiere.code,
+      pvPublished: filiere.pvPublished,
       students: ranked,
       totalStudents: ranked.length,
       admisCount,
@@ -144,6 +149,11 @@ export default async function DeliberationPage() {
               <span className="text-gray-500">
                 ({filiere.totalStudents} total)
               </span>
+              <PublishPvButton
+                filiereId={filiere.filiereId}
+                filiereName={filiere.filiereName}
+                published={filiere.pvPublished}
+              />
             </div>
           </div>
 

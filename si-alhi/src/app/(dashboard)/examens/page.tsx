@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { BookOpen, FileText, Award, ClipboardList, ArrowRight, GraduationCap } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/ui/PageUI";
+import { calculateGeneralAverage, getMention } from "@/lib/grade-calculator";
 
 export default async function ExamensPage() {
   const session = await auth();
@@ -18,28 +19,57 @@ export default async function ExamensPage() {
   const canEnterGrades = ["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(role);
   const canManage = ["ADMIN", "SCOLARITE"].includes(role);
 
-  // For students: find their own student record to link to their bulletin
+  type DelibResult = { average: number | null; mention: string; decision: string; credits: number };
+
+  // For students: find their own student record to link to their bulletin + PV
   let myStudent: { id: string; filiereId: string; bulletinsPublished: boolean } | null = null;
+  let myDelib: DelibResult | null = null;
   if (role === "ETUDIANT" && userId) {
     const s = await prisma.student.findFirst({
       where: { userId },
-      select: { id: true, filiereId: true, filiere: { select: { bulletinsPublished: true } } },
+      select: {
+        id: true, filiereId: true,
+        filiere: { select: { bulletinsPublished: true, pvPublished: true } },
+        grades: { where: { academicYear: "2025-2026", semester: 1 }, include: { course: { select: { credits: true } } } },
+      },
     });
-    if (s) myStudent = { id: s.id, filiereId: s.filiereId, bulletinsPublished: s.filiere.bulletinsPublished };
+    if (s) {
+      myStudent = { id: s.id, filiereId: s.filiereId, bulletinsPublished: s.filiere.bulletinsPublished };
+      if (s.filiere.pvPublished && s.grades.length > 0) {
+        const gradeData = s.grades.map((g) => ({ average: g.noteFinal, credits: g.course.credits }));
+        const avg = calculateGeneralAverage(gradeData);
+        const credits = s.grades.filter((g) => (g.noteFinal ?? 0) >= 10).reduce((sum, g) => sum + g.course.credits, 0);
+        myDelib = { average: avg, mention: getMention(avg), decision: avg !== null && avg >= 10 ? "Admis" : "Ajourné", credits };
+      }
+    }
   }
 
-  // For parents: list their children with bulletin links
-  let myChildren: { id: string; firstName: string; lastName: string; bulletinsPublished: boolean }[] = [];
+  // For parents: list their children with bulletin links + PV
+  type ChildResult = { id: string; firstName: string; lastName: string; bulletinsPublished: boolean; delib: DelibResult | null };
+  let myChildren: ChildResult[] = [];
   if (role === "PARENT" && userId) {
     const parent = await prisma.parent.findFirst({
       where: { userId },
-      include: { students: { include: { filiere: { select: { bulletinsPublished: true } } } } },
+      include: {
+        students: {
+          include: {
+            filiere: { select: { bulletinsPublished: true, pvPublished: true } },
+            grades: { where: { academicYear: "2025-2026", semester: 1 }, include: { course: { select: { credits: true } } } },
+          },
+        },
+      },
     });
     if (parent) {
-      myChildren = parent.students.map((c) => ({
-        id: c.id, firstName: c.firstName, lastName: c.lastName,
-        bulletinsPublished: c.filiere.bulletinsPublished,
-      }));
+      myChildren = parent.students.map((c) => {
+        let delib: DelibResult | null = null;
+        if (c.filiere.pvPublished && c.grades.length > 0) {
+          const gradeData = c.grades.map((g) => ({ average: g.noteFinal, credits: g.course.credits }));
+          const avg = calculateGeneralAverage(gradeData);
+          const credits = c.grades.filter((g) => (g.noteFinal ?? 0) >= 10).reduce((sum, g) => sum + g.course.credits, 0);
+          delib = { average: avg, mention: getMention(avg), decision: avg !== null && avg >= 10 ? "Admis" : "Ajourné", credits };
+        }
+        return { id: c.id, firstName: c.firstName, lastName: c.lastName, bulletinsPublished: c.filiere.bulletinsPublished, delib };
+      });
     }
   }
 
@@ -106,32 +136,81 @@ export default async function ExamensPage() {
         </div>
       )}
 
+      {/* Student PV de deliberation */}
+      {role === "ETUDIANT" && myDelib && (
+        <div style={{ background: myDelib.decision === "Admis" ? "#f0fdf4" : "#fef2f2", borderRadius: "12px", border: `1px solid ${myDelib.decision === "Admis" ? "#86efac" : "#fca5a5"}`, padding: "20px", marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+            <Award style={{ width: "20px", height: "20px", color: myDelib.decision === "Admis" ? "#16a34a" : "#dc2626" }} />
+            <span style={{ fontWeight: "800", fontSize: "15px", color: myDelib.decision === "Admis" ? "#15803d" : "#991b1b" }}>
+              Resultat de deliberation : {myDelib.decision}
+            </span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
+            <div style={{ background: "white", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+              <p style={{ fontSize: "22px", fontWeight: "800", color: myDelib.average !== null && myDelib.average >= 10 ? "#16a34a" : "#dc2626" }}>
+                {myDelib.average !== null ? myDelib.average.toFixed(2) : "N.C."}<span style={{ fontSize: "13px", fontWeight: "400", color: "#6b7280" }}>/20</span>
+              </p>
+              <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Moyenne generale</p>
+            </div>
+            <div style={{ background: "white", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+              <p style={{ fontSize: "22px", fontWeight: "800", color: "#2563eb" }}>{myDelib.credits}</p>
+              <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Credits valides</p>
+            </div>
+            <div style={{ background: "white", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+              <p style={{ fontSize: "14px", fontWeight: "800", color: "#7c3aed" }}>{myDelib.mention}</p>
+              <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Mention</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Parent : list children */}
       {role === "PARENT" && myChildren.length > 0 && (
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", marginBottom: "16px", overflow: "hidden" }}>
           <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
-            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Bulletins de mes enfants</span>
+            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Bulletins et resultats de mes enfants</span>
           </div>
           <div style={{ padding: "6px" }}>
             {myChildren.map((c) => (
-              <div key={c.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "10px" }}>
-                <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: "var(--red-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <GraduationCap style={{ width: "18px", height: "18px", color: "#B91C2F" }} />
+              <div key={c.id} style={{ borderRadius: "10px", marginBottom: "4px", overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px" }}>
+                  <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: "var(--red-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <GraduationCap style={{ width: "18px", height: "18px", color: "#B91C2F" }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--text)" }}>{c.firstName} {c.lastName}</p>
+                    <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                      {c.bulletinsPublished ? "Bulletin publie" : "Bulletin non encore publie"}
+                      {c.delib ? ` • PV: ${c.delib.decision}` : ""}
+                    </p>
+                  </div>
+                  {c.bulletinsPublished ? (
+                    <Link href={`/print/bulletin/${c.id}?semester=1&year=2025-2026`} target="_blank" style={{ padding: "5px 12px", background: "#B91C2F", color: "white", borderRadius: "7px", fontSize: "11px", fontWeight: "600", textDecoration: "none" }}>
+                      Voir bulletin
+                    </Link>
+                  ) : (
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", padding: "5px 10px", background: "var(--bg-muted)", borderRadius: "7px" }}>
+                      En attente
+                    </span>
+                  )}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--text)" }}>{c.firstName} {c.lastName}</p>
-                  <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                    {c.bulletinsPublished ? "Bulletin publie" : "Bulletin non encore publie"}
-                  </p>
-                </div>
-                {c.bulletinsPublished ? (
-                  <Link href={`/print/bulletin/${c.id}?semester=1&year=2025-2026`} target="_blank" style={{ padding: "5px 12px", background: "#B91C2F", color: "white", borderRadius: "7px", fontSize: "11px", fontWeight: "600", textDecoration: "none" }}>
-                    Voir bulletin
-                  </Link>
-                ) : (
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", padding: "5px 10px", background: "var(--bg-muted)", borderRadius: "7px" }}>
-                    En attente
-                  </span>
+                {c.delib && (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "6px", padding: "0 12px 12px" }}>
+                    <div style={{ background: c.delib.decision === "Admis" ? "#f0fdf4" : "#fef2f2", borderRadius: "8px", padding: "8px 10px", textAlign: "center" }}>
+                      <p style={{ fontSize: "16px", fontWeight: "800", color: c.delib.decision === "Admis" ? "#16a34a" : "#dc2626" }}>
+                        {c.delib.average !== null ? c.delib.average.toFixed(2) : "N.C."}<span style={{ fontSize: "10px" }}>/20</span>
+                      </p>
+                      <p style={{ fontSize: "10px", color: "#6b7280" }}>Moyenne</p>
+                    </div>
+                    <div style={{ background: "#eff6ff", borderRadius: "8px", padding: "8px 10px", textAlign: "center" }}>
+                      <p style={{ fontSize: "16px", fontWeight: "800", color: "#2563eb" }}>{c.delib.credits}</p>
+                      <p style={{ fontSize: "10px", color: "#6b7280" }}>Credits</p>
+                    </div>
+                    <div style={{ background: "#f5f3ff", borderRadius: "8px", padding: "8px 10px", textAlign: "center" }}>
+                      <p style={{ fontSize: "12px", fontWeight: "700", color: "#7c3aed" }}>{c.delib.mention}</p>
+                      <p style={{ fontSize: "10px", color: "#6b7280" }}>Mention</p>
+                    </div>
+                  </div>
                 )}
               </div>
             ))}

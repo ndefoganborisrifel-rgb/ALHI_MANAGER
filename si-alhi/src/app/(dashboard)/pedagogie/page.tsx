@@ -109,6 +109,7 @@ export default function PedagogiePage() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
   const [collisionWarn, setCollisionWarn] = useState(false);
+  const [activeSemester, setActiveSemester] = useState(1);
 
   const loadData = useCallback(async () => {
     try {
@@ -141,7 +142,7 @@ export default function PedagogiePage() {
   for (let i = 0; i < schedules.length; i++) {
     for (let j = i + 1; j < schedules.length; j++) {
       const a = schedules[i], b = schedules[j];
-      if (a.dayOfWeek !== b.dayOfWeek || a.startTime !== b.startTime) continue;
+      if (a.dayOfWeek !== b.dayOfWeek || a.startTime !== b.startTime || a.semester !== b.semester) continue;
       // Collision salle
       if (a.roomId && a.roomId === b.roomId) { collisions.add(a.id); collisions.add(b.id); }
       // Collision enseignant
@@ -154,7 +155,7 @@ export default function PedagogiePage() {
   }
 
   const filiere = filieres.find((f) => f.id === activeFiliereId);
-  const filiereSchedules = schedules.filter((s) => s.filiereId === activeFiliereId);
+  const filiereSchedules = schedules.filter((s) => s.filiereId === activeFiliereId && s.semester === activeSemester);
   const coursSlots = filiereSchedules.filter((s) => s.type !== "EVALUATION");
   const examSlots = filiereSchedules.filter((s) => s.type === "EVALUATION");
   const filiereAssignments = assignments.filter((a) => a.course.filiereId === activeFiliereId);
@@ -209,7 +210,7 @@ export default function PedagogiePage() {
     } finally { setSubmitting(false); }
   }
 
-  function openModal() { setForm({ ...EMPTY_FORM }); setFormError(""); setCollisionWarn(false); setShowModal(true); }
+  function openModal() { setForm({ ...EMPTY_FORM, semester: String(activeSemester) }); setFormError(""); setCollisionWarn(false); setShowModal(true); }
 
   const weekEnd = addDays(weekStart, 5);
 
@@ -235,7 +236,7 @@ export default function PedagogiePage() {
     const tdTime: React.CSSProperties = {
       padding: "6px 8px", background: "#1A1A1A", color: "rgba(255,255,255,0.85)",
       fontSize: "11px", fontWeight: "700", textAlign: "center", verticalAlign: "middle",
-      border: "1px solid #2a2a2a", whiteSpace: "nowrap", minWidth: "72px",
+      border: "1px solid #2a2a2a", whiteSpace: "nowrap", minWidth: "72px", height: "72px",
     };
 
     return (
@@ -265,14 +266,14 @@ export default function PedagogiePage() {
                 <tr>
                   <td style={tdTime}>
                     <div>{slot.label}</div>
-                    <div style={{ fontSize: "9px", opacity: 0.5, fontWeight: "400", marginTop: "1px" }}>{slot.end}</div>
+                    <div style={{ fontSize: "9px", opacity: 0.7, fontWeight: "600", marginTop: "3px", letterSpacing: "0.2px" }}>a {slot.end}</div>
                   </td>
                   {DAYS.map((day) => {
                     if (skipped.has(`${day}:${idx}`)) return null;
                     const matching = slotsList.filter((s) => s.dayOfWeek === day && s.startTime === slot.start);
                     const cellSpan = matching.length > 0 ? Math.max(...matching.map(getSlotSpan)) : 1;
                     return (
-                      <td key={day} rowSpan={cellSpan} style={{ border: "1px solid var(--border)", padding: "4px", verticalAlign: "top", minHeight: cellSpan > 1 ? `${70 * cellSpan}px` : "70px" }}>
+                      <td key={day} rowSpan={cellSpan} style={{ border: "1px solid var(--border)", padding: "4px", verticalAlign: "top", height: cellSpan > 1 ? `${72 * cellSpan}px` : "72px" }}>
                         {matching.map((s) => {
                           const hasCol = collisions.has(s.id);
                           const style = hasCol
@@ -402,6 +403,24 @@ export default function PedagogiePage() {
               <span style={{ fontSize: "11px", fontWeight: "600", color: s.text }}>{s.label}</span>
             </div>
           ))}
+        </div>
+
+        {/* Semester selector */}
+        <div style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "12px" }}>
+          <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.5px", marginRight: "4px" }}>SEMESTRE :</span>
+          {[1, 2, 3, 4].map((s) => (
+            <button
+              key={s}
+              className={`filiere-btn${activeSemester === s ? " active" : ""}`}
+              onClick={() => setActiveSemester(s)}
+              style={{ padding: "5px 13px", fontSize: "11px", fontWeight: "700" }}
+            >
+              S{s}
+            </button>
+          ))}
+          <span style={{ marginLeft: "8px", fontSize: "10px", color: "var(--text-muted)", fontStyle: "italic" }}>
+            {filiereSchedules.length} creneau{filiereSchedules.length !== 1 ? "x" : ""} planifie{filiereSchedules.length !== 1 ? "s" : ""}
+          </span>
         </div>
 
         {/* Filiere tabs */}
