@@ -52,6 +52,7 @@ export type ScheduleMinAggregateOutputType = {
   type: $Enums.ScheduleType | null
   sessionNumber: number | null
   totalSessions: number | null
+  sharedGroupId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -70,6 +71,7 @@ export type ScheduleMaxAggregateOutputType = {
   type: $Enums.ScheduleType | null
   sessionNumber: number | null
   totalSessions: number | null
+  sharedGroupId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -88,6 +90,7 @@ export type ScheduleCountAggregateOutputType = {
   type: number
   sessionNumber: number
   totalSessions: number
+  sharedGroupId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -120,6 +123,7 @@ export type ScheduleMinAggregateInputType = {
   type?: true
   sessionNumber?: true
   totalSessions?: true
+  sharedGroupId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -138,6 +142,7 @@ export type ScheduleMaxAggregateInputType = {
   type?: true
   sessionNumber?: true
   totalSessions?: true
+  sharedGroupId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -156,6 +161,7 @@ export type ScheduleCountAggregateInputType = {
   type?: true
   sessionNumber?: true
   totalSessions?: true
+  sharedGroupId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -261,6 +267,7 @@ export type ScheduleGroupByOutputType = {
   type: $Enums.ScheduleType
   sessionNumber: number | null
   totalSessions: number | null
+  sharedGroupId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ScheduleCountAggregateOutputType | null
@@ -302,6 +309,7 @@ export type ScheduleWhereInput = {
   type?: Prisma.EnumScheduleTypeFilter<"Schedule"> | $Enums.ScheduleType
   sessionNumber?: Prisma.IntNullableFilter<"Schedule"> | number | null
   totalSessions?: Prisma.IntNullableFilter<"Schedule"> | number | null
+  sharedGroupId?: Prisma.StringNullableFilter<"Schedule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Schedule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Schedule"> | Date | string
   courseAssignment?: Prisma.XOR<Prisma.CourseAssignmentNullableScalarRelationFilter, Prisma.CourseAssignmentWhereInput> | null
@@ -324,6 +332,7 @@ export type ScheduleOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   sessionNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSessions?: Prisma.SortOrderInput | Prisma.SortOrder
+  sharedGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   courseAssignment?: Prisma.CourseAssignmentOrderByWithRelationInput
@@ -349,6 +358,7 @@ export type ScheduleWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.EnumScheduleTypeFilter<"Schedule"> | $Enums.ScheduleType
   sessionNumber?: Prisma.IntNullableFilter<"Schedule"> | number | null
   totalSessions?: Prisma.IntNullableFilter<"Schedule"> | number | null
+  sharedGroupId?: Prisma.StringNullableFilter<"Schedule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Schedule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Schedule"> | Date | string
   courseAssignment?: Prisma.XOR<Prisma.CourseAssignmentNullableScalarRelationFilter, Prisma.CourseAssignmentWhereInput> | null
@@ -371,6 +381,7 @@ export type ScheduleOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   sessionNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSessions?: Prisma.SortOrderInput | Prisma.SortOrder
+  sharedGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ScheduleCountOrderByAggregateInput
@@ -397,6 +408,7 @@ export type ScheduleScalarWhereWithAggregatesInput = {
   type?: Prisma.EnumScheduleTypeWithAggregatesFilter<"Schedule"> | $Enums.ScheduleType
   sessionNumber?: Prisma.IntNullableWithAggregatesFilter<"Schedule"> | number | null
   totalSessions?: Prisma.IntNullableWithAggregatesFilter<"Schedule"> | number | null
+  sharedGroupId?: Prisma.StringNullableWithAggregatesFilter<"Schedule"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Schedule"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Schedule"> | Date | string
 }
@@ -412,6 +424,7 @@ export type ScheduleCreateInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   courseAssignment?: Prisma.CourseAssignmentCreateNestedOneWithoutSchedulesInput
@@ -434,6 +447,7 @@ export type ScheduleUncheckedCreateInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutScheduleInput
@@ -450,6 +464,7 @@ export type ScheduleUpdateInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courseAssignment?: Prisma.CourseAssignmentUpdateOneWithoutSchedulesNestedInput
@@ -472,6 +487,7 @@ export type ScheduleUncheckedUpdateInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutScheduleNestedInput
@@ -491,6 +507,7 @@ export type ScheduleCreateManyInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -506,6 +523,7 @@ export type ScheduleUpdateManyMutationInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -524,6 +542,7 @@ export type ScheduleUncheckedUpdateManyInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -552,6 +571,7 @@ export type ScheduleCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   sessionNumber?: Prisma.SortOrder
   totalSessions?: Prisma.SortOrder
+  sharedGroupId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -576,6 +596,7 @@ export type ScheduleMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   sessionNumber?: Prisma.SortOrder
   totalSessions?: Prisma.SortOrder
+  sharedGroupId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -594,6 +615,7 @@ export type ScheduleMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   sessionNumber?: Prisma.SortOrder
   totalSessions?: Prisma.SortOrder
+  sharedGroupId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -780,6 +802,7 @@ export type ScheduleCreateWithoutFiliereInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   courseAssignment?: Prisma.CourseAssignmentCreateNestedOneWithoutSchedulesInput
@@ -800,6 +823,7 @@ export type ScheduleUncheckedCreateWithoutFiliereInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutScheduleInput
@@ -847,6 +871,7 @@ export type ScheduleScalarWhereInput = {
   type?: Prisma.EnumScheduleTypeFilter<"Schedule"> | $Enums.ScheduleType
   sessionNumber?: Prisma.IntNullableFilter<"Schedule"> | number | null
   totalSessions?: Prisma.IntNullableFilter<"Schedule"> | number | null
+  sharedGroupId?: Prisma.StringNullableFilter<"Schedule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Schedule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Schedule"> | Date | string
 }
@@ -862,6 +887,7 @@ export type ScheduleCreateWithoutCourseAssignmentInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   room?: Prisma.RoomCreateNestedOneWithoutSchedulesInput
@@ -882,6 +908,7 @@ export type ScheduleUncheckedCreateWithoutCourseAssignmentInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutScheduleInput
@@ -923,6 +950,7 @@ export type ScheduleCreateWithoutRoomInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   courseAssignment?: Prisma.CourseAssignmentCreateNestedOneWithoutSchedulesInput
@@ -943,6 +971,7 @@ export type ScheduleUncheckedCreateWithoutRoomInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutScheduleInput
@@ -984,6 +1013,7 @@ export type ScheduleCreateWithoutAttendancesInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   courseAssignment?: Prisma.CourseAssignmentCreateNestedOneWithoutSchedulesInput
@@ -1005,6 +1035,7 @@ export type ScheduleUncheckedCreateWithoutAttendancesInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1036,6 +1067,7 @@ export type ScheduleUpdateWithoutAttendancesInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courseAssignment?: Prisma.CourseAssignmentUpdateOneWithoutSchedulesNestedInput
@@ -1057,6 +1089,7 @@ export type ScheduleUncheckedUpdateWithoutAttendancesInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1074,6 +1107,7 @@ export type ScheduleCreateManyFiliereInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1089,6 +1123,7 @@ export type ScheduleUpdateWithoutFiliereInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courseAssignment?: Prisma.CourseAssignmentUpdateOneWithoutSchedulesNestedInput
@@ -1109,6 +1144,7 @@ export type ScheduleUncheckedUpdateWithoutFiliereInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutScheduleNestedInput
@@ -1127,6 +1163,7 @@ export type ScheduleUncheckedUpdateManyWithoutFiliereInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1144,6 +1181,7 @@ export type ScheduleCreateManyCourseAssignmentInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1159,6 +1197,7 @@ export type ScheduleUpdateWithoutCourseAssignmentInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   room?: Prisma.RoomUpdateOneWithoutSchedulesNestedInput
@@ -1179,6 +1218,7 @@ export type ScheduleUncheckedUpdateWithoutCourseAssignmentInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutScheduleNestedInput
@@ -1197,6 +1237,7 @@ export type ScheduleUncheckedUpdateManyWithoutCourseAssignmentInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1214,6 +1255,7 @@ export type ScheduleCreateManyRoomInput = {
   type?: $Enums.ScheduleType
   sessionNumber?: number | null
   totalSessions?: number | null
+  sharedGroupId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1229,6 +1271,7 @@ export type ScheduleUpdateWithoutRoomInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courseAssignment?: Prisma.CourseAssignmentUpdateOneWithoutSchedulesNestedInput
@@ -1249,6 +1292,7 @@ export type ScheduleUncheckedUpdateWithoutRoomInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutScheduleNestedInput
@@ -1267,6 +1311,7 @@ export type ScheduleUncheckedUpdateManyWithoutRoomInput = {
   type?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
   sessionNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   totalSessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sharedGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1316,6 +1361,7 @@ export type ScheduleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   type?: boolean
   sessionNumber?: boolean
   totalSessions?: boolean
+  sharedGroupId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   courseAssignment?: boolean | Prisma.Schedule$courseAssignmentArgs<ExtArgs>
@@ -1339,6 +1385,7 @@ export type ScheduleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   type?: boolean
   sessionNumber?: boolean
   totalSessions?: boolean
+  sharedGroupId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   courseAssignment?: boolean | Prisma.Schedule$courseAssignmentArgs<ExtArgs>
@@ -1360,6 +1407,7 @@ export type ScheduleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   type?: boolean
   sessionNumber?: boolean
   totalSessions?: boolean
+  sharedGroupId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   courseAssignment?: boolean | Prisma.Schedule$courseAssignmentArgs<ExtArgs>
@@ -1381,11 +1429,12 @@ export type ScheduleSelectScalar = {
   type?: boolean
   sessionNumber?: boolean
   totalSessions?: boolean
+  sharedGroupId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ScheduleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "courseAssignmentId" | "roomId" | "dayOfWeek" | "startTime" | "endTime" | "academicYear" | "semester" | "weekStart" | "filiereId" | "type" | "sessionNumber" | "totalSessions" | "createdAt" | "updatedAt", ExtArgs["result"]["schedule"]>
+export type ScheduleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "courseAssignmentId" | "roomId" | "dayOfWeek" | "startTime" | "endTime" | "academicYear" | "semester" | "weekStart" | "filiereId" | "type" | "sessionNumber" | "totalSessions" | "sharedGroupId" | "createdAt" | "updatedAt", ExtArgs["result"]["schedule"]>
 export type ScheduleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   courseAssignment?: boolean | Prisma.Schedule$courseAssignmentArgs<ExtArgs>
   room?: boolean | Prisma.Schedule$roomArgs<ExtArgs>
@@ -1426,6 +1475,7 @@ export type $SchedulePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     type: $Enums.ScheduleType
     sessionNumber: number | null
     totalSessions: number | null
+    sharedGroupId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["schedule"]>
@@ -1868,6 +1918,7 @@ export interface ScheduleFieldRefs {
   readonly type: Prisma.FieldRef<"Schedule", 'ScheduleType'>
   readonly sessionNumber: Prisma.FieldRef<"Schedule", 'Int'>
   readonly totalSessions: Prisma.FieldRef<"Schedule", 'Int'>
+  readonly sharedGroupId: Prisma.FieldRef<"Schedule", 'String'>
   readonly createdAt: Prisma.FieldRef<"Schedule", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Schedule", 'DateTime'>
 }

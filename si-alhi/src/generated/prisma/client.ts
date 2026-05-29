@@ -72,6 +72,11 @@ export type UE = Prisma.UEModel
  */
 export type Course = Prisma.CourseModel
 /**
+ * Model CourseFiliere
+ * 
+ */
+export type CourseFiliere = Prisma.CourseFiliereModel
+/**
  * Model Teacher
  * 
  */

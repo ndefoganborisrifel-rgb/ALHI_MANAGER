@@ -57,6 +57,7 @@ export const ModelName = {
   Specialization: 'Specialization',
   UE: 'UE',
   Course: 'Course',
+  CourseFiliere: 'CourseFiliere',
   Teacher: 'Teacher',
   CourseAssignment: 'CourseAssignment',
   Room: 'Room',
@@ -180,6 +181,16 @@ export const CourseScalarFieldEnum = {
 export type CourseScalarFieldEnum = (typeof CourseScalarFieldEnum)[keyof typeof CourseScalarFieldEnum]
 
 
+export const CourseFiliereScalarFieldEnum = {
+  id: 'id',
+  courseId: 'courseId',
+  filiereId: 'filiereId',
+  createdAt: 'createdAt'
+} as const
+
+export type CourseFiliereScalarFieldEnum = (typeof CourseFiliereScalarFieldEnum)[keyof typeof CourseFiliereScalarFieldEnum]
+
+
 export const TeacherScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -241,6 +252,7 @@ export const ScheduleScalarFieldEnum = {
   type: 'type',
   sessionNumber: 'sessionNumber',
   totalSessions: 'totalSessions',
+  sharedGroupId: 'sharedGroupId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

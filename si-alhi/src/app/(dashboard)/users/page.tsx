@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { UserPlus, Copy, CheckCheck, Users } from "lucide-react";
+import { UserPlus, Copy, CheckCheck, Users, Search } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { PageHeader, Panel, StatusBadge } from "@/components/ui/PageUI";
@@ -38,6 +38,8 @@ const emptyEditForm = { firstName: "", lastName: "", email: "", role: "ETUDIANT"
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
   // Edit modal
   const [showEditModal, setShowEditModal] = useState(false);
@@ -67,6 +69,16 @@ export default function UsersPage() {
     acc[u.role] = (acc[u.role] ?? 0) + 1;
     return acc;
   }, {});
+
+  const q = search.trim().toLowerCase();
+  const filteredUsers = users.filter((u) => {
+    const matchRole = !roleFilter || u.role === roleFilter;
+    const matchSearch = !q
+      || `${u.firstName} ${u.lastName}`.toLowerCase().includes(q)
+      || u.email.toLowerCase().includes(q)
+      || (roleLabels[u.role] ?? u.role).toLowerCase().includes(q);
+    return matchRole && matchSearch;
+  });
 
   function openEdit(user: User) {
     setEditingUser(user);
@@ -179,6 +191,28 @@ export default function UsersPage() {
       </div>
 
       <Panel title="Tous les comptes" icon={<Users style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}>
+        <div style={{ display: "flex", gap: "10px", marginBottom: "14px", flexWrap: "wrap" }}>
+          <div style={{ position: "relative", flex: 1, minWidth: "220px" }}>
+            <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: "14px", height: "14px", color: "var(--text-muted)" }} />
+            <input
+              type="text"
+              placeholder="Rechercher par nom, email, role..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: "100%", padding: "8px 10px 8px 32px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", boxSizing: "border-box" }}
+            />
+          </div>
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            style={{ padding: "8px 12px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", minWidth: "160px" }}
+          >
+            <option value="">Tous les roles</option>
+            {Object.entries(roleLabels).map(([r, label]) => (
+              <option key={r} value={r}>{label}</option>
+            ))}
+          </select>
+        </div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -193,8 +227,11 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user, idx) => (
-                <tr key={user.id} className="row-hover" style={{ borderBottom: idx < users.length - 1 ? "1px solid var(--border-muted)" : "none", opacity: user.isActive ? 1 : 0.5 }}>
+              {filteredUsers.length === 0 && (
+                <tr><td colSpan={7} style={{ ...td, textAlign: "center", color: "var(--text-muted)", padding: "30px" }}>Aucun utilisateur ne correspond a la recherche.</td></tr>
+              )}
+              {filteredUsers.map((user, idx) => (
+                <tr key={user.id} className="row-hover" style={{ borderBottom: idx < filteredUsers.length - 1 ? "1px solid var(--border-muted)" : "none", opacity: user.isActive ? 1 : 0.5 }}>
                   <td style={{ ...td, fontWeight: 600 }}>{user.firstName} {user.lastName}</td>
                   <td style={{ ...td, color: "var(--text-secondary)", fontSize: "12px" }}>{user.email}</td>
                   <td style={td}><StatusBadge label={roleLabels[user.role] ?? user.role} color={roleHex[user.role] ?? "#6b7280"} dot={false} /></td>

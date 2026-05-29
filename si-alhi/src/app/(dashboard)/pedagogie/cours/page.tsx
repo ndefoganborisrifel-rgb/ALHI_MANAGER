@@ -20,6 +20,7 @@ type Course = {
   filiereId: string;
   filiere: Filiere;
   ue?: UE | null;
+  courseFilieres?: { filiereId: string; filiere: { id: string; code: string; name: string } }[];
 };
 
 const emptyForm = {
@@ -32,6 +33,7 @@ const emptyForm = {
   ueCode: "",
   ueName: "",
   filiereId: "",
+  filiereIds: [] as string[],
 };
 
 export default function CoursPage() {
@@ -86,6 +88,9 @@ export default function CoursPage() {
 
   function openEdit(course: Course) {
     setEditing(course);
+    const extraFilieres = (course.courseFilieres ?? [])
+      .map((cf) => cf.filiereId)
+      .filter((id) => id !== course.filiereId);
     setForm({
       code: course.code,
       name: course.name,
@@ -96,9 +101,19 @@ export default function CoursPage() {
       ueCode: course.ueCode,
       ueName: course.ueName,
       filiereId: course.filiereId,
+      filiereIds: extraFilieres,
     });
     setError("");
     setShowModal(true);
+  }
+
+  function toggleExtraFiliere(id: string) {
+    setForm((f) => ({
+      ...f,
+      filiereIds: f.filiereIds.includes(id)
+        ? f.filiereIds.filter((x) => x !== id)
+        : [...f.filiereIds, id],
+    }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -310,7 +325,16 @@ export default function CoursPage() {
                             </div>
                           </td>
                           <td style={{ padding: "10px 14px" }}>
-                            <span style={{ padding: "2px 8px", background: "var(--bg-muted)", borderRadius: "6px", fontSize: "11px", fontWeight: "600", color: "var(--text-secondary)" }}>{course.filiere.code}</span>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "3px", alignItems: "center" }}>
+                              <span style={{ padding: "2px 8px", background: "var(--bg-muted)", borderRadius: "6px", fontSize: "11px", fontWeight: "600", color: "var(--text-secondary)" }}>{course.filiere.code}</span>
+                              {(course.courseFilieres ?? [])
+                                .filter((cf) => cf.filiereId !== course.filiereId)
+                                .map((cf) => (
+                                  <span key={cf.filiereId} title={`Cours commun : ${cf.filiere.name}`} style={{ padding: "2px 7px", background: "#f5f3ff", border: "1px solid #d8b4fe", borderRadius: "6px", fontSize: "10px", fontWeight: "700", color: "#7c3aed" }}>
+                                    {cf.filiere.code}
+                                  </span>
+                                ))}
+                            </div>
                           </td>
                           <td style={{ padding: "10px 14px", textAlign: "center" }}>
                             <span style={{ fontWeight: "700", color: "#2563eb", fontSize: "14px" }}>{course.credits}</span>
@@ -381,6 +405,40 @@ export default function CoursPage() {
                     <option key={f.id} value={f.id}>{f.code} - {f.name}</option>
                   ))}
                 </select>
+              </div>
+
+              {/* Mutualisation : autres filieres concernees */}
+              <div>
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                  Autres filieres concernees (cours commun, optionnel)
+                </label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {filieres.filter((f) => f.id !== form.filiereId).length === 0 ? (
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>Selectionnez d&apos;abord une filiere principale.</span>
+                  ) : (
+                    filieres.filter((f) => f.id !== form.filiereId).map((f) => {
+                      const active = form.filiereIds.includes(f.id);
+                      return (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => toggleExtraFiliere(f.id)}
+                          style={{
+                            padding: "5px 11px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", cursor: "pointer",
+                            border: active ? "1.5px solid #7c3aed" : "1.5px solid var(--border)",
+                            background: active ? "#7c3aed" : "var(--bg-card)",
+                            color: active ? "white" : "var(--text-secondary)",
+                          }}
+                        >
+                          {f.code}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+                <p style={{ fontSize: "10.5px", color: "var(--text-muted)", marginTop: "5px" }}>
+                  Si vous selectionnez d&apos;autres filieres, programmer ce cours dans l&apos;une le programme automatiquement dans toutes (meme prof, meme salle, meme horaire).
+                </p>
               </div>
 
               {/* Code + Nom */}

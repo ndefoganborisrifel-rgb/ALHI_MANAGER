@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Plus, Users, UserCheck, UserX, Wallet, UserCog } from "lucide-react";
+import { Plus, Users, UserCheck, UserX, Wallet, UserCog, Search } from "lucide-react";
 import { PageHeader, StatCard, Panel, PrimaryButton, StatusBadge, EmptyState } from "@/components/ui/PageUI";
 import { formatCFA, getStatusLabel, getStatusHex } from "@/lib/utils";
 import { useCanManage, useRole } from "@/components/providers/RoleProvider";
@@ -60,6 +60,7 @@ export default function RHPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"enseignants" | "vacations">("enseignants");
+  const [teacherSearch, setTeacherSearch] = useState("");
 
   const [showTeacherModal, setShowTeacherModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
@@ -92,6 +93,14 @@ export default function RHPage() {
   const totalPayments = payments.reduce((sum, p) => sum + p.totalAmount, 0);
   const permanents = teachers.filter((t) => t.type === "PERMANENT").length;
   const vacataires = teachers.filter((t) => t.type === "VACATAIRE").length;
+
+  const tq = teacherSearch.trim().toLowerCase();
+  const filteredTeachers = teachers.filter((t) => {
+    if (!tq) return true;
+    return `${t.firstName} ${t.lastName}`.toLowerCase().includes(tq)
+      || (t.speciality ?? "").toLowerCase().includes(tq)
+      || (t.email ?? t.user.email).toLowerCase().includes(tq);
+  });
 
   function openAddTeacher() {
     setEditingTeacher(null);
@@ -237,6 +246,17 @@ export default function RHPage() {
           {teachers.length === 0 ? (
             <EmptyState icon={<Users style={{ width: "24px", height: "24px" }} />} message="Aucun enseignant enregistre." action={canManage ? <PrimaryButton onClick={openAddTeacher}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un enseignant</PrimaryButton> : undefined} />
           ) : (
+            <>
+            <div style={{ position: "relative", marginBottom: "14px", maxWidth: "340px" }}>
+              <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: "14px", height: "14px", color: "var(--text-muted)" }} />
+              <input
+                type="text"
+                placeholder="Rechercher un enseignant, specialite..."
+                value={teacherSearch}
+                onChange={(e) => setTeacherSearch(e.target.value)}
+                style={{ width: "100%", padding: "8px 10px 8px 32px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", boxSizing: "border-box" }}
+              />
+            </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
@@ -251,8 +271,11 @@ export default function RHPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {teachers.map((teacher, i) => (
-                    <tr key={teacher.id} className="row-hover" style={{ borderBottom: i < teachers.length - 1 ? "1px solid var(--border-muted)" : "none", opacity: teacher.user.isActive ? 1 : 0.5 }}>
+                  {filteredTeachers.length === 0 && (
+                    <tr><td colSpan={isTeacher ? 6 : 7} style={{ ...td, textAlign: "center", color: "var(--text-muted)", padding: "30px" }}>Aucun enseignant ne correspond a la recherche.</td></tr>
+                  )}
+                  {filteredTeachers.map((teacher, i) => (
+                    <tr key={teacher.id} className="row-hover" style={{ borderBottom: i < filteredTeachers.length - 1 ? "1px solid var(--border-muted)" : "none", opacity: teacher.user.isActive ? 1 : 0.5 }}>
                       <td style={{ ...td, fontWeight: 600 }}>{teacher.firstName} {teacher.lastName}</td>
                       <td style={{ ...td, color: "var(--text-secondary)" }}>{teacher.speciality ?? <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "11px" }}>Non renseigne</span>}</td>
                       <td style={td}><StatusBadge label={getStatusLabel(teacher.type)} color={getStatusHex(teacher.type)} dot={false} /></td>
@@ -287,6 +310,7 @@ export default function RHPage() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </Panel>
       )}

@@ -11,8 +11,14 @@ export async function GET(req: Request) {
   const filiereId = searchParams.get("filiereId");
 
   const courses = await prisma.course.findMany({
-    where: filiereId ? { filiereId } : undefined,
-    include: { ue: true, filiere: true },
+    where: filiereId
+      ? { OR: [{ filiereId }, { courseFilieres: { some: { filiereId } } }] }
+      : undefined,
+    include: {
+      ue: true,
+      filiere: true,
+      courseFilieres: { include: { filiere: { select: { id: true, code: true, name: true } } } },
+    },
     orderBy: [{ filiere: { code: "asc" } }, { code: "asc" }],
   });
   return NextResponse.json(courses);
@@ -26,6 +32,7 @@ const createSchema = z.object({
   totalHours: z.number().int().positive(),
   semester: z.number().int().min(1).max(8),
   filiereId: z.string().min(1),
+  filiereIds: z.array(z.string().min(1)).optional(),
   ueCode: z.string().min(1),
   ueName: z.string().min(1),
 });
@@ -44,15 +51,27 @@ export async function POST(req: Request) {
   const existing = await prisma.course.findFirst({ where: { code: parsed.data.code } });
   if (existing) return NextResponse.json({ error: "Un cours avec ce code existe deja" }, { status: 409 });
 
+  const { filiereIds, ...courseData } = parsed.data;
+  // Liste complete des filieres concernees (primaire incluse, sans doublon)
+  const allFiliereIds = Array.from(new Set([courseData.filiereId, ...(filiereIds ?? [])]));
+
   const ue = await prisma.uE.upsert({
-    where: { code_filiereId: { code: parsed.data.ueCode, filiereId: parsed.data.filiereId } },
+    where: { code_filiereId: { code: courseData.ueCode, filiereId: courseData.filiereId } },
     update: {},
-    create: { code: parsed.data.ueCode, name: parsed.data.ueName, filiereId: parsed.data.filiereId, semester: parsed.data.semester, totalCredits: parsed.data.credits },
+    create: { code: courseData.ueCode, name: courseData.ueName, filiereId: courseData.filiereId, semester: courseData.semester, totalCredits: courseData.credits },
   });
 
   const course = await prisma.course.create({
-    data: { ...parsed.data, ueId: ue.id },
-    include: { filiere: true, ue: true },
+    data: {
+      ...courseData,
+      ueId: ue.id,
+      courseFilieres: { create: allFiliereIds.map((fid) => ({ filiereId: fid })) },
+    },
+    include: {
+      filiere: true,
+      ue: true,
+      courseFilieres: { include: { filiere: { select: { id: true, code: true, name: true } } } },
+    },
   });
   return NextResponse.json(course, { status: 201 });
 }

@@ -291,6 +291,7 @@ export type FiliereWhereInput = {
   ues?: Prisma.UEListRelationFilter
   tuitionFees?: Prisma.TuitionFeeListRelationFilter
   specializations?: Prisma.SpecializationListRelationFilter
+  courseFilieres?: Prisma.CourseFiliereListRelationFilter
 }
 
 export type FiliereOrderByWithRelationInput = {
@@ -314,6 +315,7 @@ export type FiliereOrderByWithRelationInput = {
   ues?: Prisma.UEOrderByRelationAggregateInput
   tuitionFees?: Prisma.TuitionFeeOrderByRelationAggregateInput
   specializations?: Prisma.SpecializationOrderByRelationAggregateInput
+  courseFilieres?: Prisma.CourseFiliereOrderByRelationAggregateInput
 }
 
 export type FiliereWhereUniqueInput = Prisma.AtLeast<{
@@ -340,6 +342,7 @@ export type FiliereWhereUniqueInput = Prisma.AtLeast<{
   ues?: Prisma.UEListRelationFilter
   tuitionFees?: Prisma.TuitionFeeListRelationFilter
   specializations?: Prisma.SpecializationListRelationFilter
+  courseFilieres?: Prisma.CourseFiliereListRelationFilter
 }, "id" | "code">
 
 export type FiliereOrderByWithAggregationInput = {
@@ -402,6 +405,7 @@ export type FiliereCreateInput = {
   ues?: Prisma.UECreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateInput = {
@@ -424,6 +428,7 @@ export type FiliereUncheckedCreateInput = {
   ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUpdateInput = {
@@ -446,6 +451,7 @@ export type FiliereUpdateInput = {
   ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateInput = {
@@ -468,6 +474,7 @@ export type FiliereUncheckedUpdateInput = {
   ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereCreateManyInput = {
@@ -640,6 +647,20 @@ export type FiliereUpdateOneRequiredWithoutCoursesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FiliereUpdateToOneWithWhereWithoutCoursesInput, Prisma.FiliereUpdateWithoutCoursesInput>, Prisma.FiliereUncheckedUpdateWithoutCoursesInput>
 }
 
+export type FiliereCreateNestedOneWithoutCourseFilieresInput = {
+  create?: Prisma.XOR<Prisma.FiliereCreateWithoutCourseFilieresInput, Prisma.FiliereUncheckedCreateWithoutCourseFilieresInput>
+  connectOrCreate?: Prisma.FiliereCreateOrConnectWithoutCourseFilieresInput
+  connect?: Prisma.FiliereWhereUniqueInput
+}
+
+export type FiliereUpdateOneRequiredWithoutCourseFilieresNestedInput = {
+  create?: Prisma.XOR<Prisma.FiliereCreateWithoutCourseFilieresInput, Prisma.FiliereUncheckedCreateWithoutCourseFilieresInput>
+  connectOrCreate?: Prisma.FiliereCreateOrConnectWithoutCourseFilieresInput
+  upsert?: Prisma.FiliereUpsertWithoutCourseFilieresInput
+  connect?: Prisma.FiliereWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FiliereUpdateToOneWithWhereWithoutCourseFilieresInput, Prisma.FiliereUpdateWithoutCourseFilieresInput>, Prisma.FiliereUncheckedUpdateWithoutCourseFilieresInput>
+}
+
 export type FiliereCreateNestedManyWithoutResponsableInput = {
   create?: Prisma.XOR<Prisma.FiliereCreateWithoutResponsableInput, Prisma.FiliereUncheckedCreateWithoutResponsableInput> | Prisma.FiliereCreateWithoutResponsableInput[] | Prisma.FiliereUncheckedCreateWithoutResponsableInput[]
   connectOrCreate?: Prisma.FiliereCreateOrConnectWithoutResponsableInput | Prisma.FiliereCreateOrConnectWithoutResponsableInput[]
@@ -743,6 +764,7 @@ export type FiliereCreateWithoutSpecializationsInput = {
   schedules?: Prisma.ScheduleCreateNestedManyWithoutFiliereInput
   ues?: Prisma.UECreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateWithoutSpecializationsInput = {
@@ -764,6 +786,7 @@ export type FiliereUncheckedCreateWithoutSpecializationsInput = {
   schedules?: Prisma.ScheduleUncheckedCreateNestedManyWithoutFiliereInput
   ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereCreateOrConnectWithoutSpecializationsInput = {
@@ -801,6 +824,7 @@ export type FiliereUpdateWithoutSpecializationsInput = {
   schedules?: Prisma.ScheduleUpdateManyWithoutFiliereNestedInput
   ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateWithoutSpecializationsInput = {
@@ -822,6 +846,7 @@ export type FiliereUncheckedUpdateWithoutSpecializationsInput = {
   schedules?: Prisma.ScheduleUncheckedUpdateManyWithoutFiliereNestedInput
   ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereCreateWithoutUesInput = {
@@ -843,6 +868,7 @@ export type FiliereCreateWithoutUesInput = {
   schedules?: Prisma.ScheduleCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateWithoutUesInput = {
@@ -864,6 +890,7 @@ export type FiliereUncheckedCreateWithoutUesInput = {
   schedules?: Prisma.ScheduleUncheckedCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereCreateOrConnectWithoutUesInput = {
@@ -901,6 +928,7 @@ export type FiliereUpdateWithoutUesInput = {
   schedules?: Prisma.ScheduleUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateWithoutUesInput = {
@@ -922,6 +950,7 @@ export type FiliereUncheckedUpdateWithoutUesInput = {
   schedules?: Prisma.ScheduleUncheckedUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereCreateWithoutCoursesInput = {
@@ -943,6 +972,7 @@ export type FiliereCreateWithoutCoursesInput = {
   ues?: Prisma.UECreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateWithoutCoursesInput = {
@@ -964,6 +994,7 @@ export type FiliereUncheckedCreateWithoutCoursesInput = {
   ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereCreateOrConnectWithoutCoursesInput = {
@@ -1001,6 +1032,7 @@ export type FiliereUpdateWithoutCoursesInput = {
   ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateWithoutCoursesInput = {
@@ -1018,6 +1050,111 @@ export type FiliereUncheckedUpdateWithoutCoursesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
+  schedules?: Prisma.ScheduleUncheckedUpdateManyWithoutFiliereNestedInput
+  ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
+  tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
+  specializations?: Prisma.SpecializationUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
+}
+
+export type FiliereCreateWithoutCourseFilieresInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  duration: number
+  level?: string | null
+  totalFees: number
+  bulletinsPublished?: boolean
+  pvPublished?: boolean
+  coursesPublished?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  responsable?: Prisma.TeacherCreateNestedOneWithoutFiliereManagedInput
+  students?: Prisma.StudentCreateNestedManyWithoutFiliereInput
+  courses?: Prisma.CourseCreateNestedManyWithoutFiliereInput
+  schedules?: Prisma.ScheduleCreateNestedManyWithoutFiliereInput
+  ues?: Prisma.UECreateNestedManyWithoutFiliereInput
+  tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
+  specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+}
+
+export type FiliereUncheckedCreateWithoutCourseFilieresInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  duration: number
+  level?: string | null
+  totalFees: number
+  responsableId?: string | null
+  bulletinsPublished?: boolean
+  pvPublished?: boolean
+  coursesPublished?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutFiliereInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutFiliereInput
+  schedules?: Prisma.ScheduleUncheckedCreateNestedManyWithoutFiliereInput
+  ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
+  tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
+  specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+}
+
+export type FiliereCreateOrConnectWithoutCourseFilieresInput = {
+  where: Prisma.FiliereWhereUniqueInput
+  create: Prisma.XOR<Prisma.FiliereCreateWithoutCourseFilieresInput, Prisma.FiliereUncheckedCreateWithoutCourseFilieresInput>
+}
+
+export type FiliereUpsertWithoutCourseFilieresInput = {
+  update: Prisma.XOR<Prisma.FiliereUpdateWithoutCourseFilieresInput, Prisma.FiliereUncheckedUpdateWithoutCourseFilieresInput>
+  create: Prisma.XOR<Prisma.FiliereCreateWithoutCourseFilieresInput, Prisma.FiliereUncheckedCreateWithoutCourseFilieresInput>
+  where?: Prisma.FiliereWhereInput
+}
+
+export type FiliereUpdateToOneWithWhereWithoutCourseFilieresInput = {
+  where?: Prisma.FiliereWhereInput
+  data: Prisma.XOR<Prisma.FiliereUpdateWithoutCourseFilieresInput, Prisma.FiliereUncheckedUpdateWithoutCourseFilieresInput>
+}
+
+export type FiliereUpdateWithoutCourseFilieresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalFees?: Prisma.IntFieldUpdateOperationsInput | number
+  bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coursesPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  responsable?: Prisma.TeacherUpdateOneWithoutFiliereManagedNestedInput
+  students?: Prisma.StudentUpdateManyWithoutFiliereNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutFiliereNestedInput
+  schedules?: Prisma.ScheduleUpdateManyWithoutFiliereNestedInput
+  ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
+  tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
+  specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+}
+
+export type FiliereUncheckedUpdateWithoutCourseFilieresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalFees?: Prisma.IntFieldUpdateOperationsInput | number
+  responsableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bulletinsPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pvPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coursesPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  students?: Prisma.StudentUncheckedUpdateManyWithoutFiliereNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutFiliereNestedInput
   schedules?: Prisma.ScheduleUncheckedUpdateManyWithoutFiliereNestedInput
   ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
@@ -1043,6 +1180,7 @@ export type FiliereCreateWithoutResponsableInput = {
   ues?: Prisma.UECreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateWithoutResponsableInput = {
@@ -1064,6 +1202,7 @@ export type FiliereUncheckedCreateWithoutResponsableInput = {
   ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereCreateOrConnectWithoutResponsableInput = {
@@ -1129,6 +1268,7 @@ export type FiliereCreateWithoutSchedulesInput = {
   ues?: Prisma.UECreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateWithoutSchedulesInput = {
@@ -1150,6 +1290,7 @@ export type FiliereUncheckedCreateWithoutSchedulesInput = {
   ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereCreateOrConnectWithoutSchedulesInput = {
@@ -1187,6 +1328,7 @@ export type FiliereUpdateWithoutSchedulesInput = {
   ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateWithoutSchedulesInput = {
@@ -1208,6 +1350,7 @@ export type FiliereUncheckedUpdateWithoutSchedulesInput = {
   ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereCreateWithoutStudentsInput = {
@@ -1229,6 +1372,7 @@ export type FiliereCreateWithoutStudentsInput = {
   ues?: Prisma.UECreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateWithoutStudentsInput = {
@@ -1250,6 +1394,7 @@ export type FiliereUncheckedCreateWithoutStudentsInput = {
   ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
   tuitionFees?: Prisma.TuitionFeeUncheckedCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereCreateOrConnectWithoutStudentsInput = {
@@ -1287,6 +1432,7 @@ export type FiliereUpdateWithoutStudentsInput = {
   ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateWithoutStudentsInput = {
@@ -1308,6 +1454,7 @@ export type FiliereUncheckedUpdateWithoutStudentsInput = {
   ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereCreateWithoutTuitionFeesInput = {
@@ -1329,6 +1476,7 @@ export type FiliereCreateWithoutTuitionFeesInput = {
   schedules?: Prisma.ScheduleCreateNestedManyWithoutFiliereInput
   ues?: Prisma.UECreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereUncheckedCreateWithoutTuitionFeesInput = {
@@ -1350,6 +1498,7 @@ export type FiliereUncheckedCreateWithoutTuitionFeesInput = {
   schedules?: Prisma.ScheduleUncheckedCreateNestedManyWithoutFiliereInput
   ues?: Prisma.UEUncheckedCreateNestedManyWithoutFiliereInput
   specializations?: Prisma.SpecializationUncheckedCreateNestedManyWithoutFiliereInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedCreateNestedManyWithoutFiliereInput
 }
 
 export type FiliereCreateOrConnectWithoutTuitionFeesInput = {
@@ -1387,6 +1536,7 @@ export type FiliereUpdateWithoutTuitionFeesInput = {
   schedules?: Prisma.ScheduleUpdateManyWithoutFiliereNestedInput
   ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateWithoutTuitionFeesInput = {
@@ -1408,6 +1558,7 @@ export type FiliereUncheckedUpdateWithoutTuitionFeesInput = {
   schedules?: Prisma.ScheduleUncheckedUpdateManyWithoutFiliereNestedInput
   ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereCreateManyResponsableInput = {
@@ -1444,6 +1595,7 @@ export type FiliereUpdateWithoutResponsableInput = {
   ues?: Prisma.UEUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateWithoutResponsableInput = {
@@ -1465,6 +1617,7 @@ export type FiliereUncheckedUpdateWithoutResponsableInput = {
   ues?: Prisma.UEUncheckedUpdateManyWithoutFiliereNestedInput
   tuitionFees?: Prisma.TuitionFeeUncheckedUpdateManyWithoutFiliereNestedInput
   specializations?: Prisma.SpecializationUncheckedUpdateManyWithoutFiliereNestedInput
+  courseFilieres?: Prisma.CourseFiliereUncheckedUpdateManyWithoutFiliereNestedInput
 }
 
 export type FiliereUncheckedUpdateManyWithoutResponsableInput = {
@@ -1494,6 +1647,7 @@ export type FiliereCountOutputType = {
   ues: number
   tuitionFees: number
   specializations: number
+  courseFilieres: number
 }
 
 export type FiliereCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1503,6 +1657,7 @@ export type FiliereCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   ues?: boolean | FiliereCountOutputTypeCountUesArgs
   tuitionFees?: boolean | FiliereCountOutputTypeCountTuitionFeesArgs
   specializations?: boolean | FiliereCountOutputTypeCountSpecializationsArgs
+  courseFilieres?: boolean | FiliereCountOutputTypeCountCourseFilieresArgs
 }
 
 /**
@@ -1557,6 +1712,13 @@ export type FiliereCountOutputTypeCountSpecializationsArgs<ExtArgs extends runti
   where?: Prisma.SpecializationWhereInput
 }
 
+/**
+ * FiliereCountOutputType without action
+ */
+export type FiliereCountOutputTypeCountCourseFilieresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CourseFiliereWhereInput
+}
+
 
 export type FiliereSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1579,6 +1741,7 @@ export type FiliereSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   ues?: boolean | Prisma.Filiere$uesArgs<ExtArgs>
   tuitionFees?: boolean | Prisma.Filiere$tuitionFeesArgs<ExtArgs>
   specializations?: boolean | Prisma.Filiere$specializationsArgs<ExtArgs>
+  courseFilieres?: boolean | Prisma.Filiere$courseFilieresArgs<ExtArgs>
   _count?: boolean | Prisma.FiliereCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["filiere"]>
 
@@ -1641,6 +1804,7 @@ export type FiliereInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   ues?: boolean | Prisma.Filiere$uesArgs<ExtArgs>
   tuitionFees?: boolean | Prisma.Filiere$tuitionFeesArgs<ExtArgs>
   specializations?: boolean | Prisma.Filiere$specializationsArgs<ExtArgs>
+  courseFilieres?: boolean | Prisma.Filiere$courseFilieresArgs<ExtArgs>
   _count?: boolean | Prisma.FiliereCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FiliereIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1660,6 +1824,7 @@ export type $FilierePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     ues: Prisma.$UEPayload<ExtArgs>[]
     tuitionFees: Prisma.$TuitionFeePayload<ExtArgs>[]
     specializations: Prisma.$SpecializationPayload<ExtArgs>[]
+    courseFilieres: Prisma.$CourseFilierePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2076,6 +2241,7 @@ export interface Prisma__FiliereClient<T, Null = never, ExtArgs extends runtime.
   ues<T extends Prisma.Filiere$uesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Filiere$uesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UEPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tuitionFees<T extends Prisma.Filiere$tuitionFeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Filiere$tuitionFeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TuitionFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   specializations<T extends Prisma.Filiere$specializationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Filiere$specializationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SpecializationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  courseFilieres<T extends Prisma.Filiere$courseFilieresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Filiere$courseFilieresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CourseFilierePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2677,6 +2843,30 @@ export type Filiere$specializationsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.SpecializationScalarFieldEnum | Prisma.SpecializationScalarFieldEnum[]
+}
+
+/**
+ * Filiere.courseFilieres
+ */
+export type Filiere$courseFilieresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CourseFiliere
+   */
+  select?: Prisma.CourseFiliereSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CourseFiliere
+   */
+  omit?: Prisma.CourseFiliereOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseFiliereInclude<ExtArgs> | null
+  where?: Prisma.CourseFiliereWhereInput
+  orderBy?: Prisma.CourseFiliereOrderByWithRelationInput | Prisma.CourseFiliereOrderByWithRelationInput[]
+  cursor?: Prisma.CourseFiliereWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CourseFiliereScalarFieldEnum | Prisma.CourseFiliereScalarFieldEnum[]
 }
 
 /**

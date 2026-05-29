@@ -76,6 +76,12 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
   }
 
   const { id } = await params;
-  await prisma.schedule.delete({ where: { id } });
+  const existing = await prisma.schedule.findUnique({ where: { id }, select: { sharedGroupId: true } });
+  if (existing?.sharedGroupId) {
+    // Creneau mutualise : on supprime toute la serie liee (toutes les filieres concernees)
+    await prisma.schedule.deleteMany({ where: { sharedGroupId: existing.sharedGroupId } });
+  } else {
+    await prisma.schedule.delete({ where: { id } });
+  }
   return NextResponse.json({ success: true });
 }

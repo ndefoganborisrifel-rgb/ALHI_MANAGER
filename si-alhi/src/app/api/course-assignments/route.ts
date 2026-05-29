@@ -24,11 +24,11 @@ export async function GET(req: Request) {
 
   const assignments = await prisma.courseAssignment.findMany({
     where: {
-      ...(filiereId ? { course: { filiereId } } : {}),
+      ...(filiereId ? { OR: [{ course: { filiereId } }, { course: { courseFilieres: { some: { filiereId } } } }] } : {}),
       ...(academicYear ? { academicYear } : {}),
     },
     include: {
-      course: { include: { filiere: true } },
+      course: { include: { filiere: true, courseFilieres: { select: { filiereId: true } } } },
       teacher: true,
     },
     orderBy: { createdAt: "desc" },

@@ -55,82 +55,96 @@ export async function POST(req: Request) {
 
   const { roomId, dayOfWeek, startTime, academicYear, semester, courseAssignmentId, filiereId } = parsed.data;
 
-  // Collision salle: meme salle, meme jour, meme heure
-  if (roomId) {
-    const roomCollision = await prisma.schedule.findFirst({
-      where: { roomId, dayOfWeek, startTime, academicYear, semester },
-    });
-    if (roomCollision) {
-      return NextResponse.json({
-        error: "Collision detectee : cette salle est deja occupee a ce creneau.",
-        collision: true,
-      }, { status: 409 });
-    }
-  }
-
-  // Collision enseignant: meme enseignant, meme jour, meme heure
+  // Determiner les filieres concernees : si la matiere est mutualisee, on
+  // programme automatiquement le creneau dans toutes ses filieres.
+  let targetFiliereIds = [filiereId];
+  let teacherId: string | null = null;
   if (courseAssignmentId) {
     const assignment = await prisma.courseAssignment.findUnique({
       where: { id: courseAssignmentId },
-      select: { teacherId: true },
+      select: {
+        teacherId: true,
+        course: { select: { filiereId: true, courseFilieres: { select: { filiereId: true } } } },
+      },
     });
     if (assignment) {
-      const teacherConflict = await prisma.schedule.findFirst({
-        where: {
-          dayOfWeek,
-          startTime,
-          academicYear,
-          semester,
-          courseAssignment: { teacherId: assignment.teacherId },
-        },
-      });
-      if (teacherConflict) {
-        return NextResponse.json({
-          error: "Collision detectee : cet enseignant est deja programme a ce creneau.",
-          collision: true,
-        }, { status: 409 });
-      }
+      teacherId = assignment.teacherId;
+      const courseFiliereIds = assignment.course.courseFilieres.map((cf) => cf.filiereId);
+      const all = courseFiliereIds.length > 0 ? courseFiliereIds : [assignment.course.filiereId];
+      // On garde uniquement les filieres reellement liees, en s'assurant que
+      // la filiere active est incluse.
+      targetFiliereIds = Array.from(new Set([filiereId, ...all]));
+    }
+  }
+  const isMutualized = targetFiliereIds.length > 1;
+
+  // Collision salle (hors filieres mutualisees du meme creneau)
+  if (roomId) {
+    const roomCollision = await prisma.schedule.findFirst({
+      where: { roomId, dayOfWeek, startTime, academicYear, semester, filiereId: { notIn: targetFiliereIds } },
+    });
+    if (roomCollision) {
+      return NextResponse.json({ error: "Collision detectee : cette salle est deja occupee a ce creneau.", collision: true }, { status: 409 });
     }
   }
 
-  // Collision filiere: meme filiere, meme jour, meme heure
+  // Collision enseignant (un autre cours, pas la version mutualisee)
+  if (teacherId) {
+    const teacherConflict = await prisma.schedule.findFirst({
+      where: {
+        dayOfWeek, startTime, academicYear, semester,
+        filiereId: { notIn: targetFiliereIds },
+        courseAssignment: { teacherId },
+      },
+    });
+    if (teacherConflict) {
+      return NextResponse.json({ error: "Collision detectee : cet enseignant est deja programme a ce creneau.", collision: true }, { status: 409 });
+    }
+  }
+
+  // Collision filiere : chaque filiere concernee doit etre libre a ce creneau
   const filiereConflict = await prisma.schedule.findFirst({
-    where: { filiereId, dayOfWeek, startTime, academicYear, semester },
+    where: { filiereId: { in: targetFiliereIds }, dayOfWeek, startTime, academicYear, semester },
+    include: { filiere: { select: { name: true } } },
   });
   if (filiereConflict) {
     return NextResponse.json({
-      error: "Collision detectee : cette filiere a deja un cours a ce creneau.",
+      error: `Collision detectee : la filiere ${filiereConflict.filiere.name} a deja un creneau a cette heure.`,
       collision: true,
     }, { status: 409 });
   }
 
-  const schedule = await prisma.schedule.create({ data: parsed.data });
+  // Creation : un creneau par filiere concernee, lies par sharedGroupId si mutualise
+  const sharedGroupId = isMutualized ? `grp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}` : null;
+  const created = await prisma.$transaction(
+    targetFiliereIds.map((fid) =>
+      prisma.schedule.create({ data: { ...parsed.data, filiereId: fid, sharedGroupId } })
+    )
+  );
 
-  // Notification aux etudiants de la filiere
+  // Notification aux etudiants de chaque filiere concernee
   try {
-    const filiere = await prisma.filiere.findUnique({
-      where: { id: filiereId },
-      select: { name: true },
-    });
+    const filieres = await prisma.filiere.findMany({ where: { id: { in: targetFiliereIds } }, select: { id: true, name: true } });
     const students = await prisma.student.findMany({
-      where: { filiereId, status: { in: ["ACTIF", "INSCRIT"] } },
-      select: { userId: true },
+      where: { filiereId: { in: targetFiliereIds }, status: { in: ["ACTIF", "INSCRIT"] } },
+      select: { userId: true, filiereId: true },
     });
-    const userIds = students.map((s) => s.userId).filter(Boolean) as string[];
-    if (userIds.length > 0 && filiere) {
-      const dayFr: Record<string, string> = { LUNDI: "lundi", MARDI: "mardi", MERCREDI: "mercredi", JEUDI: "jeudi", VENDREDI: "vendredi", SAMEDI: "samedi" };
-      await prisma.notification.createMany({
-        data: userIds.map((userId) => ({
-          userId,
+    const dayFr: Record<string, string> = { LUNDI: "lundi", MARDI: "mardi", MERCREDI: "mercredi", JEUDI: "jeudi", VENDREDI: "vendredi", SAMEDI: "samedi" };
+    const notifs = students
+      .filter((s) => s.userId)
+      .map((s) => {
+        const fname = filieres.find((f) => f.id === s.filiereId)?.name ?? "votre filiere";
+        return {
+          userId: s.userId as string,
           title: "Emploi du temps mis a jour",
-          message: `Un nouveau creneau a ete ajoute le ${dayFr[dayOfWeek] ?? dayOfWeek} de ${startTime} pour ${filiere.name}.`,
+          message: `Un nouveau creneau a ete ajoute le ${dayFr[dayOfWeek] ?? dayOfWeek} de ${startTime} pour ${fname}.`,
           type: "INFO",
-        })),
+        };
       });
-    }
+    if (notifs.length > 0) await prisma.notification.createMany({ data: notifs });
   } catch {
     // Ne pas bloquer la reponse si les notifications echouent
   }
 
-  return NextResponse.json(schedule, { status: 201 });
+  return NextResponse.json({ ...created[0], mutualized: isMutualized, filiereCount: created.length }, { status: 201 });
 }

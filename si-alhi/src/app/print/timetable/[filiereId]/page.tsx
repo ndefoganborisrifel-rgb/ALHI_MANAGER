@@ -22,6 +22,7 @@ type Schedule = {
   startTime: string;
   endTime: string;
   type: string;
+  semester?: number;
   sessionNumber?: number | null;
   totalSessions?: number | null;
   label?: string | null;
@@ -73,9 +74,12 @@ export default function PrintTimetablePage() {
     }).finally(() => setLoading(false));
   }, [filiereId, year]);
 
+  const semFiltered = semester
+    ? schedules.filter((s) => String(s.semester ?? "") === semester)
+    : schedules;
   const filtered = mode === "examens"
-    ? schedules.filter((s) => s.type === "EVALUATION")
-    : schedules.filter((s) => s.type !== "EVALUATION");
+    ? semFiltered.filter((s) => s.type === "EVALUATION")
+    : semFiltered.filter((s) => s.type !== "EVALUATION");
 
   if (loading) return <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif", color: "#888" }}>Chargement...</div>;
   if (!filiere) return <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif", color: "#B91C2F" }}>Filiere introuvable.</div>;

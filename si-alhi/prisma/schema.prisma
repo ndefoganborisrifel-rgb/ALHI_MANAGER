@@ -165,6 +165,7 @@ model Filiere {
   ues             UE[]
   tuitionFees     TuitionFee[]
   specializations Specialization[]
+  courseFilieres  CourseFiliere[]
 }
 
 model Specialization {
@@ -213,6 +214,22 @@ model Course {
   ue          UE?               @relation(fields: [ueId], references: [id])
   assignments CourseAssignment[]
   grades      Grade[]
+  courseFilieres CourseFiliere[]
+}
+
+// Mutualisation : une matiere peut etre partagee par plusieurs filieres.
+// La filiere "primaire" reste Course.filiereId ; cette table liste toutes
+// les filieres concernees (y compris la primaire).
+model CourseFiliere {
+  id        String   @id @default(cuid())
+  courseId  String
+  filiereId String
+  createdAt DateTime @default(now())
+
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  filiere Filiere @relation(fields: [filiereId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, filiereId])
 }
 
 model Teacher {
@@ -281,6 +298,7 @@ model Schedule {
   type               ScheduleType @default(COURS)
   sessionNumber      Int?
   totalSessions      Int?
+  sharedGroupId      String?
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 

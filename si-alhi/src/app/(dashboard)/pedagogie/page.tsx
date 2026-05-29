@@ -9,7 +9,7 @@ type Filiere = { id: string; code: string; name: string };
 type Room = { id: string; code: string; name: string; capacity?: number };
 type CourseAssignment = {
   id: string;
-  course: { id: string; name: string; code: string; filiereId: string; totalHours: number };
+  course: { id: string; name: string; code: string; filiereId: string; totalHours: number; courseFilieres?: { filiereId: string }[] };
   teacher: { id: string; firstName: string; lastName: string };
 };
 type Schedule = {
@@ -24,6 +24,7 @@ type Schedule = {
   courseAssignmentId?: string | null;
   sessionNumber?: number | null;
   totalSessions?: number | null;
+  sharedGroupId?: string | null;
   label?: string | null;
   courseAssignment?: {
     course: { name: string; code: string };
@@ -137,19 +138,23 @@ export default function PedagogiePage() {
 
   useEffect(() => { loadData(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Collision detection: meme salle OU meme enseignant, meme jour, meme heure
+  // Detection des collisions : meme jour, meme creneau, meme semestre.
+  // On NE compte PAS comme collision les creneaux mutualises (meme matiere
+  // partagee par plusieurs filieres) : ils partagent un sharedGroupId.
   const collisions = new Set<string>();
   for (let i = 0; i < schedules.length; i++) {
     for (let j = i + 1; j < schedules.length; j++) {
       const a = schedules[i], b = schedules[j];
       if (a.dayOfWeek !== b.dayOfWeek || a.startTime !== b.startTime || a.semester !== b.semester) continue;
-      // Collision salle
+      // Creneaux mutualises (meme cours commun) : ce n'est pas une collision
+      if (a.sharedGroupId && a.sharedGroupId === b.sharedGroupId) continue;
+      // Collision salle (physiquement impossible)
       if (a.roomId && a.roomId === b.roomId) { collisions.add(a.id); collisions.add(b.id); }
-      // Collision enseignant
+      // Collision enseignant (deux cours differents en meme temps)
       const ta = a.courseAssignment?.teacher?.id;
       const tb = b.courseAssignment?.teacher?.id;
       if (ta && ta === tb) { collisions.add(a.id); collisions.add(b.id); }
-      // Collision filiere (meme groupe, meme heure)
+      // Collision filiere (meme groupe d'etudiants, deux creneaux a la meme heure)
       if (a.filiereId === b.filiereId) { collisions.add(a.id); collisions.add(b.id); }
     }
   }
@@ -158,7 +163,10 @@ export default function PedagogiePage() {
   const filiereSchedules = schedules.filter((s) => s.filiereId === activeFiliereId && s.semester === activeSemester);
   const coursSlots = filiereSchedules.filter((s) => s.type !== "EVALUATION");
   const examSlots = filiereSchedules.filter((s) => s.type === "EVALUATION");
-  const filiereAssignments = assignments.filter((a) => a.course.filiereId === activeFiliereId);
+  const filiereAssignments = assignments.filter((a) => {
+    const ids = a.course.courseFilieres?.map((cf) => cf.filiereId) ?? [];
+    return a.course.filiereId === activeFiliereId || ids.includes(activeFiliereId);
+  });
   const totalCollisions = collisions.size / 2;
 
   // Demain
@@ -291,6 +299,11 @@ export default function PedagogiePage() {
                               )}
                               {s.courseAssignment ? (
                                 <>
+                                  {s.sharedGroupId && (
+                                    <div style={{ display: "inline-block", fontSize: "8px", fontWeight: "800", color: "#7c3aed", background: "#f5f3ff", border: "1px solid #d8b4fe", borderRadius: "4px", padding: "0 4px", marginBottom: "2px" }}>
+                                      Cours commun
+                                    </div>
+                                  )}
                                   <div style={{ fontWeight: "800", fontSize: "10px", color: style.text, lineHeight: 1.3 }}>{s.courseAssignment.course.code}</div>
                                   <div style={{ fontSize: "10px", color: style.text, opacity: 0.9, lineHeight: 1.3, marginTop: "1px" }}>{s.courseAssignment.course.name}</div>
                                   <div style={{ fontSize: "9px", color: style.text, opacity: 0.65, marginTop: "2px", fontStyle: "italic" }}>
@@ -465,7 +478,7 @@ export default function PedagogiePage() {
                   <ChevronRight style={{ width: "13px", height: "13px" }} />
                 </button>
                 <button
-                  onClick={() => window.open(`/print/timetable/${activeFiliereId}?mode=${activeTab === "examens" ? "examens" : "cours"}&year=2025-2026&weekStart=${weekStart.toISOString().slice(0, 10)}`, "_blank")}
+                  onClick={() => window.open(`/print/timetable/${activeFiliereId}?mode=${activeTab === "examens" ? "examens" : "cours"}&year=2025-2026&semester=${activeSemester}&weekStart=${weekStart.toISOString().slice(0, 10)}`, "_blank")}
                   style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", background: "var(--bg-card)", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "12px", fontWeight: "600", color: "var(--text)", cursor: "pointer" }}
                 >
                   <Printer style={{ width: "12px", height: "12px" }} />Imprimer
@@ -614,6 +627,17 @@ export default function PedagogiePage() {
                   {filiereAssignments.length === 0 && (
                     <p style={{ fontSize: "11px", color: "#d97706", marginTop: "4px" }}>Aucun cours assigne. Creez des affectations dans RH.</p>
                   )}
+                  {(() => {
+                    const sel = filiereAssignments.find((a) => a.id === form.courseAssignmentId);
+                    const ids = sel?.course.courseFilieres?.map((cf) => cf.filiereId) ?? [];
+                    if (!sel || ids.length <= 1) return null;
+                    const names = filieres.filter((f) => ids.includes(f.id)).map((f) => f.code);
+                    return (
+                      <p style={{ fontSize: "11px", color: "#7c3aed", marginTop: "5px", background: "#f5f3ff", border: "1px solid #d8b4fe", borderRadius: "6px", padding: "6px 8px" }}>
+                        Cours commun : ce creneau sera programme automatiquement pour {names.join(", ")}.
+                      </p>
+                    );
+                  })()}
                 </div>
               )}
 
