@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { getStatusLabel, formatDate } from "@/lib/utils";
 import { UserPlus, ChevronRight } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageUI";
 
 const STAGE_CONFIG = [
   { key: "PROSPECT", label: "Prospects", dot: "#6b7280" },
@@ -24,21 +25,17 @@ export default async function AdmissionPage() {
 
   return (
     <div style={{ maxWidth: "1200px" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-        <div>
-          <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>SI-Admission</h1>
-          <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>{total} dossier{total !== 1 ? "s" : ""} au total</p>
-        </div>
-        <Link href="/admission/nouveau" style={{
-          display: "inline-flex", alignItems: "center", gap: "7px",
-          padding: "9px 18px", background: "#B91C2F", color: "white",
-          borderRadius: "9px", fontWeight: "700", fontSize: "13px", textDecoration: "none",
-        }}>
-          <UserPlus style={{ width: "15px", height: "15px" }} />
-          Nouveau candidat
-        </Link>
-      </div>
+      <PageHeader
+        title="SI-Admission"
+        subtitle={`${total} dossier${total !== 1 ? "s" : ""} au total`}
+        backHref="/dashboard"
+        icon={<UserPlus style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+        actions={(
+          <Link href="/admission/nouveau" style={{ display: "inline-flex", alignItems: "center", gap: "7px", padding: "10px 18px", background: "#B91C2F", color: "white", borderRadius: "10px", fontWeight: 700, fontSize: "13px", textDecoration: "none" }}>
+            <UserPlus style={{ width: "15px", height: "15px" }} />Nouveau candidat
+          </Link>
+        )}
+      />
 
       {/* Pipeline */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "10px", marginBottom: "20px" }}>

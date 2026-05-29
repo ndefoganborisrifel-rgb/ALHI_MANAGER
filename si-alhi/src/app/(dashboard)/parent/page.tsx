@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCFA, getStatusLabel, getStatusColor } from "@/lib/utils";
 import { User, GraduationCap, CreditCard, BookOpen, AlertTriangle } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageUI";
 
 export default async function ParentPage() {
   const session = await auth();
@@ -41,18 +42,16 @@ export default async function ParentPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Espace Parent</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Bienvenue, {parent.firstName} {parent.lastName}. Année académique 2025-2026
-          </p>
-        </div>
-        <Badge className="bg-[#B91C2F]/10 text-[#B91C2F] border-[#B91C2F]/20">
-          {parent.relation === "PERE" ? "Père" : parent.relation === "MERE" ? "Mère" : "Tuteur"}
-        </Badge>
-      </div>
+      <PageHeader
+        title="Espace Parent"
+        subtitle={`Bienvenue, ${parent.firstName} ${parent.lastName}. Annee academique 2025-2026`}
+        icon={<User style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+        actions={(
+          <span style={{ fontSize: "12px", fontWeight: 700, padding: "6px 14px", borderRadius: "20px", background: "var(--red-bg)", color: "#B91C2F" }}>
+            {parent.relation === "PERE" ? "Pere" : parent.relation === "MERE" ? "Mere" : "Tuteur"}
+          </span>
+        )}
+      />
 
       {parent.students.length === 0 && (
         <Card>

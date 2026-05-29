@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { AlertTriangle, Plus, Trash2, Calendar, ChevronLeft, ChevronRight, Printer, X, Eye } from "lucide-react";
 import { useCanManage } from "@/components/providers/RoleProvider";
+import { PageHeader } from "@/components/ui/PageUI";
 
 type Filiere = { id: string; code: string; name: string };
 type Room = { id: string; code: string; name: string; capacity?: number };
@@ -353,30 +354,30 @@ export default function PedagogiePage() {
       `}</style>
 
       <div style={{ maxWidth: "1400px" }}>
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
-          <div>
-            <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "2px" }}>SI-Pedagogie</h1>
-            <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Emploi du temps et plannings d&apos;examens, 2025-2026</p>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            {/* Demain banner */}
-            {tomorrowSlots.length > 0 && tomorrowFirst && tomorrowLast && (
-              <div style={{ display: "flex", alignItems: "center", gap: "7px", background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: "10px", padding: "7px 12px" }}>
-                <Calendar style={{ width: "13px", height: "13px", color: "#2563eb" }} />
-                <span style={{ fontSize: "11.5px", fontWeight: "600", color: "#1e40af" }}>
-                  Demain : {tomorrowFirst.label} a {tomorrowLast.end} ({tomorrowSlots.length} cours)
-                </span>
-              </div>
-            )}
-            {totalCollisions > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: "10px", padding: "8px 14px" }}>
-                <AlertTriangle style={{ width: "14px", height: "14px", color: "#dc2626" }} />
-                <span style={{ fontSize: "12px", fontWeight: "700", color: "#991b1b" }}>{totalCollisions} collision{totalCollisions > 1 ? "s" : ""}</span>
-              </div>
-            )}
-          </div>
-        </div>
+        <PageHeader
+          title="SI-Pedagogie"
+          subtitle="Emploi du temps et plannings d'examens, 2025-2026"
+          backHref="/dashboard"
+          icon={<Calendar style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
+          actions={(
+            <>
+              {tomorrowSlots.length > 0 && tomorrowFirst && tomorrowLast && (
+                <div style={{ display: "flex", alignItems: "center", gap: "7px", background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: "10px", padding: "7px 12px" }}>
+                  <Calendar style={{ width: "13px", height: "13px", color: "#2563eb" }} />
+                  <span style={{ fontSize: "11.5px", fontWeight: "600", color: "#1e40af" }}>
+                    Demain : {tomorrowFirst.label} a {tomorrowLast.end} ({tomorrowSlots.length} cours)
+                  </span>
+                </div>
+              )}
+              {totalCollisions > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: "10px", padding: "8px 14px" }}>
+                  <AlertTriangle style={{ width: "14px", height: "14px", color: "#dc2626" }} />
+                  <span style={{ fontSize: "12px", fontWeight: "700", color: "#991b1b" }}>{totalCollisions} collision{totalCollisions > 1 ? "s" : ""}</span>
+                </div>
+              )}
+            </>
+          )}
+        />
 
         {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "18px" }}>
