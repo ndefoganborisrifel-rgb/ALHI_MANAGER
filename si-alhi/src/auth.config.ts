@@ -35,7 +35,7 @@ export const authConfig: NextAuthConfig = {
 
       const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/changer-mot-de-passe") || pathname.startsWith("/mot-de-passe-oublie");
       const isApiAuth = pathname.startsWith("/api/auth");
-      const isPublic = pathname === "/favicon.ico" || pathname.startsWith("/_next");
+      const isPublic = pathname === "/favicon.ico" || pathname.startsWith("/_next") || /\.(?:png|jpg|jpeg|gif|svg|webp|ico|pdf)$/.test(pathname);
 
       if (isPublic || isApiAuth) return true;
       if (!isLoggedIn && !isAuthPage) return Response.redirect(new URL(`/login?callbackUrl=${pathname}`, nextUrl));
