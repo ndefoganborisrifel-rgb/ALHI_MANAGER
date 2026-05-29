@@ -269,8 +269,45 @@ async function main() {
   }
   console.log("✅ Schedules created");
 
-  // Students — 20 étudiants Prépa Engineering
-  const studentsData = [
+  // Helper pour créer les étudiants d'une filière avec le bon code matricule
+  async function seedStudents(
+    list: { lastName: string; firstName: string; gender: string }[],
+    filiereId: string,
+    matriculePrefix: string,  // ex: "ING", "BUS", "MBA", "BBA"
+    specId?: string,
+  ): Promise<{ id: string; firstName: string; lastName: string }[]> {
+    const records: { id: string; firstName: string; lastName: string }[] = [];
+    for (let i = 0; i < list.length; i++) {
+      const s = list[i];
+      const seq = i + 1;
+      const matricule = `ALI\\${matriculePrefix}${String(seq).padStart(3, "0")}\\25`;
+      const slug = `${s.firstName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}.${s.lastName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}`;
+      const email = `${slug}@etu.africaleadershipinstitute.com`;
+
+      const user = await prisma.user.upsert({
+        where: { email },
+        update: {},
+        create: { email, password: studentPassword, firstName: s.firstName, lastName: s.lastName, role: "ETUDIANT", mustChangePassword: false },
+      });
+
+      const student = await prisma.student.upsert({
+        where: { userId: user.id },
+        update: { matricule, firstName: s.firstName, lastName: s.lastName },
+        create: {
+          userId: user.id, matricule, firstName: s.firstName, lastName: s.lastName,
+          gender: s.gender, filiereId, specializationId: specId ?? null,
+          promotionYear: 2025, level: 1, status: "ACTIF", city: "Yaoundé", email,
+        },
+      });
+      records.push(student);
+    }
+    return records;
+  }
+
+  const studentPassword = await hash("Etudiant@2025", 12);
+
+  // Prépas Ingénieur — ALI\ING001\25 … ALI\ING020\25
+  const peStudentsData = [
     { lastName: "BINOUMA ASSOUNANA",    firstName: "Ange Jenny Willy",  gender: "F" },
     { lastName: "FOTIE MAMBOU DEFFO",   firstName: "Hilane",            gender: "F" },
     { lastName: "NDE FOGAN",            firstName: "Boris Rifel",       gender: "M" },
@@ -292,44 +329,44 @@ async function main() {
     { lastName: "NTEP",                 firstName: "Audrey Noëlle",     gender: "F" },
     { lastName: "MBAPPÉ",               firstName: "David Sébastien",   gender: "M" },
   ];
+  const studentRecords = await seedStudents(peStudentsData, filierePE.id, "ING", specsIng[0].id);
 
-  const studentPassword = await hash("Etudiant@2025", 12);
-  const studentRecords: { id: string; firstName: string; lastName: string }[] = [];
+  // Prépas Business — ALI\BUS001\25 … ALI\BUS009\25
+  const pbStudentsData = [
+    { lastName: "KAMGA",       firstName: "Éric Donald",     gender: "M" },
+    { lastName: "FOPA TAGNE",  firstName: "Carelle Lucie",   gender: "F" },
+    { lastName: "NGUELE",      firstName: "Rodrigue Parfait",gender: "M" },
+    { lastName: "BIKIÉ",       firstName: "Armelle Grace",   gender: "F" },
+    { lastName: "NFONO",       firstName: "Thierry Blaise",  gender: "M" },
+    { lastName: "DJOB",        firstName: "Célestine Aline", gender: "F" },
+    { lastName: "OWONA",       firstName: "Franck Valery",   gender: "M" },
+    { lastName: "MINKA",       firstName: "Laetitia Diane",  gender: "F" },
+    { lastName: "ESSOMBA",     firstName: "Claude Arnaud",   gender: "M" },
+  ];
+  const pbStudentRecords = await seedStudents(pbStudentsData, filierePB.id, "BUS");
 
-  for (let i = 0; i < studentsData.length; i++) {
-    const s = studentsData[i];
-    const seq = i + 1;
-    const matricule = `ALI\\ING${String(seq).padStart(3, "0")}\\25`;
-    const slug = `${s.firstName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}.${s.lastName.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[̀-ͯ]/g, "")}`;
-    const email = `${slug}@etu.africaleadershipinstitute.com`;
+  // MBA — ALI\MBA001\25 … ALI\MBA006\25
+  const mbaStudentsData = [
+    { lastName: "BELINGA",     firstName: "Christophe Serge", gender: "M" },
+    { lastName: "NZIÉ",        firstName: "Nadine Ornella",   gender: "F" },
+    { lastName: "MVONDO",      firstName: "Hervé Stéphane",   gender: "M" },
+    { lastName: "ABESSOLO",    firstName: "Régine Carole",    gender: "F" },
+    { lastName: "OLOMO",       firstName: "Luc Bertrand",     gender: "M" },
+    { lastName: "ETOGA",       firstName: "Sandrine Josée",   gender: "F" },
+  ];
+  await seedStudents(mbaStudentsData, filiereMBA.id, "MBA");
 
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: {},
-      create: { email, password: studentPassword, firstName: s.firstName, lastName: s.lastName, role: "ETUDIANT", mustChangePassword: false },
-    });
+  // BBA — ALI\BBA001\25 … ALI\BBA005\25
+  const bbaStudentsData = [
+    { lastName: "ONDOUA",      firstName: "Maëlle Ingrid",    gender: "F" },
+    { lastName: "NKOUMOU",     firstName: "Ulric Fabrice",    gender: "M" },
+    { lastName: "MEYE",        firstName: "Prisca Sandra",    gender: "F" },
+    { lastName: "ZANGA",       firstName: "Bertrand Loïc",    gender: "M" },
+    { lastName: "EBANG",       firstName: "Miroslava Chloe",  gender: "F" },
+  ];
+  await seedStudents(bbaStudentsData, filiereBBA.id, "BBA");
 
-    const student = await prisma.student.upsert({
-      where: { userId: user.id },
-      update: { matricule, firstName: s.firstName, lastName: s.lastName },
-      create: {
-        userId: user.id,
-        matricule,
-        firstName: s.firstName,
-        lastName: s.lastName,
-        gender: s.gender,
-        filiereId: filierePE.id,
-        specializationId: specsIng[0].id,
-        promotionYear: 2025,
-        level: 1,
-        status: "ACTIF",
-        city: "Yaoundé",
-        email,
-      },
-    });
-    studentRecords.push(student);
-  }
-  console.log("✅ Students created");
+  console.log("✅ Students created (PE: ING, PB: BUS, MBA: MBA, BBA: BBA)");
 
   // Grades — Boris Rifel NDE FOGAN (index 2) from prototype
   const borisStudent = studentRecords[2];
