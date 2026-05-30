@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, KeyRound, Calendar, BookOpen, Settings, Shield, ArrowLeft, Wrench } from "lucide-react";
 import { ChangePasswordForm } from "@/components/ui/ChangePasswordForm";
 import { MigrateSchedulesButton } from "@/components/ui/MigrateSchedulesButton";
+import { CleanupDuplicatesButton } from "@/components/ui/CleanupDuplicatesButton";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -148,8 +149,11 @@ export default async function SettingsPage() {
                 Maintenance
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="pt-6 space-y-6">
               <MigrateSchedulesButton />
+              <div className="border-t border-gray-100 pt-4">
+                <CleanupDuplicatesButton />
+              </div>
             </CardContent>
           </Card>
 

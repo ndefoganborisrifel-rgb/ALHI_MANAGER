@@ -283,10 +283,21 @@ export default function PedagogiePage() {
                   </td>
                   {DAYS.map((day) => {
                     if (skipped.has(`${day}:${idx}`)) return null;
-                    const matching = slotsList.filter((s) => s.dayOfWeek === day && s.startTime === slot.start);
+                    const allMatching = slotsList.filter((s) => s.dayOfWeek === day && s.startTime === slot.start);
+                    // Ne montrer qu un seul creneau par cellule si doublons reels (meme filiere, collision non exempte)
+                    const hasDuplicates = allMatching.length > 1;
+                    const matching = hasDuplicates
+                      ? allMatching.slice(0, 1)
+                      : allMatching;
                     const cellSpan = matching.length > 0 ? Math.max(...matching.map(getSlotSpan)) : 1;
                     return (
                       <td key={day} rowSpan={cellSpan} style={{ border: "1px solid var(--border)", padding: "4px", verticalAlign: "top", height: cellSpan > 1 ? `${72 * cellSpan}px` : "72px" }}>
+                        {hasDuplicates && (
+                          <div style={{ display: "flex", alignItems: "center", gap: "3px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: "5px", padding: "2px 6px", marginBottom: "3px", fontSize: "9px", fontWeight: "700", color: "#991b1b" }}>
+                            <AlertTriangle style={{ width: "9px", height: "9px" }} />
+                            {allMatching.length} doublons, allez dans Parametres pour nettoyer
+                          </div>
+                        )}
                         {matching.map((s) => {
                           const hasCol = collisions.has(s.id);
                           const style = hasCol
@@ -399,7 +410,7 @@ export default function PedagogiePage() {
         />
 
         {/* KPIs */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "18px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "12px", marginBottom: "18px" }}>
           {[
             { label: "Creneaux", value: schedules.length, color: "#2563eb" },
             { label: "Collisions", value: totalCollisions, color: "#B91C2F" },

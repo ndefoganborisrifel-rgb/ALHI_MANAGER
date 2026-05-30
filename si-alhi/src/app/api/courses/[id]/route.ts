@@ -51,9 +51,21 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
   const { filiereIds, ...scalarData } = parsed.data;
 
+  // Lire l'etat actuel pour detecter les changements de publication
+  const existing = await prisma.course.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      pvNormalePublished: true,
+      pvRattrapagePublished: true,
+      filiereId: true,
+      courseFilieres: { select: { filiereId: true } },
+    },
+  });
+
   // Si la liste des filieres est fournie, on la resynchronise (primaire incluse)
   if (filiereIds) {
-    const primary = scalarData.filiereId ?? (await prisma.course.findUnique({ where: { id }, select: { filiereId: true } }))?.filiereId;
+    const primary = scalarData.filiereId ?? existing?.filiereId;
     const allFiliereIds = Array.from(new Set([...(primary ? [primary] : []), ...filiereIds]));
     await prisma.courseFiliere.deleteMany({ where: { courseId: id } });
     await prisma.courseFiliere.createMany({ data: allFiliereIds.map((fid) => ({ courseId: id, filiereId: fid })) });
@@ -68,6 +80,41 @@ export async function PATCH(req: Request, { params }: RouteParams) {
       courseFilieres: { include: { filiere: { select: { id: true, code: true, name: true } } } },
     },
   });
+
+  // Envoyer des notifications aux etudiants lorsqu'un PV est publie
+  try {
+    const normaleJustPublished = scalarData.pvNormalePublished === true && existing?.pvNormalePublished === false;
+    const rattrapageJustPublished = scalarData.pvRattrapagePublished === true && existing?.pvRattrapagePublished === false;
+
+    if (normaleJustPublished || rattrapageJustPublished) {
+      const courseFiliereIds = existing?.courseFilieres.map((cf) => cf.filiereId) ?? [];
+      const primaryId = existing?.filiereId;
+      const allFiliereIds = Array.from(new Set([...(primaryId ? [primaryId] : []), ...courseFiliereIds]));
+
+      const students = await prisma.student.findMany({
+        where: { filiereId: { in: allFiliereIds }, status: { in: ["ACTIF", "INSCRIT"] } },
+        select: { userId: true },
+      });
+
+      const notifData = students
+        .filter((s) => s.userId)
+        .map((s) => ({
+          userId: s.userId as string,
+          title: normaleJustPublished ? "Resultats publies" : "Resultats de rattrapage publies",
+          message: normaleJustPublished
+            ? `Les resultats de la session normale de "${existing?.name ?? "votre cours"}" sont disponibles.`
+            : `Les resultats de la session de rattrapage de "${existing?.name ?? "votre cours"}" sont disponibles.`,
+          type: "SUCCESS",
+        }));
+
+      if (notifData.length > 0) {
+        await prisma.notification.createMany({ data: notifData });
+      }
+    }
+  } catch {
+    // Ne pas bloquer la reponse si les notifications echouent
+  }
+
   return NextResponse.json(course);
 }
 
