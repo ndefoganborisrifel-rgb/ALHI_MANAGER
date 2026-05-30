@@ -53,8 +53,7 @@ export async function POST() {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    const [keep, ...rest] = sorted;
-    void keep;
+    const [, ...rest] = sorted;
     toDelete.push(...rest.map((s) => s.id));
     groupsAffected++;
   }
