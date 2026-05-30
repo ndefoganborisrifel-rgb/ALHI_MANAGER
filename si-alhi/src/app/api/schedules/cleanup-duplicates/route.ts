@@ -11,60 +11,71 @@ import { prisma } from "@/lib/prisma";
  * Operation admin uniquement, idempotente.
  */
 export async function POST() {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
-  }
+  try {
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    }
 
-  const allSchedules = await prisma.schedule.findMany({
-    select: {
-      id: true,
-      filiereId: true,
-      dayOfWeek: true,
-      startTime: true,
-      semester: true,
-      academicYear: true,
-      courseAssignmentId: true,
-      sharedGroupId: true,
-      createdAt: true,
-    },
-    orderBy: { createdAt: "asc" },
-  });
-
-  // Regroupe par cle unique : meme filiere + jour + heure + semestre + annee
-  const groups = new Map<string, typeof allSchedules>();
-  for (const s of allSchedules) {
-    const key = `${s.filiereId}|${s.dayOfWeek}|${s.startTime}|${s.semester}|${s.academicYear}`;
-    const arr = groups.get(key) ?? [];
-    arr.push(s);
-    groups.set(key, arr);
-  }
-
-  const toDelete: string[] = [];
-  let groupsAffected = 0;
-
-  for (const [, slots] of groups) {
-    if (slots.length <= 1) continue;
-
-    // Conserver le meilleur : 1) avec courseAssignmentId 2) le plus recent
-    const sorted = [...slots].sort((a, b) => {
-      if (a.courseAssignmentId && !b.courseAssignmentId) return -1;
-      if (!a.courseAssignmentId && b.courseAssignmentId) return 1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    const allSchedules = await prisma.schedule.findMany({
+      select: {
+        id: true,
+        filiereId: true,
+        dayOfWeek: true,
+        startTime: true,
+        semester: true,
+        academicYear: true,
+        courseAssignmentId: true,
+        sharedGroupId: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: "asc" },
     });
 
-    const [, ...rest] = sorted;
-    toDelete.push(...rest.map((s) => s.id));
-    groupsAffected++;
-  }
+    // Regroupe par cle unique : meme filiere + jour + heure + semestre + annee
+    const groups = new Map<string, typeof allSchedules>();
+    for (const s of allSchedules) {
+      const key = `${s.filiereId}|${s.dayOfWeek}|${s.startTime}|${s.semester}|${s.academicYear}`;
+      const arr = groups.get(key) ?? [];
+      arr.push(s);
+      groups.set(key, arr);
+    }
 
-  if (toDelete.length > 0) {
-    await prisma.schedule.deleteMany({ where: { id: { in: toDelete } } });
-  }
+    const toDelete: string[] = [];
+    let groupsAffected = 0;
 
-  return NextResponse.json({
-    message: `Nettoyage termine : ${toDelete.length} doublon(s) supprime(s) dans ${groupsAffected} groupe(s).`,
-    deleted: toDelete.length,
-    groupsAffected,
-  });
+    for (const [, slots] of groups) {
+      if (slots.length <= 1) continue;
+
+      // Conserver le meilleur : 1) avec courseAssignmentId 2) le plus recent
+      const sorted = [...slots].sort((a, b) => {
+        if (a.courseAssignmentId && !b.courseAssignmentId) return -1;
+        if (!a.courseAssignmentId && b.courseAssignmentId) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      const [, ...rest] = sorted;
+      toDelete.push(...rest.map((s) => s.id));
+      groupsAffected++;
+    }
+
+    // Supprimer par lots pour ne pas depasser la limite de variables SQLite (999)
+    let deleted = 0;
+    const BATCH = 400;
+    for (let i = 0; i < toDelete.length; i += BATCH) {
+      const chunk = toDelete.slice(i, i + BATCH);
+      const res = await prisma.schedule.deleteMany({ where: { id: { in: chunk } } });
+      deleted += res.count;
+    }
+
+    return NextResponse.json({
+      message: `Nettoyage termine : ${deleted} doublon(s) supprime(s) dans ${groupsAffected} groupe(s).`,
+      deleted,
+      groupsAffected,
+    });
+  } catch (e) {
+    // Toujours renvoyer du JSON, meme en cas d erreur, pour que le client puisse l afficher
+    const message = e instanceof Error ? e.message : "Erreur inconnue lors du nettoyage";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

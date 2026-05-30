@@ -15,9 +15,15 @@ export function CleanupDuplicatesButton() {
     setErrorMsg("");
     try {
       const res = await fetch("/api/schedules/cleanup-duplicates", { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Erreur serveur");
-      setResult({ deleted: data.deleted, groupsAffected: data.groupsAffected });
+      // Lire le texte d abord pour eviter "unexpected end of JSON input" si la reponse est vide
+      const raw = await res.text();
+      let data: { error?: string; deleted?: number; groupsAffected?: number } = {};
+      if (raw) {
+        try { data = JSON.parse(raw); }
+        catch { throw new Error(`Reponse serveur invalide (code ${res.status}). Reessayez ou rechargez la page.`); }
+      }
+      if (!res.ok) throw new Error(data.error ?? `Erreur serveur (code ${res.status})`);
+      setResult({ deleted: data.deleted ?? 0, groupsAffected: data.groupsAffected ?? 0 });
       setStatus("done");
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Erreur inconnue");

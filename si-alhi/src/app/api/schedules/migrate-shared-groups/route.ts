@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma";
  * Idempotent : un creneau deja groupe n est pas retouche.
  */
 export async function POST() {
+  try {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
@@ -62,4 +63,8 @@ export async function POST() {
     groupsCreated: updates.length,
     schedulePatched: patchedCount,
   });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Erreur inconnue lors de la migration";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

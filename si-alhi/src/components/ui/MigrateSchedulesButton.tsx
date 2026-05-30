@@ -15,9 +15,14 @@ export function MigrateSchedulesButton() {
     setErrorMsg("");
     try {
       const res = await fetch("/api/schedules/migrate-shared-groups", { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Erreur serveur");
-      setResult({ groupsCreated: data.groupsCreated, schedulePatched: data.schedulePatched });
+      const raw = await res.text();
+      let data: { error?: string; groupsCreated?: number; schedulePatched?: number } = {};
+      if (raw) {
+        try { data = JSON.parse(raw); }
+        catch { throw new Error(`Reponse serveur invalide (code ${res.status}). Reessayez ou rechargez la page.`); }
+      }
+      if (!res.ok) throw new Error(data.error ?? `Erreur serveur (code ${res.status})`);
+      setResult({ groupsCreated: data.groupsCreated ?? 0, schedulePatched: data.schedulePatched ?? 0 });
       setStatus("done");
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Erreur inconnue");
