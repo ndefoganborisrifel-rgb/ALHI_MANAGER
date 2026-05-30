@@ -8,6 +8,7 @@ import { User, KeyRound, Calendar, BookOpen, Settings, Shield, ArrowLeft, Wrench
 import { ChangePasswordForm } from "@/components/ui/ChangePasswordForm";
 import { MigrateSchedulesButton } from "@/components/ui/MigrateSchedulesButton";
 import { CleanupDuplicatesButton } from "@/components/ui/CleanupDuplicatesButton";
+import { RecomputeGradesButton } from "@/components/ui/RecomputeGradesButton";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -153,6 +154,9 @@ export default async function SettingsPage() {
               <MigrateSchedulesButton />
               <div className="border-t border-gray-100 pt-4">
                 <CleanupDuplicatesButton />
+              </div>
+              <div className="border-t border-gray-100 pt-4">
+                <RecomputeGradesButton />
               </div>
             </CardContent>
           </Card>

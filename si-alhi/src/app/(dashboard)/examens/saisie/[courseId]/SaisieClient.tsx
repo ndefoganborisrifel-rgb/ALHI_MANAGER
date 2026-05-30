@@ -36,8 +36,8 @@ function calcFinal(cc1: number | string, cc2: number | string, exam: number | st
   const c2 = cc2 !== "" ? Number(cc2) : null;
   const ex = exam !== "" ? Number(exam) : null;
   if (ex === null) return null;
-  if (c1 !== null && c2 !== null) return c1 * 0.2 + c2 * 0.2 + ex * 0.6;
-  if (c1 !== null) return c1 * 0.4 + ex * 0.6;
+  if (c1 !== null && c2 !== null) return c1 * 0.25 + c2 * 0.25 + ex * 0.5;
+  if (c1 !== null) return c1 * 0.5 + ex * 0.5;
   return ex;
 }
 
@@ -286,8 +286,8 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
         <CardContent className="p-4 text-sm text-blue-800">
           {session === "NORMALE" ? (
             <>
-              <strong>Formule :</strong> Note finale = CC1 x 20% + CC2 x 20% + Examen x 60%.
-              Si CC2 absent : CC1 x 40% + Examen x 60%. Si CC absents : note examen seule.
+              <strong>Formule :</strong> Note finale = CC 50% + Examen 50%, soit CC1 x 25% + CC2 x 25% + Examen x 50%.
+              Si un seul CC : CC1 x 50% + Examen x 50%. Si CC absents : note examen seule.
               <span className="ml-2 font-bold text-[#B91C2F]">Seuil de validation : 14/20.</span>
               Si la note est inferieure a 14, l&apos;etudiant passe en rattrapage (examen uniquement).
             </>
@@ -295,7 +295,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
             <>
               <strong>Session de rattrapage :</strong> La note de l&apos;examen de rattrapage remplace la note d&apos;examen.
               Les CC de la session normale sont conserves (affiches en lecture seule).
-              <span className="block mt-1">Formule : CC1 x 20% + CC2 x 20% + Exam.Ratt. x 60%.</span>
+              <span className="block mt-1">Formule : CC1 x 25% + CC2 x 25% + Exam.Ratt. x 50%.</span>
               <span className="font-bold text-[#B91C2F]">Seuil de validation : 14/20.</span>
             </>
           )}

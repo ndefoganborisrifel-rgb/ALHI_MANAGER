@@ -36,13 +36,13 @@ export default async function PVListPage() {
     <div className="space-y-6" style={{ maxWidth: "1200px" }}>
       <PageHeader
         title="Proces-Verbaux de Notes"
-        subtitle={`Generez et publiez les PV officiels par cours. Annee ${currentYear}.`}
+        subtitle={`PV officiel par filiere : toutes les matieres et tous les etudiants. Annee ${currentYear}.`}
         backHref="/examens"
         icon={<FileText style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />
 
       <div style={{ padding: "12px 16px", background: "var(--bg-card)", borderRadius: "10px", border: "1px solid var(--border)", fontSize: "12px", color: "var(--text-muted)" }}>
-        Utilisez les boutons <strong style={{ color: "var(--text)" }}>Publier</strong> pour rendre les notes visibles aux etudiants par cours et par session. Les boutons <strong style={{ color: "var(--text)" }}>PV Normale/Rattrapage</strong> ouvrent la version imprimable.
+        Les boutons <strong style={{ color: "var(--text)" }}>PV Normale/Rattrapage</strong> ouvrent le proces-verbal complet de la filiere (toutes les matieres, tous les etudiants, notes et decision) pret a imprimer. Utilisez les boutons <strong style={{ color: "var(--text)" }}>Publier</strong> pour rendre les notes de chaque cours visibles aux etudiants.
       </div>
 
       {filieres.length === 0 && (
@@ -56,7 +56,7 @@ export default async function PVListPage() {
       {filieres.map((filiere) => (
         <Card key={filiere.id}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-3">
+            <CardTitle className="text-base flex items-center gap-3 flex-wrap">
               <span
                 style={{
                   background: "#B91C2F",
@@ -71,9 +71,39 @@ export default async function PVListPage() {
                 {filiere.code}
               </span>
               {filiere.name}
-              <span className="ml-auto text-xs font-normal text-gray-400">
+              <span className="text-xs font-normal text-gray-400">
                 {filiere.courses.length} cours
               </span>
+              <div className="ml-auto flex items-center gap-2">
+                <Link
+                  href={`/print/pv-filiere/${filiere.id}?session=NORMALE&year=${currentYear}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs gap-1.5 border-gray-300 hover:border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white"
+                  >
+                    <Printer className="w-3 h-3" />
+                    PV Normale
+                  </Button>
+                </Link>
+                <Link
+                  href={`/print/pv-filiere/${filiere.id}?session=RATTRAPAGE&year=${currentYear}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs gap-1.5 border-[#B91C2F]/40 text-[#B91C2F] hover:bg-[#B91C2F] hover:text-white hover:border-[#B91C2F]"
+                  >
+                    <Printer className="w-3 h-3" />
+                    PV Rattrapage
+                  </Button>
+                </Link>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -89,9 +119,8 @@ export default async function PVListPage() {
                       <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Code</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cours</th>
                       <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Sem.</th>
-                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Normale</th>
-                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rattrapage</th>
-                      <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Imprimer</th>
+                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Publier Normale</th>
+                      <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Publier Rattrapage</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -122,38 +151,6 @@ export default async function PVListPage() {
                             session="RATTRAPAGE"
                             initialPublished={course.pvRattrapagePublished}
                           />
-                        </td>
-                        <td className="px-6 py-3">
-                          <div className="flex items-center justify-end gap-2">
-                            <Link
-                              href={`/print/pv/${course.id}?session=NORMALE&year=${currentYear}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-xs gap-1.5 border-gray-300 hover:border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white"
-                              >
-                                <Printer className="w-3 h-3" />
-                                PV Normale
-                              </Button>
-                            </Link>
-                            <Link
-                              href={`/print/pv/${course.id}?session=RATTRAPAGE&year=${currentYear}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-xs gap-1.5 border-[#B91C2F]/40 text-[#B91C2F] hover:bg-[#B91C2F] hover:text-white hover:border-[#B91C2F]"
-                              >
-                                <Printer className="w-3 h-3" />
-                                PV Rattrapage
-                              </Button>
-                            </Link>
-                          </div>
                         </td>
                       </tr>
                     ))}

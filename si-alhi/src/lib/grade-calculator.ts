@@ -1,10 +1,13 @@
 // Le rattrapage remplace la note d'examen; les CC de la session normale sont conserves.
-// Formule : CC1*20% + CC2*20% + Exam*60% (ou CC*40% si un seul CC, ou Exam seul si aucun CC).
+// Formule : CC 50% + Examen 50%.
+//   - 2 CC : (CC1 + CC2)/2 * 50% + Exam * 50% = CC1*25% + CC2*25% + Exam*50%
+//   - 1 CC : CC1 * 50% + Exam * 50%
+//   - aucun CC : note d'examen seule
 export function calculateFinalGrade(cc1?: number | null, cc2?: number | null, exam?: number | null, rattrapage?: number | null): number | null {
   const effectiveExam = rattrapage != null ? rattrapage : exam;
   if (effectiveExam == null) return null;
-  if (cc1 != null && cc2 != null) return cc1 * 0.2 + cc2 * 0.2 + effectiveExam * 0.6;
-  if (cc1 != null) return cc1 * 0.4 + effectiveExam * 0.6;
+  if (cc1 != null && cc2 != null) return cc1 * 0.25 + cc2 * 0.25 + effectiveExam * 0.5;
+  if (cc1 != null) return cc1 * 0.5 + effectiveExam * 0.5;
   return effectiveExam;
 }
 
