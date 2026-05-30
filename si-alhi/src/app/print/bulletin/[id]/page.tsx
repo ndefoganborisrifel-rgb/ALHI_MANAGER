@@ -251,7 +251,7 @@ export default function PrintBulletinPage() {
         {/* Filigrane */}
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="" style={{ width: "240px", opacity: 0.05, objectFit: "contain" }} />
+          <img src="/logo.png" alt="" style={{ width: "240px", opacity: 0.08, objectFit: "contain" }} />
         </div>
         {/* Contenu */}
         <div style={{ position: "relative" }}>
@@ -464,18 +464,18 @@ export default function PrintBulletinPage() {
           </div>
         </div>
 
-        {/* Signatures : uniquement Directrice et DAAC */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "12px", fontSize: "8.5px", textAlign: "center" }}>
+        {/* Signatures : DAAC a gauche, Directrice a droite */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px", marginTop: "14px", fontSize: "8.5px", textAlign: "center" }}>
           <div>
-            <div style={{ borderTop: "1px solid #555", paddingTop: "4px", marginTop: "22px", color: "#333" }}>
-              <div style={{ fontWeight: "bold" }}>La Directrice de l&apos;Institut</div>
-              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "1px" }}>The Director</div>
+            <div style={{ borderTop: "1.5px solid #333", paddingTop: "5px", marginTop: "40px", color: "#333" }}>
+              <div style={{ fontWeight: "bold" }}>La DAAC</div>
+              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "2px" }}>Direction des Affaires Academiques et de la Conformite</div>
             </div>
           </div>
           <div>
-            <div style={{ borderTop: "1px solid #555", paddingTop: "4px", marginTop: "22px", color: "#333" }}>
-              <div style={{ fontWeight: "bold" }}>La DAAC</div>
-              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "1px" }}>Direction des Affaires Academiques et de la Conformite</div>
+            <div style={{ borderTop: "1.5px solid #333", paddingTop: "5px", marginTop: "40px", color: "#333" }}>
+              <div style={{ fontWeight: "bold" }}>La Directrice de l&apos;Institut</div>
+              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "2px" }}>The Director</div>
             </div>
           </div>
         </div>

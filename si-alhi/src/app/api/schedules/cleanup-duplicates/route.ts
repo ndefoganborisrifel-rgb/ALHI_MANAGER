@@ -59,9 +59,17 @@ export async function POST() {
       groupsAffected++;
     }
 
-    // Supprimer par lots pour ne pas depasser la limite de variables SQLite (999)
-    let deleted = 0;
+    // Supprimer par lots (SQLite : max 999 variables par requete)
     const BATCH = 400;
+
+    // 1. Supprimer d'abord les presences liees (FK : Attendance.scheduleId -> Schedule.id)
+    for (let i = 0; i < toDelete.length; i += BATCH) {
+      const chunk = toDelete.slice(i, i + BATCH);
+      await prisma.attendance.deleteMany({ where: { scheduleId: { in: chunk } } });
+    }
+
+    // 2. Supprimer les creneaux dupliques
+    let deleted = 0;
     for (let i = 0; i < toDelete.length; i += BATCH) {
       const chunk = toDelete.slice(i, i + BATCH);
       const res = await prisma.schedule.deleteMany({ where: { id: { in: chunk } } });
