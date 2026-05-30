@@ -57,9 +57,15 @@ export async function POST(req: Request) {
   if (gradeSession === "RATTRAPAGE") {
     const normaleGrade = await prisma.grade.findFirst({
       where: { studentId, courseId, session: "NORMALE", academicYear, semester },
-      select: { cc1: true, cc2: true },
+      select: { cc1: true, cc2: true, noteFinal: true },
     });
     if (normaleGrade) {
+      if (normaleGrade.noteFinal != null && normaleGrade.noteFinal >= 14) {
+        return NextResponse.json(
+          { error: "Cet etudiant a deja valide cette matiere en session normale." },
+          { status: 409 }
+        );
+      }
       effectiveCc1 = normaleGrade.cc1;
       effectiveCc2 = normaleGrade.cc2;
     }

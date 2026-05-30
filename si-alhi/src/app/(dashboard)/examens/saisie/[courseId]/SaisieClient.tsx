@@ -22,12 +22,13 @@ interface StudentRow {
   matricule: string;
   firstName: string;
   lastName: string;
-  cc1: number | string;       // Pour RATTRAPAGE : CC de la session normale (lecture seule)
-  cc2: number | string;       // Pour RATTRAPAGE : CC de la session normale (lecture seule)
-  examScore: number | string; // Note d'examen (normale ou rattrapage)
+  cc1: number | string;
+  cc2: number | string;
+  examScore: number | string;
   noteFinal: number | null;
   gradeId: string | null;
   saved: boolean;
+  normaleValidated: boolean; // true si la note finale de session normale >= 14
 }
 
 function calcFinal(cc1: number | string, cc2: number | string, exam: number | string): number | null {
@@ -87,6 +88,8 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
           // En session rattrapage, les CC viennent de la session normale (read-only)
           const cc1Val = session === "RATTRAPAGE" ? (normale?.cc1 ?? "") : (existing?.cc1 ?? "");
           const cc2Val = session === "RATTRAPAGE" ? (normale?.cc2 ?? "") : (existing?.cc2 ?? "");
+          const normaleNoteFinal = normale?.noteFinal ?? null;
+          const normaleValidated = normaleNoteFinal != null && normaleNoteFinal >= PASSING_GRADE;
           return {
             id: s.id,
             matricule: s.matricule,
@@ -98,6 +101,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
             noteFinal: existing?.noteFinal ?? null,
             gradeId: existing?.id ?? null,
             saved: !!existing,
+            normaleValidated,
           };
         });
 
@@ -135,6 +139,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
   async function saveRow(idx: number) {
     if (!canEdit) return;
     const row = rows[idx];
+    if (session === "RATTRAPAGE" && row.normaleValidated) return;
     setSaving((prev) => ({ ...prev, [row.id]: true }));
     try {
       const res = await fetch("/api/grades", {
@@ -368,7 +373,11 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
                       </td>
                       {/* Examen */}
                       <td className="px-3 py-2">
-                        {canEdit ? (
+                        {session === "RATTRAPAGE" && row.normaleValidated ? (
+                          <div className="text-center">
+                            <Badge className="bg-green-100 text-green-700 text-xs">Deja valide</Badge>
+                          </div>
+                        ) : canEdit ? (
                           <input type="number" min="0" max="20" step="0.25" placeholder="0" value={row.examScore}
                             onChange={(e) => updateRow(idx, "examScore", e.target.value)}
                             className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]" />
@@ -384,7 +393,9 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
                         )}
                       </td>
                       <td className="px-3 py-2 text-center">
-                        {preview != null ? (
+                        {session === "RATTRAPAGE" && row.normaleValidated ? (
+                          <Badge className="bg-green-100 text-green-700">Valide (S.N.)</Badge>
+                        ) : preview != null ? (
                           <Badge className={passed ? "bg-green-100 text-green-700" : preview >= 10 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}>
                             {passed ? "Validé" : preview >= 10 ? "Rattrapage" : "Ajourné"}
                           </Badge>

@@ -53,47 +53,87 @@ function fmt(n: number | null | undefined): string {
 // Seuil de validation ALHI
 const PASS = 14;
 
-function GradeBarChart({ ueResults }: { ueResults: UEResult[] }) {
+function GradeLineChart({ ueResults }: { ueResults: UEResult[] }) {
   const allCourses = ueResults.flatMap((ue) => ue.courses).filter((c) => c.noteFinal != null);
   if (allCourses.length === 0) return null;
-  const maxVisible = 16;
-  const shown = allCourses.slice(0, maxVisible);
+
+  const shown = allCourses.slice(0, 14);
+  const n = shown.length;
+  const W = 360, H = 130;
+  const PL = 18, PR = 14, PT = 16, PB = 34;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const xOf = (i: number) => PL + (n <= 1 ? cW / 2 : (i / (n - 1)) * cW);
+  const yOf = (v: number) => PT + cH * (1 - v / 20);
+  const yPass = yOf(14);
+
+  const pts = shown.map((c, i) => ({
+    x: xOf(i),
+    y: yOf(c.noteFinal!),
+    score: c.noteFinal!,
+    code: c.code.length > 8 ? c.code.slice(-8) : c.code,
+    isRatt: c.session === "RATTRAPAGE",
+  }));
+
   return (
     <div>
       <div style={{ fontSize: "7px", fontWeight: "bold", color: "#555", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.6px" }}>
-        Profil de performance par matiere
+        Evolution des notes par matiere
       </div>
-      {shown.map((c) => {
-        const score = c.noteFinal ?? 0;
-        const pct = Math.min((score / 20) * 100, 100);
-        const isRatt = c.session === "RATTRAPAGE";
-        const color = score >= 16 ? "#15803d" : score >= PASS ? "#16a34a" : score >= 10 ? "#d97706" : "#b91c1c";
-        const passMarker = (PASS / 20) * 100;
-        return (
-          <div key={c.code} style={{ marginBottom: "2.5px", display: "flex", alignItems: "center", gap: "3px" }}>
-            <div style={{ width: "46px", fontSize: "6px", fontFamily: "monospace", color: "#666", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flexShrink: 0 }}>
-              {c.code.slice(-8)}
-            </div>
-            <div style={{ flex: 1, background: "#e5e7eb", borderRadius: "3px", height: "11px", overflow: "hidden", position: "relative" }}>
-              <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: "3px", transition: "width 0.3s" }} />
-              {/* Graduation mark at 14 */}
-              <div style={{ position: "absolute", left: `${passMarker}%`, top: 0, width: "1px", height: "100%", background: "rgba(0,0,0,0.25)" }} />
-            </div>
-            <div style={{ fontSize: "7px", fontWeight: "800", color, minWidth: "20px", textAlign: "right" }}>{score.toFixed(1)}</div>
-            {isRatt && (
-              <div style={{ fontSize: "6px", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: "2px", padding: "0 2px", color: "#92400e", flexShrink: 0 }}>R</div>
-            )}
-          </div>
-        );
-      })}
-      <div style={{ display: "flex", paddingLeft: "49px", paddingRight: "24px", justifyContent: "space-between", fontSize: "5.5px", color: "#aaa", marginTop: "2px" }}>
-        <span>0</span>
-        <span style={{ position: "relative", left: `${(10 / 20) * 100 - 50}%` }}>10</span>
-        <span style={{ color: "#16a34a", fontWeight: "bold", position: "relative", left: `${(PASS / 20) * 100 - 50}%` }}>14</span>
-        <span>20</span>
-      </div>
-      <div style={{ fontSize: "6px", color: "#aaa", marginTop: "2px", fontStyle: "italic" }}>
-        Le trait vertical indique le seuil de validation (14/20). R = Rattrapage.
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}>
+        {[0, 5, 10, 14, 20].map((v) => (
+          <g key={v}>
+            <line x1={PL} y1={yOf(v)} x2={W - PR} y2={yOf(v)}
+              stroke={v === 14 ? "#16a34a" : "#e5e7eb"}
+              strokeWidth={v === 14 ? 0.8 : 0.5}
+              strokeDasharray={v === 14 ? "3,2" : "2,4"} />
+            <text x={PL - 2} y={yOf(v) + 2} textAnchor="end" fontSize="5" fill={v === 14 ? "#16a34a" : "#bbb"}>{v}</text>
+          </g>
+        ))}
+        <text x={W - PR + 2} y={yPass + 2} fontSize="5.5" fill="#16a34a" fontWeight="bold">14</text>
+
+        {pts.slice(1).map((pt, i) => {
+          const prev = pts[i];
+          const flat = Math.abs(pt.score - prev.score) < 0.01;
+          const rising = pt.score > prev.score;
+          const segColor = flat ? "#94a3b8" : rising ? "#16a34a" : "#b91c1c";
+          const midX = (prev.x + pt.x) / 2;
+          const midY = (prev.y + pt.y) / 2;
+          const angle = Math.atan2(pt.y - prev.y, pt.x - prev.x) * (180 / Math.PI);
+          return (
+            <g key={i}>
+              <line x1={prev.x} y1={prev.y} x2={pt.x} y2={pt.y} stroke={segColor} strokeWidth="1.5" strokeLinecap="round" />
+              <g transform={`translate(${midX},${midY}) rotate(${angle})`}>
+                <polygon points="4.5,0 -2,-2 -2,2" fill={segColor} opacity="0.9" />
+              </g>
+            </g>
+          );
+        })}
+
+        {pts.map((pt, i) => {
+          const color = pt.score >= 16 ? "#15803d" : pt.score >= 14 ? "#16a34a" : pt.score >= 10 ? "#d97706" : "#b91c1c";
+          return (
+            <g key={i}>
+              {pt.isRatt && <circle cx={pt.x} cy={pt.y} r="5.5" fill="none" stroke="#fcd34d" strokeWidth="1" />}
+              <circle cx={pt.x} cy={pt.y} r="3.5" fill={color} stroke="white" strokeWidth="0.8" />
+              <text x={pt.x} y={pt.y - 5.5} textAnchor="middle" fontSize="5.5" fontWeight="bold" fill={color}>
+                {pt.score.toFixed(1)}
+              </text>
+            </g>
+          );
+        })}
+
+        {pts.map((pt, i) => (
+          <text key={i} x={pt.x} y={H - PB + 10} textAnchor="middle" fontSize="5" fill="#888"
+            {...(n > 6 ? { transform: `rotate(-30,${pt.x},${H - PB + 10})` } : {})}>
+            {pt.code}
+          </text>
+        ))}
+      </svg>
+      <div style={{ fontSize: "6px", color: "#aaa", marginTop: "1px", fontStyle: "italic", display: "flex", gap: "8px" }}>
+        <span style={{ color: "#16a34a" }}>▲ Progression</span>
+        <span style={{ color: "#b91c1c" }}>▼ Regression</span>
+        <span>Seuil vert = 14/20</span>
+        <span>R = Rattrapage</span>
       </div>
     </div>
   );
@@ -161,6 +201,8 @@ export default function PrintBulletinPage() {
         }
         .page {
           background: white;
+          position: relative;
+          overflow: hidden;
           max-width: 210mm;
           margin: 16px auto;
           padding: 8mm 10mm;
@@ -206,6 +248,13 @@ export default function PrintBulletinPage() {
       </div>
 
       <div className="page">
+        {/* Filigrane */}
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="" style={{ width: "240px", opacity: 0.05, objectFit: "contain" }} />
+        </div>
+        {/* Contenu */}
+        <div style={{ position: "relative" }}>
 
         {/* EN-TETE OFFICIELLE 3 COLONNES */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 72px 1fr", gap: "6px", paddingBottom: "5px", marginBottom: "5px", borderBottom: "1.5px solid #1A1A1A" }}>
@@ -385,7 +434,7 @@ export default function PrintBulletinPage() {
               </div>
             </div>
             {/* Graphique par cours */}
-            <GradeBarChart ueResults={data.ueResults} />
+            <GradeLineChart ueResults={data.ueResults} />
           </div>
 
           {/* Droite : decision */}
@@ -444,6 +493,7 @@ export default function PrintBulletinPage() {
           Africa Leadership Higher Institute - Chateau Ngoa Ekele, Yaounde, Cameroun - Tel : (+237) 657 75 54 87
           <br />
           Ce document est un releve officiel de notes. Toute falsification est passible de sanctions disciplinaires et penales.
+        </div>
         </div>
       </div>
     </>
