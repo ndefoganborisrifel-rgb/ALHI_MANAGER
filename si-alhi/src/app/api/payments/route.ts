@@ -46,7 +46,44 @@ export async function POST(req: Request) {
       receiptNumber,
       status: "VALIDE",
     },
+    include: { student: { select: { userId: true, firstName: true, lastName: true, parent: { select: { userId: true } } } } },
   });
+
+  // Notifier l'etudiant et son parent du paiement enregistre
+  try {
+    const typeLabels: Record<string, string> = {
+      INSCRIPTION: "frais d'inscription",
+      TRANCHE1: "1re tranche de scolarite",
+      TRANCHE2: "2e tranche de scolarite",
+      TRANCHE3: "3e tranche de scolarite",
+      TRANCHE4: "4e tranche de scolarite",
+      AUTRE: "versement",
+    };
+    const typeLabel = typeLabels[parsed.data.type] ?? "paiement";
+    const amountFmt = new Intl.NumberFormat("fr-FR").format(parsed.data.amount) + " FCFA";
+    const notifs: { userId: string; title: string; message: string; type: string; link: string }[] = [];
+    if (payment.student.userId) {
+      notifs.push({
+        userId: payment.student.userId,
+        title: "Paiement enregistre",
+        message: `Un paiement de ${amountFmt} (${typeLabel}) a ete enregistre sur votre compte. Recu : ${receiptNumber}.`,
+        type: "SUCCESS",
+        link: "/scolarite",
+      });
+    }
+    if (payment.student.parent?.userId) {
+      notifs.push({
+        userId: payment.student.parent.userId,
+        title: "Paiement enregistre",
+        message: `Un paiement de ${amountFmt} (${typeLabel}) a ete enregistre pour ${payment.student.firstName} ${payment.student.lastName}.`,
+        type: "SUCCESS",
+        link: "/parent",
+      });
+    }
+    if (notifs.length > 0) await prisma.notification.createMany({ data: notifs });
+  } catch {
+    // Ne pas bloquer la reponse si les notifications echouent
+  }
 
   return NextResponse.json(payment, { status: 201 });
 }

@@ -50,7 +50,21 @@ export async function POST(req: Request) {
   }
 
   const { cc1, cc2, examScore, rattrapageScore, studentId, courseId, session: gradeSession, academicYear, semester } = parsed.data;
-  const noteFinal = calculateFinalGrade(cc1, cc2, examScore, rattrapageScore);
+
+  // Pour le rattrapage : les CC proviennent de la session normale, seul l'examen est repasse.
+  let effectiveCc1 = cc1;
+  let effectiveCc2 = cc2;
+  if (gradeSession === "RATTRAPAGE") {
+    const normaleGrade = await prisma.grade.findFirst({
+      where: { studentId, courseId, session: "NORMALE", academicYear, semester },
+      select: { cc1: true, cc2: true },
+    });
+    if (normaleGrade) {
+      effectiveCc1 = normaleGrade.cc1;
+      effectiveCc2 = normaleGrade.cc2;
+    }
+  }
+  const noteFinal = calculateFinalGrade(effectiveCc1, effectiveCc2, examScore ?? rattrapageScore, null);
 
   const grade = await prisma.grade.upsert({
     where: {

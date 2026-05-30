@@ -63,10 +63,10 @@ export default async function DeliberationPage() {
       }));
       const avg = calculateGeneralAverage(gradeData);
       const validatedCredits = student.grades
-        .filter((g) => (g.noteFinal ?? 0) >= 10)
+        .filter((g) => (g.noteFinal ?? 0) >= 14)
         .reduce((sum, g) => sum + g.course.credits, 0);
       const mention = getMention(avg);
-      const isAdmis = avg != null && avg >= 10;
+      const isAdmis = avg != null && avg >= 14;
       return {
         id: student.id,
         name: `${student.lastName} ${student.firstName}`,
@@ -195,7 +195,7 @@ export default async function DeliberationPage() {
                             {student.average != null ? (
                               <span
                                 className={`font-bold text-sm ${
-                                  student.average >= 10 ? "text-green-600" : "text-red-600"
+                                  student.average >= 14 ? "text-green-600" : student.average >= 10 ? "text-amber-600" : "text-red-600"
                                 }`}
                               >
                                 {student.average.toFixed(2)}

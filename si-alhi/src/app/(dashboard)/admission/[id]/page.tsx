@@ -410,7 +410,7 @@ export default function AdmissionDetailPage() {
                   </TableHeader>
                   <TableBody>
                     {student.grades.map((g) => {
-                      const passed = g.noteFinal != null && g.noteFinal >= 10;
+                      const passed = g.noteFinal != null && g.noteFinal >= 14;
                       return (
                         <TableRow key={g.id}>
                           <TableCell className="font-mono text-xs text-gray-500">{g.course.code}</TableCell>

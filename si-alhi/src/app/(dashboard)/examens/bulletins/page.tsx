@@ -196,7 +196,7 @@ export default function BulletinsPage() {
                       <td style={{ padding: "10px 14px", fontFamily: "monospace", color: "var(--text-muted)", fontSize: "11px" }}>{student.matricule}</td>
                       <td style={{ padding: "10px 14px" }}>
                         {student.avg != null ? (
-                          <span style={{ fontWeight: "700", color: student.avg >= 10 ? "#16a34a" : "#B91C2F" }}>
+                          <span style={{ fontWeight: "700", color: student.avg >= 14 ? "#16a34a" : student.avg >= 10 ? "#d97706" : "#B91C2F" }}>
                             {student.avg.toFixed(2)}/20
                           </span>
                         ) : <span style={{ color: "var(--text-muted)" }}>-</span>}

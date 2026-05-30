@@ -62,8 +62,8 @@ export default async function ExamensPage() {
       if (s.filiere.pvPublished && sem1Grades.length > 0) {
         const gradeData = sem1Grades.map((g) => ({ average: g.noteFinal, credits: g.course.credits }));
         const avg = calculateGeneralAverage(gradeData);
-        const credits = sem1Grades.filter((g) => (g.noteFinal ?? 0) >= 10).reduce((sum, g) => sum + g.course.credits, 0);
-        myDelib = { average: avg, mention: getMention(avg), decision: avg !== null && avg >= 10 ? "Admis" : "Ajourné", credits };
+        const credits = sem1Grades.filter((g) => (g.noteFinal ?? 0) >= 14).reduce((sum, g) => sum + g.course.credits, 0);
+        myDelib = { average: avg, mention: getMention(avg), decision: avg !== null && avg >= 14 ? "Admis" : "Ajourné", credits };
       }
       // Per-course grades visible when course PV is published
       myCourseGrades = s.grades
@@ -109,8 +109,8 @@ export default async function ExamensPage() {
         if (c.filiere.pvPublished && c.grades.length > 0) {
           const gradeData = c.grades.map((g) => ({ average: g.noteFinal, credits: g.course.credits }));
           const avg = calculateGeneralAverage(gradeData);
-          const credits = c.grades.filter((g) => (g.noteFinal ?? 0) >= 10).reduce((sum, g) => sum + g.course.credits, 0);
-          delib = { average: avg, mention: getMention(avg), decision: avg !== null && avg >= 10 ? "Admis" : "Ajourné", credits };
+          const credits = c.grades.filter((g) => (g.noteFinal ?? 0) >= 14).reduce((sum, g) => sum + g.course.credits, 0);
+          delib = { average: avg, mention: getMention(avg), decision: avg !== null && avg >= 14 ? "Admis" : "Ajourné", credits };
         }
         return { id: c.id, firstName: c.firstName, lastName: c.lastName, bulletinsPublished: c.filiere.bulletinsPublished, delib };
       });
@@ -243,7 +243,7 @@ export default async function ExamensPage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
             <div style={{ background: "white", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
-              <p style={{ fontSize: "22px", fontWeight: "800", color: myDelib.average !== null && myDelib.average >= 10 ? "#16a34a" : "#dc2626" }}>
+              <p style={{ fontSize: "22px", fontWeight: "800", color: myDelib.average !== null && myDelib.average >= 14 ? "#16a34a" : "#dc2626" }}>
                 {myDelib.average !== null ? myDelib.average.toFixed(2) : "N.C."}<span style={{ fontSize: "13px", fontWeight: "400", color: "#6b7280" }}>/20</span>
               </p>
               <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Moyenne generale</p>

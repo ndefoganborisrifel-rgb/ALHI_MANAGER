@@ -71,7 +71,7 @@ export default function PrintPVPage() {
       .finally(() => setLoading(false));
   }, [courseId, session]);
 
-  const admitted = grades.filter((g) => g.noteFinal != null && g.noteFinal >= 10).length;
+  const admitted = grades.filter((g) => g.noteFinal != null && g.noteFinal >= 14).length;
   const total = grades.length;
 
   if (error) {
@@ -299,7 +299,7 @@ export default function PrintPVPage() {
           </thead>
           <tbody>
             {grades.map((g, i) => {
-              const validated = g.noteFinal != null && g.noteFinal >= 10;
+              const validated = g.noteFinal != null && g.noteFinal >= 14;
               return (
                 <tr key={g.id}>
                   <td>{i + 1}</td>

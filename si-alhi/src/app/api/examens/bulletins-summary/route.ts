@@ -36,7 +36,7 @@ export async function GET(req: Request) {
     }));
     const avg = calculateGeneralAverage(gradeItems);
     const credits = student.grades
-      .filter((g) => (g.noteFinal ?? 0) >= 10)
+      .filter((g) => (g.noteFinal ?? 0) >= 14)
       .reduce((sum, g) => sum + g.course.credits, 0);
 
     return {

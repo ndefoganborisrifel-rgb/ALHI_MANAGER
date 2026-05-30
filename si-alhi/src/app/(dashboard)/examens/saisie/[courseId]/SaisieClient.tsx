@@ -22,9 +22,9 @@ interface StudentRow {
   matricule: string;
   firstName: string;
   lastName: string;
-  cc1: number | string;
-  cc2: number | string;
-  examScore: number | string;
+  cc1: number | string;       // Pour RATTRAPAGE : CC de la session normale (lecture seule)
+  cc2: number | string;       // Pour RATTRAPAGE : CC de la session normale (lecture seule)
+  examScore: number | string; // Note d'examen (normale ou rattrapage)
   noteFinal: number | null;
   gradeId: string | null;
   saved: boolean;
@@ -39,6 +39,9 @@ function calcFinal(cc1: number | string, cc2: number | string, exam: number | st
   if (c1 !== null) return c1 * 0.4 + ex * 0.6;
   return ex;
 }
+
+// Seuil de validation ALHI
+const PASSING_GRADE = 14;
 
 export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit: boolean }) {
   const [course, setCourse] = useState<CourseInfo | null>(null);
@@ -73,18 +76,24 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
         const grades: Array<{ id: string; studentId: string; cc1: number | null; cc2: number | null; examScore: number | null; noteFinal: number | null; session: string }> =
           Array.isArray(gradesRes) ? gradesRes : [];
 
+        const normaleGrades = grades.filter((g) => g.session === "NORMALE");
         const sessionGrades = grades.filter((g) => g.session === session);
+        const normaleMap = new Map(normaleGrades.map((g) => [g.studentId, g]));
         const gradeMap = new Map(sessionGrades.map((g) => [g.studentId, g]));
 
         const allRows: StudentRow[] = students.map((s) => {
           const existing = gradeMap.get(s.id);
+          const normale = normaleMap.get(s.id);
+          // En session rattrapage, les CC viennent de la session normale (read-only)
+          const cc1Val = session === "RATTRAPAGE" ? (normale?.cc1 ?? "") : (existing?.cc1 ?? "");
+          const cc2Val = session === "RATTRAPAGE" ? (normale?.cc2 ?? "") : (existing?.cc2 ?? "");
           return {
             id: s.id,
             matricule: s.matricule,
             firstName: s.firstName,
             lastName: s.lastName,
-            cc1: existing?.cc1 ?? "",
-            cc2: existing?.cc2 ?? "",
+            cc1: cc1Val,
+            cc2: cc2Val,
             examScore: existing?.examScore ?? "",
             noteFinal: existing?.noteFinal ?? null,
             gradeId: existing?.id ?? null,
@@ -271,9 +280,19 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
       <Card className="border-blue-100 bg-blue-50">
         <CardContent className="p-4 text-sm text-blue-800">
           {session === "NORMALE" ? (
-            <><strong>Formule :</strong> Note finale = CC1 x 20% + CC2 x 20% + Examen x 60%. Si CC2 absent : CC1 x 40% + Examen x 60%. Si CC absents : note examen seule.</>
+            <>
+              <strong>Formule :</strong> Note finale = CC1 x 20% + CC2 x 20% + Examen x 60%.
+              Si CC2 absent : CC1 x 40% + Examen x 60%. Si CC absents : note examen seule.
+              <span className="ml-2 font-bold text-[#B91C2F]">Seuil de validation : 14/20.</span>
+              Si la note est inferieure a 14, l&apos;etudiant passe en rattrapage (examen uniquement).
+            </>
           ) : (
-            <><strong>Session de rattrapage :</strong> Seule la note de l&apos;examen de rattrapage est saisie. Note finale = note de l&apos;examen.</>
+            <>
+              <strong>Session de rattrapage :</strong> La note de l&apos;examen de rattrapage remplace la note d&apos;examen.
+              Les CC de la session normale sont conserves (affiches en lecture seule).
+              <span className="block mt-1">Formule : CC1 x 20% + CC2 x 20% + Exam.Ratt. x 60%.</span>
+              <span className="font-bold text-[#B91C2F]">Seuil de validation : 14/20.</span>
+            </>
           )}
         </CardContent>
       </Card>
@@ -299,51 +318,75 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
                 <tr className="border-b bg-gray-50">
                   <th className="text-left px-4 py-3 font-semibold text-gray-700 w-36">Matricule</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-700">Étudiant</th>
-                  {session === "NORMALE" && <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC1/20</th>}
-                  {session === "NORMALE" && <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">CC2/20</th>}
+                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">
+                    CC1/20{session === "RATTRAPAGE" && <span className="block text-xs font-normal text-amber-600">(conserve)</span>}
+                  </th>
+                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">
+                    CC2/20{session === "RATTRAPAGE" && <span className="block text-xs font-normal text-amber-600">(conserve)</span>}
+                  </th>
                   <th className="text-center px-3 py-3 font-semibold text-gray-700 w-28">{session === "RATTRAPAGE" ? "Exam. Rattrapage/20" : "Examen/20"}</th>
                   <th className="text-center px-3 py-3 font-semibold text-gray-700 w-24">Note/20</th>
-                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-28">Résultat</th>
+                  <th className="text-center px-3 py-3 font-semibold text-gray-700 w-28">Résultat (seuil 14)</th>
                   {canEdit && <th className="px-3 py-3 w-24" />}
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row, idx) => {
                   const preview = calcFinal(row.cc1, row.cc2, row.examScore);
-                  const passed = preview != null && preview >= 10;
+                  const passed = preview != null && preview >= PASSING_GRADE;
                   return (
                     <tr key={row.id} className={`border-b hover:bg-gray-50 ${row.saved ? "bg-green-50/30" : ""}`}>
                       <td className="px-4 py-2 font-mono text-xs text-gray-500">{row.matricule}</td>
                       <td className="px-4 py-2 font-medium text-gray-900">{row.lastName} {row.firstName}</td>
-                      {(session === "NORMALE" ? (["cc1", "cc2", "examScore"] as const) : (["examScore"] as const)).map((field: "cc1" | "cc2" | "examScore") => (
-                        <td key={field} className="px-3 py-2">
-                          {canEdit ? (
-                            <input
-                              type="number"
-                              min="0"
-                              max="20"
-                              step="0.25"
-                              placeholder="0"
-                              value={row[field]}
-                              onChange={(e) => updateRow(idx, field, e.target.value)}
-                              className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]"
-                            />
-                          ) : (
-                            <div className="text-center text-gray-700">{row[field] !== "" ? row[field] : <span className="text-gray-300">-</span>}</div>
-                          )}
-                        </td>
-                      ))}
+                      {/* CC1 */}
+                      <td className="px-3 py-2">
+                        {session === "RATTRAPAGE" ? (
+                          <div className="text-center text-gray-500 bg-amber-50 rounded py-1 text-sm">
+                            {row.cc1 !== "" ? row.cc1 : <span className="text-gray-300">-</span>}
+                          </div>
+                        ) : canEdit ? (
+                          <input type="number" min="0" max="20" step="0.25" placeholder="0" value={row.cc1}
+                            onChange={(e) => updateRow(idx, "cc1", e.target.value)}
+                            className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]" />
+                        ) : (
+                          <div className="text-center text-gray-700">{row.cc1 !== "" ? row.cc1 : <span className="text-gray-300">-</span>}</div>
+                        )}
+                      </td>
+                      {/* CC2 */}
+                      <td className="px-3 py-2">
+                        {session === "RATTRAPAGE" ? (
+                          <div className="text-center text-gray-500 bg-amber-50 rounded py-1 text-sm">
+                            {row.cc2 !== "" ? row.cc2 : <span className="text-gray-300">-</span>}
+                          </div>
+                        ) : canEdit ? (
+                          <input type="number" min="0" max="20" step="0.25" placeholder="0" value={row.cc2}
+                            onChange={(e) => updateRow(idx, "cc2", e.target.value)}
+                            className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]" />
+                        ) : (
+                          <div className="text-center text-gray-700">{row.cc2 !== "" ? row.cc2 : <span className="text-gray-300">-</span>}</div>
+                        )}
+                      </td>
+                      {/* Examen */}
+                      <td className="px-3 py-2">
+                        {canEdit ? (
+                          <input type="number" min="0" max="20" step="0.25" placeholder="0" value={row.examScore}
+                            onChange={(e) => updateRow(idx, "examScore", e.target.value)}
+                            className="w-full text-center border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 focus:border-[#B91C2F]" />
+                        ) : (
+                          <div className="text-center text-gray-700">{row.examScore !== "" ? row.examScore : <span className="text-gray-300">-</span>}</div>
+                        )}
+                      </td>
                       <td className="px-3 py-2 text-center">
                         {preview != null ? (
-                          <span className={`font-bold ${passed ? "text-green-600" : "text-red-600"}`}>{preview.toFixed(2)}</span>
+                          <span className={`font-bold ${passed ? "text-green-600" : preview >= 10 ? "text-amber-600" : "text-red-600"}`}>{preview.toFixed(2)}</span>
                         ) : (
                           <span className="text-gray-300">-</span>
                         )}
                       </td>
                       <td className="px-3 py-2 text-center">
                         {preview != null ? (
-                          <Badge className={passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
-                            {passed ? "Validé" : "Ajourné"}
+                          <Badge className={passed ? "bg-green-100 text-green-700" : preview >= 10 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}>
+                            {passed ? "Validé" : preview >= 10 ? "Rattrapage" : "Ajourné"}
                           </Badge>
                         ) : (
                           <span className="text-gray-300 text-xs">-</span>

@@ -1,13 +1,11 @@
+// Le rattrapage remplace la note d'examen; les CC de la session normale sont conserves.
+// Formule : CC1*20% + CC2*20% + Exam*60% (ou CC*40% si un seul CC, ou Exam seul si aucun CC).
 export function calculateFinalGrade(cc1?: number | null, cc2?: number | null, exam?: number | null, rattrapage?: number | null): number | null {
-  if (rattrapage != null) return rattrapage;
-  if (cc1 != null && cc2 != null && exam != null) {
-    return cc1 * 0.2 + cc2 * 0.2 + exam * 0.6;
-  }
-  if (cc1 != null && exam != null) {
-    return cc1 * 0.4 + exam * 0.6;
-  }
-  if (exam != null) return exam;
-  return null;
+  const effectiveExam = rattrapage != null ? rattrapage : exam;
+  if (effectiveExam == null) return null;
+  if (cc1 != null && cc2 != null) return cc1 * 0.2 + cc2 * 0.2 + effectiveExam * 0.6;
+  if (cc1 != null) return cc1 * 0.4 + effectiveExam * 0.6;
+  return effectiveExam;
 }
 
 export function calculateUEAverage(grades: Array<{ noteFinal: number | null; credits: number }>): number | null {
@@ -37,6 +35,7 @@ export function getMention(average: number | null): string {
   return "Insuffisant";
 }
 
+// ALHI valide a partir de 14/20
 export function isValidated(grade: number | null): boolean {
-  return grade != null && grade >= 10;
+  return grade != null && grade >= 14;
 }

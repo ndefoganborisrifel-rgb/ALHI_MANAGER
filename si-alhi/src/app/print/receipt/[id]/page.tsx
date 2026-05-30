@@ -79,7 +79,7 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
 
       <div style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: "3px solid #B91C2F", paddingBottom: "10px", marginBottom: "12px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: "3px solid #B91C2F", paddingBottom: "7px", marginBottom: "8px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -132,8 +132,8 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
             background: "#fafafa",
             borderLeft: "3px solid #B91C2F",
             borderRadius: "0 5px 5px 0",
-            padding: "8px 10px",
-            marginBottom: "10px",
+            padding: "5px 8px",
+            marginBottom: "7px",
           }}
         >
           <div style={{ fontWeight: "bold", fontSize: "12px", color: "#1A1A1A" }}>{data.studentName}</div>
@@ -147,7 +147,7 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
         </div>
 
         {/* Payment details table */}
-        <div style={{ marginBottom: "10px" }}>
+        <div style={{ marginBottom: "7px" }}>
           <Row label="Date du paiement / Payment date" value={fmtDate(data.paymentDate)} />
           <Row label="Nature / Nature" value={`${typeInfo.fr} / ${typeInfo.en}`} />
           <Row label="Mode / Method" value={methodLabel} />
@@ -159,9 +159,9 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
           style={{
             border: "2px solid #1A1A1A",
             borderRadius: "6px",
-            padding: "10px 14px",
+            padding: "7px 12px",
             textAlign: "center",
-            marginBottom: "10px",
+            marginBottom: "7px",
           }}
         >
           <div style={{ fontSize: "9px", color: "#888", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "4px" }}>
@@ -186,8 +186,8 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
               background: data.balance === 0 ? "#f0fdf4" : "#fef2f2",
               border: `1px solid ${data.balance === 0 ? "#86efac" : "#fca5a5"}`,
               borderRadius: "5px",
-              marginBottom: "14px",
-              fontSize: "10px",
+              marginBottom: "8px",
+              fontSize: "9.5px",
             }}
           >
             <span style={{ color: "#555" }}>Solde restant / Remaining balance</span>
@@ -243,7 +243,7 @@ function Row({ label, value, valueStyle }: { label: string; value: string; value
 
 function SigLine({ label }: { label: string }) {
   return (
-    <div style={{ textAlign: "center", paddingTop: "6px", marginTop: "30px", borderTop: "1px solid #555", fontSize: "9px", color: "#333" }}>
+    <div style={{ textAlign: "center", paddingTop: "4px", marginTop: "22px", borderTop: "1px solid #555", fontSize: "8.5px", color: "#333" }}>
       {label}
     </div>
   );
@@ -310,23 +310,23 @@ export default function PrintReceiptPage() {
         .copy {
           position: relative;
           overflow: hidden;
-          padding: 12mm 14mm;
-          min-height: 140mm;
+          padding: 7mm 12mm;
+          min-height: 122mm;
         }
         .cut-line {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 0 10mm;
-          color: #aaa;
-          font-size: 9px;
+          gap: 6px;
+          padding: 1mm 10mm;
+          color: #bbb;
+          font-size: 8px;
           font-family: sans-serif;
-          letter-spacing: 1px;
+          letter-spacing: 0.8px;
         }
         .cut-line::before, .cut-line::after {
           content: "";
           flex: 1;
-          border-top: 1px dashed #bbb;
+          border-top: 1px dashed #ccc;
         }
       `}</style>
 

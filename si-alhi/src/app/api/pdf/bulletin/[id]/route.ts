@@ -60,17 +60,21 @@ export async function GET(req: Request, { params }: RouteParams) {
   // Build bulletin structure
   const ueResults = student.filiere.ues.map((ue) => {
     const courseGrades = ue.courses.map((course) => {
-      const grade = student.grades.find((g) => g.courseId === course.id);
+      // Le rattrapage est la note definitive si elle existe
+      const normaleGrade = student.grades.find((g) => g.courseId === course.id && g.session === "NORMALE");
+      const rattrapageGrade = student.grades.find((g) => g.courseId === course.id && g.session === "RATTRAPAGE");
+      const activeGrade = rattrapageGrade ?? normaleGrade;
       return {
         code: course.code,
         name: course.name,
         credits: course.credits,
-        cc1: grade?.cc1 ?? null,
-        cc2: grade?.cc2 ?? null,
-        examScore: grade?.examScore ?? null,
-        noteFinal: grade?.noteFinal ?? null,
-        session: grade?.session ?? "NORMALE",
-        validated: isValidated(grade?.noteFinal ?? null),
+        cc1: normaleGrade?.cc1 ?? null,
+        cc2: normaleGrade?.cc2 ?? null,
+        examScore: normaleGrade?.examScore ?? null,
+        rattrapageScore: rattrapageGrade?.examScore ?? null,
+        noteFinal: activeGrade?.noteFinal ?? null,
+        session: rattrapageGrade ? "RATTRAPAGE" : "NORMALE",
+        validated: isValidated(activeGrade?.noteFinal ?? null),
       };
     });
 
@@ -129,6 +133,6 @@ export async function GET(req: Request, { params }: RouteParams) {
     totalCredits: ueResults.reduce((sum, ue) => sum + ue.totalCredits, 0),
     mention,
     rank: `${rank}${rank === 1 ? "er" : "ème"}`,
-    decision: generalAverage != null && generalAverage >= 10 ? "Admis" : "Ajourné",
+    decision: generalAverage != null && generalAverage >= 14 ? "Admis" : "Ajourné",
   });
 }
