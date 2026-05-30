@@ -27,7 +27,7 @@ type Schedule = {
   sharedGroupId?: string | null;
   label?: string | null;
   courseAssignment?: {
-    course: { name: string; code: string };
+    course: { id: string; name: string; code: string };
     teacher: { id: string; firstName: string; lastName: string };
   } | null;
   room?: { name: string; code: string } | null;
@@ -152,12 +152,16 @@ export default function PedagogiePage() {
       if (a.sharedGroupId && a.sharedGroupId === b.sharedGroupId) continue;
       // Meme affectation cours/prof sur plusieurs filieres (ancien systeme ou mutualisé)
       if (a.courseAssignmentId && a.courseAssignmentId === b.courseAssignmentId) continue;
-      // Collision salle (physiquement impossible)
-      if (a.roomId && a.roomId === b.roomId) { collisions.add(a.id); collisions.add(b.id); }
-      // Collision enseignant : seulement si les deux creneaux sont dans des filieres DIFFERENTES
-      // (meme filiere + meme prof = collision reelle gere par la regle filiere ci-dessous)
+      // Meme cours ET meme enseignant sur des filieres differentes = cours mutualise
+      // (creneaux crees separement avant l introduction de sharedGroupId / courseAssignmentId commun)
       const ta = a.courseAssignment?.teacher?.id;
       const tb = b.courseAssignment?.teacher?.id;
+      const ca = a.courseAssignment?.course?.id;
+      const cb = b.courseAssignment?.course?.id;
+      if (ca && ca === cb && ta && ta === tb && a.filiereId !== b.filiereId) continue;
+      // Collision salle (physiquement impossible)
+      if (a.roomId && a.roomId === b.roomId) { collisions.add(a.id); collisions.add(b.id); }
+      // Collision enseignant : meme enseignant, filieres differentes, cours differents
       if (ta && ta === tb && a.filiereId !== b.filiereId) { collisions.add(a.id); collisions.add(b.id); }
       // Collision filiere (meme groupe d etudiants, deux creneaux differents a la meme heure)
       if (a.filiereId === b.filiereId) { collisions.add(a.id); collisions.add(b.id); }

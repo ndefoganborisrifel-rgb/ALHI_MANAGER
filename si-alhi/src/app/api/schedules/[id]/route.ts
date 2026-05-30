@@ -77,10 +77,20 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
 
   const { id } = await params;
   const existing = await prisma.schedule.findUnique({ where: { id }, select: { sharedGroupId: true } });
-  if (existing?.sharedGroupId) {
-    // Creneau mutualise : on supprime toute la serie liee (toutes les filieres concernees)
-    await prisma.schedule.deleteMany({ where: { sharedGroupId: existing.sharedGroupId } });
+  if (!existing) return NextResponse.json({ error: "Creneau introuvable" }, { status: 404 });
+
+  if (existing.sharedGroupId) {
+    // Creneau mutualise : recuperer tous les IDs du groupe
+    const groupIds = (await prisma.schedule.findMany({
+      where: { sharedGroupId: existing.sharedGroupId },
+      select: { id: true },
+    })).map((s) => s.id);
+    // Supprimer les presences liees avant les creneaux (contrainte FK)
+    await prisma.attendance.deleteMany({ where: { scheduleId: { in: groupIds } } });
+    await prisma.schedule.deleteMany({ where: { id: { in: groupIds } } });
   } else {
+    // Supprimer les presences liees avant le creneau (contrainte FK)
+    await prisma.attendance.deleteMany({ where: { scheduleId: id } });
     await prisma.schedule.delete({ where: { id } });
   }
   return NextResponse.json({ success: true });
