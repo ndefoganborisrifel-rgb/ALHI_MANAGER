@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, GraduationCap, CreditCard, Calendar,
   BookOpen, ClipboardList, Package, Briefcase, UserCheck,
-  Settings, ChevronLeft, ChevronRight, UserPlus, BookMarked, MessageSquare
+  Settings, ChevronLeft, ChevronRight, UserPlus, BookMarked, MessageSquare, Camera
 } from "lucide-react";
 
 interface NavItem {
@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
   { href: "/parent", label: "Espace Parent", icon: GraduationCap, roles: ["PARENT"] },
   { href: "/users", label: "Utilisateurs", icon: Users, roles: ["ADMIN"] },
   { href: "/messages", label: "Messagerie", icon: MessageSquare, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
+  { href: "/memory", label: "Memory", icon: Camera, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
 ];
 
 interface SidebarProps {

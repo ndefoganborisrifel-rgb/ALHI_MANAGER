@@ -130,6 +130,11 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Ce cours a des affectations enseignants. Supprimez-les d'abord." }, { status: 409 });
   }
 
+  const grades = await prisma.grade.count({ where: { courseId: id } });
+  if (grades > 0) {
+    return NextResponse.json({ error: "Ce cours a des notes enregistrees. Impossible de le supprimer sans perdre les notes des etudiants." }, { status: 409 });
+  }
+
   await prisma.course.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }

@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  MemoryPhoto: 'MemoryPhoto',
   User: 'User',
   AcademicYear: 'AcademicYear',
   Filiere: 'Filiere',
@@ -88,6 +89,19 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const MemoryPhotoScalarFieldEnum = {
+  id: 'id',
+  promotionYear: 'promotionYear',
+  caption: 'caption',
+  fileName: 'fileName',
+  mimeType: 'mimeType',
+  uploadedById: 'uploadedById',
+  createdAt: 'createdAt'
+} as const
+
+export type MemoryPhotoScalarFieldEnum = (typeof MemoryPhotoScalarFieldEnum)[keyof typeof MemoryPhotoScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

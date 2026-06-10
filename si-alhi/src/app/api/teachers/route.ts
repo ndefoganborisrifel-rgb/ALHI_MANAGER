@@ -36,7 +36,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-  if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role)) {
+  if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 

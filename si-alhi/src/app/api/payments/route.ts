@@ -16,7 +16,25 @@ export async function GET() {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
+  // ADMIN et SCOLARITE voient tout; un etudiant voit ses paiements;
+  // un parent voit ceux de ses enfants; les autres roles n'ont pas acces.
+  let where: object | undefined;
+  if (["ADMIN", "SCOLARITE"].includes(session.user.role)) {
+    where = undefined;
+  } else if (session.user.role === "ETUDIANT") {
+    const self = await prisma.student.findFirst({ where: { userId: session.user.id }, select: { id: true } });
+    if (!self) return NextResponse.json([]);
+    where = { studentId: self.id };
+  } else if (session.user.role === "PARENT") {
+    const parent = await prisma.parent.findFirst({ where: { userId: session.user.id }, select: { id: true } });
+    if (!parent) return NextResponse.json([]);
+    where = { student: { parentId: parent.id } };
+  } else {
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+  }
+
   const payments = await prisma.payment.findMany({
+    where,
     include: { student: true },
     orderBy: { paymentDate: "desc" },
     take: 100,

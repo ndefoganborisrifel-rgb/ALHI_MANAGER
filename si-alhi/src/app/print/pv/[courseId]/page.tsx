@@ -317,7 +317,7 @@ export default function PrintPVPage() {
                   </td>
                   <td>
                     <span className={g.noteFinal == null ? "neutral" : validated ? "validated" : "failed"}>
-                      {g.noteFinal == null ? "n/a" : validated ? "Valide" : "Ajoune"}
+                      {g.noteFinal == null ? "n/a" : validated ? "Valide" : "Ajourne"}
                     </span>
                   </td>
                 </tr>

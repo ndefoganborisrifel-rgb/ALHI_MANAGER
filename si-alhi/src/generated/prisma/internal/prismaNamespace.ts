@@ -384,6 +384,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  MemoryPhoto: 'MemoryPhoto',
   User: 'User',
   AcademicYear: 'AcademicYear',
   Filiere: 'Filiere',
@@ -423,10 +424,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "academicYear" | "filiere" | "specialization" | "uE" | "course" | "courseFiliere" | "teacher" | "courseAssignment" | "room" | "schedule" | "student" | "parent" | "tuitionFee" | "payment" | "grade" | "attendance" | "equipment" | "internship" | "teacherPayment" | "notification" | "conversation" | "conversationParticipant" | "message"
+    modelProps: "memoryPhoto" | "user" | "academicYear" | "filiere" | "specialization" | "uE" | "course" | "courseFiliere" | "teacher" | "courseAssignment" | "room" | "schedule" | "student" | "parent" | "tuitionFee" | "payment" | "grade" | "attendance" | "equipment" | "internship" | "teacherPayment" | "notification" | "conversation" | "conversationParticipant" | "message"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    MemoryPhoto: {
+      payload: Prisma.$MemoryPhotoPayload<ExtArgs>
+      fields: Prisma.MemoryPhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MemoryPhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MemoryPhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.MemoryPhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MemoryPhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>
+        }
+        findMany: {
+          args: Prisma.MemoryPhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>[]
+        }
+        create: {
+          args: Prisma.MemoryPhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>
+        }
+        createMany: {
+          args: Prisma.MemoryPhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MemoryPhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.MemoryPhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>
+        }
+        update: {
+          args: Prisma.MemoryPhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.MemoryPhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MemoryPhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MemoryPhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.MemoryPhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryPhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.MemoryPhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMemoryPhoto>
+        }
+        groupBy: {
+          args: Prisma.MemoryPhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemoryPhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MemoryPhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemoryPhotoCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -2239,6 +2314,19 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const MemoryPhotoScalarFieldEnum = {
+  id: 'id',
+  promotionYear: 'promotionYear',
+  caption: 'caption',
+  fileName: 'fileName',
+  mimeType: 'mimeType',
+  uploadedById: 'uploadedById',
+  createdAt: 'createdAt'
+} as const
+
+export type MemoryPhotoScalarFieldEnum = (typeof MemoryPhotoScalarFieldEnum)[keyof typeof MemoryPhotoScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -2658,16 +2746,9 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 
 
 /**
- * Reference to a field of type 'Role'
+ * Reference to a field of type 'Int'
  */
-export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
@@ -2679,9 +2760,16 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 
 
 /**
- * Reference to a field of type 'Int'
+ * Reference to a field of type 'Role'
  */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -2892,6 +2980,7 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
+  memoryPhoto?: Prisma.MemoryPhotoOmit
   user?: Prisma.UserOmit
   academicYear?: Prisma.AcademicYearOmit
   filiere?: Prisma.FiliereOmit

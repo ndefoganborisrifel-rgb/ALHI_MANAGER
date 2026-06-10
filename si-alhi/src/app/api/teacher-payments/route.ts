@@ -18,8 +18,18 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const teacherId = searchParams.get("teacherId");
 
+  // Un enseignant ne voit que ses propres vacations; ADMIN et SCOLARITE voient tout.
+  let where: { teacherId?: string } | undefined = teacherId ? { teacherId } : undefined;
+  if (session.user.role === "ENSEIGNANT") {
+    const self = await prisma.teacher.findUnique({ where: { userId: session.user.id }, select: { id: true } });
+    if (!self) return NextResponse.json([]);
+    where = { teacherId: self.id };
+  } else if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+  }
+
   const payments = await prisma.teacherPayment.findMany({
-    where: teacherId ? { teacherId } : undefined,
+    where,
     include: { teacher: true },
     orderBy: [{ year: "desc" }, { month: "desc" }],
   });
