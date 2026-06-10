@@ -16,7 +16,7 @@ export async function POST() {
   try {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
   // On cible uniquement les creneaux sans sharedGroupId qui ont un courseAssignmentId
@@ -59,7 +59,7 @@ export async function POST() {
   await Promise.all(updates);
 
   return NextResponse.json({
-    message: `Migration terminee : ${patchedCount} creneaux regroupes en ${updates.length} groupes.`,
+    message: `Migration terminée : ${patchedCount} créneaux regroupés en ${updates.length} groupes.`,
     groupsCreated: updates.length,
     schedulePatched: patchedCount,
   });

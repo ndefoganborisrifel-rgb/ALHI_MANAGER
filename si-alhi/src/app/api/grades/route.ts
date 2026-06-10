@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const parsed = upsertSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "Donnees invalides" }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 });
 
   // A teacher may only touch grades for courses they are assigned to. We bind
   // the allowed course ids into a Zod refinement so the ownership rule is part
@@ -40,12 +40,12 @@ export async function POST(req: Request) {
     const ownedCourseIds = await getTeacherCourseIds(guard.user.id);
     const ownership = upsertSchema
       .refine((d) => ownedCourseIds.includes(d.courseId), {
-        message: "Vous ne pouvez gerer que les notes de vos matieres",
+        message: "Vous ne pouvez gérer que les notes de vos matières",
         path: ["courseId"],
       })
       .safeParse(parsed.data);
     if (!ownership.success) {
-      return NextResponse.json({ error: ownership.error.issues[0]?.message ?? "Acces refuse" }, { status: 403 });
+      return NextResponse.json({ error: ownership.error.issues[0]?.message ?? "Accès refusé" }, { status: 403 });
     }
   }
 
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     if (normaleGrade) {
       if (normaleGrade.noteFinal != null && normaleGrade.noteFinal >= 14) {
         return NextResponse.json(
-          { error: "Cet etudiant a deja valide cette matiere en session normale." },
+          { error: "Cet étudiant a déjà validé cette matière en session normale." },
           { status: 409 }
         );
       }
@@ -91,12 +91,12 @@ export async function DELETE(req: Request) {
 
   const body = await req.json();
   const parsed = deleteSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "Donnees invalides" }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 });
 
   if (guard.user.role === "ENSEIGNANT") {
     const ownedCourseIds = await getTeacherCourseIds(guard.user.id);
     if (!ownedCourseIds.includes(parsed.data.courseId)) {
-      return NextResponse.json({ error: "Vous ne pouvez gerer que les notes de vos matieres" }, { status: 403 });
+      return NextResponse.json({ error: "Vous ne pouvez gérer que les notes de vos matières" }, { status: 403 });
     }
   }
 
@@ -110,7 +110,7 @@ export async function DELETE(req: Request) {
 
 export async function GET(req: Request) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const studentId = searchParams.get("studentId");
@@ -120,7 +120,7 @@ export async function GET(req: Request) {
   if (session.user.role === "ETUDIANT") {
     const self = await prisma.student.findFirst({ where: { userId: session.user.id }, select: { id: true } });
     if (!self || (studentId && studentId !== self.id)) {
-      return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
     }
     const grades = await prisma.grade.findMany({
       where: { studentId: self.id, ...(courseId ? { courseId } : {}) },

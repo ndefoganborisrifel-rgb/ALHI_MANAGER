@@ -75,7 +75,7 @@ export function AdminDashboard({
 
         <div style={{ position: "relative", zIndex: 1 }}>
           <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "4px" }}>
-            Annee academique 2025-2026
+            Année académique 2025-2026
           </p>
           <h1 style={{ color: "white", fontSize: "26px", fontWeight: "900", marginBottom: "4px", letterSpacing: "-0.5px" }}>
             Bienvenue, {userName.split(" ")[0]}
@@ -91,17 +91,17 @@ export function AdminDashboard({
             <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "11px", textTransform: "capitalize" }}>{dateLabel}</p>
           </div>
           <p style={{ color: "rgba(255,255,255,0.90)", fontSize: "13px", fontWeight: "600" }}>SI-ALHI v1.0</p>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "10px" }}>Systeme d&apos;Information</p>
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "10px" }}>Système d&apos;Information</p>
         </div>
       </div>
 
       {/* ── KPI CARDS ───────────────────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "20px" }}>
         {[
-          { label: "Etudiants actifs", value: studentCount.toLocaleString("fr-FR"), icon: GraduationCap, color: "#2563eb", bg: "#eff6ff", sub: `${courseCount} cours` },
+          { label: "Étudiants actifs", value: studentCount.toLocaleString("fr-FR"), icon: GraduationCap, color: "#2563eb", bg: "#eff6ff", sub: `${courseCount} cours` },
           { label: "En attente admiss.", value: pendingCount.toLocaleString("fr-FR"), icon: AlertCircle, color: "#d97706", bg: "#fff7ed", sub: "dossiers a traiter" },
           { label: "Enseignants", value: teacherCount.toLocaleString("fr-FR"), icon: Users, color: "#16a34a", bg: "#f0fdf4", sub: "corps enseignant" },
-          { label: "Recettes collectees", value: formatCFA(totalCollected), icon: TrendingUp, color: "#B91C2F", bg: "#fef2f2", sub: `${collectionRate}% de l'objectif` },
+          { label: "Recettes collectées", value: formatCFA(totalCollected), icon: TrendingUp, color: "#B91C2F", bg: "#fef2f2", sub: `${collectionRate}% de l'objectif` },
         ].map((kpi) => {
           const Icon = kpi.icon;
           return (
@@ -136,7 +136,7 @@ export function AdminDashboard({
         <div style={{ background: "var(--bg-card)", borderRadius: "14px", border: "1px solid var(--border)", overflow: "hidden" }}>
           <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "8px" }}>
             <BarChart3 style={{ width: "15px", height: "15px", color: "#B91C2F" }} />
-            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Etudiants par filiere</span>
+            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Étudiants par filière</span>
           </div>
           <div style={{ padding: "16px 18px", display: "flex", flexDirection: "column", gap: "14px" }}>
             {filiereStats.map((f) => {
@@ -157,7 +157,7 @@ export function AdminDashboard({
                 </div>
               );
             })}
-            {filiereStats.length === 0 && <p style={{ fontSize: "13px", color: "var(--text-muted)", textAlign: "center", padding: "16px" }}>Aucune donnee</p>}
+            {filiereStats.length === 0 && <p style={{ fontSize: "13px", color: "var(--text-muted)", textAlign: "center", padding: "16px" }}>Aucune donnée</p>}
           </div>
         </div>
 
@@ -183,21 +183,21 @@ export function AdminDashboard({
                 </svg>
                 <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ fontSize: "22px", fontWeight: "900", color: "#B91C2F" }}>{collectionRate}%</span>
-                  <span style={{ fontSize: "9px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px" }}>collecte</span>
+                  <span style={{ fontSize: "9px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px" }}>collecté</span>
                 </div>
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "var(--bg-muted)", borderRadius: "8px" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Montant collecte</span>
+                <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Montant collecté</span>
                 <span style={{ fontSize: "12px", fontWeight: "700", color: "#16a34a" }}>{formatCFA(totalCollected)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "var(--bg-muted)", borderRadius: "8px" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Objectif theorique</span>
+                <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Objectif théorique</span>
                 <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text)" }}>{formatCFA(totalExpected)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "#fef2f2", borderRadius: "8px" }}>
-                <span style={{ fontSize: "11px", color: "#b91c1c" }}>Reste a recouvrer</span>
+                <span style={{ fontSize: "11px", color: "#b91c1c" }}>Reste à recouvrer</span>
                 <span style={{ fontSize: "12px", fontWeight: "700", color: "#B91C2F" }}>{formatCFA(Math.max(totalExpected - totalCollected, 0))}</span>
               </div>
             </div>
@@ -207,13 +207,13 @@ export function AdminDashboard({
         {/* Acces rapides */}
         <div style={{ background: "var(--bg-card)", borderRadius: "14px", border: "1px solid var(--border)", overflow: "hidden" }}>
           <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
-            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Acces rapides</span>
+            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Accès rapides</span>
           </div>
           <div style={{ padding: "10px" }}>
             {[
               { label: "Nouvelle admission", href: "/admission/nouveau", icon: UserPlus, color: "#2563eb" },
               { label: "Saisie de notes", href: "/examens/saisie", icon: BookOpen, color: "#16a34a" },
-              { label: "Scolarite", href: "/scolarite", icon: CreditCard, color: "#B91C2F" },
+              { label: "Scolarité", href: "/scolarite", icon: CreditCard, color: "#B91C2F" },
               { label: "Planning", href: "/pedagogie", icon: Calendar, color: "#7c3aed" },
               { label: "Logistique", href: "/logistique", icon: Package, color: "#d97706" },
               { label: "Utilisateurs", href: "/users", icon: Users, color: "#0891b2" },
@@ -240,7 +240,7 @@ export function AdminDashboard({
         <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <GraduationCap style={{ width: "15px", height: "15px", color: "#B91C2F" }} />
-            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Dernieres inscriptions</span>
+            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Dernières inscriptions</span>
           </div>
           <Link href="/admission" style={{ fontSize: "11px", color: "#B91C2F", textDecoration: "none", fontWeight: "600", display: "flex", alignItems: "center", gap: "4px" }}>
             Voir tout <ArrowRight style={{ width: "11px", height: "11px" }} />
@@ -248,13 +248,13 @@ export function AdminDashboard({
         </div>
 
         {recentStudents.length === 0 ? (
-          <p style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>Aucun etudiant recent</p>
+          <p style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>Aucun étudiant récent</p>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "var(--bg-muted)" }}>
-                  {["Etudiant", "Matricule", "Filiere", "Statut", "Date inscription"].map((h) => (
+                  {["Étudiant", "Matricule", "Filière", "Statut", "Date inscription"].map((h) => (
                     <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: "10px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{h}</th>
                   ))}
                 </tr>

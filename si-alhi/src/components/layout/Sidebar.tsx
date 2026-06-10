@@ -18,10 +18,10 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { href: "/admission", label: "Admission", icon: UserPlus, roles: ["ADMIN", "SCOLARITE"] },
-  { href: "/scolarite", label: "Scolarite", icon: CreditCard, roles: ["ADMIN", "SCOLARITE"] },
-  { href: "/pedagogie", label: "Pedagogie", icon: Calendar, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT"] },
-  { href: "/pedagogie/cours", label: "Matieres", icon: BookMarked, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
-  { href: "/pedagogie/matieres", label: "Mes matieres", icon: BookMarked, roles: ["ETUDIANT", "PARENT"] },
+  { href: "/scolarite", label: "Scolarité", icon: CreditCard, roles: ["ADMIN", "SCOLARITE"] },
+  { href: "/pedagogie", label: "Pédagogie", icon: Calendar, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT"] },
+  { href: "/pedagogie/cours", label: "Matières", icon: BookMarked, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT"] },
+  { href: "/pedagogie/matieres", label: "Mes matières", icon: BookMarked, roles: ["ETUDIANT", "PARENT"] },
   { href: "/examens", label: "Examens et Notes", icon: BookOpen, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { href: "/discipline", label: "Discipline", icon: ClipboardList, roles: ["ADMIN", "SCOLARITE", "ENSEIGNANT", "ETUDIANT", "PARENT"] },
   { href: "/logistique", label: "Logistique", icon: Package, roles: ["ADMIN"] },
@@ -180,7 +180,7 @@ export function Sidebar({ userRole, collapsed, onToggle, mobileOpen, onMobileClo
       <div style={{ padding: "8px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
         <Link
           href="/settings"
-          title={collapsed ? "Parametres" : undefined}
+          title={collapsed ? "Paramètres" : undefined}
           style={{
             display: "flex",
             alignItems: "center",
@@ -198,7 +198,7 @@ export function Sidebar({ userRole, collapsed, onToggle, mobileOpen, onMobileClo
           className={pathname !== "/settings" ? "hover:!bg-white/10 hover:!text-white" : ""}
         >
           <Settings className="w-[18px] h-[18px] shrink-0" />
-          {!collapsed && <span>Parametres</span>}
+          {!collapsed && <span>Paramètres</span>}
         </Link>
       </div>
     </aside>

@@ -14,9 +14,9 @@ import { calculateGeneralAverage, getMention } from "@/lib/grade-calculator";
  */
 export async function GET(req: Request) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role)) {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
   const { searchParams } = new URL(req.url);
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
   const academicYear = searchParams.get("year") ?? "2025-2026";
   const semester = parseInt(searchParams.get("semester") ?? "1");
 
-  if (!filiereId) return NextResponse.json({ error: "Filiere non specifiee" }, { status: 400 });
+  if (!filiereId) return NextResponse.json({ error: "Filière non spécifiée" }, { status: 400 });
 
   const filiere = await prisma.filiere.findUnique({
     where: { id: filiereId },
@@ -47,7 +47,7 @@ export async function GET(req: Request) {
     },
   });
 
-  if (!filiere) return NextResponse.json({ error: "Filiere introuvable" }, { status: 404 });
+  if (!filiere) return NextResponse.json({ error: "Filière introuvable" }, { status: 404 });
 
   const courses = filiere.courses.map((c) => ({
     id: c.id,
@@ -87,7 +87,7 @@ export async function GET(req: Request) {
       average: avg,
       mention: getMention(avg),
       validatedCredits,
-      decision: isAdmis ? "Admis" : "Ajourne",
+      decision: isAdmis ? "Admis" : "Ajourné",
     };
   });
 

@@ -22,7 +22,7 @@ type StudentRow = {
 };
 
 function getMentionColor(mention: string): string {
-  if (mention.includes("Tres Bien") || mention.includes("Excellent")) return "#d97706";
+  if (mention.includes("Très Bien") || mention.includes("Excellent")) return "#d97706";
   if (mention.includes("Bien")) return "#16a34a";
   if (mention.includes("Assez")) return "#2563eb";
   if (mention.includes("Passable") || mention.includes("Admis")) return "#6b7280";
@@ -119,7 +119,7 @@ export default function BulletinsPage() {
               style={{ display: "inline-flex", alignItems: "center", gap: "7px", padding: "8px 16px", background: selectedFiliere.bulletinsPublished ? "#16a34a" : "#B91C2F", color: "white", borderRadius: "9px", fontWeight: "700", fontSize: "12px", border: "none", cursor: toggling ? "not-allowed" : "pointer", opacity: toggling ? 0.7 : 1 }}
             >
               {selectedFiliere.bulletinsPublished
-                ? <><ToggleRight style={{ width: "14px", height: "14px" }} />Bulletins publies</>
+                ? <><ToggleRight style={{ width: "14px", height: "14px" }} />Bulletins publiés</>
                 : <><ToggleLeft style={{ width: "14px", height: "14px" }} />Publier bulletins</>
               }
             </button>
@@ -133,8 +133,8 @@ export default function BulletinsPage() {
         <div style={{ marginBottom: "14px", padding: "10px 16px", borderRadius: "10px", background: selectedFiliere.bulletinsPublished ? "#16a34a18" : "#B91C2F18", border: `1px solid ${selectedFiliere.bulletinsPublished ? "#16a34a40" : "#B91C2F30"}`, fontSize: "12px", color: selectedFiliere.bulletinsPublished ? "#16a34a" : "#B91C2F", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px" }}>
           <BookOpen style={{ width: "14px", height: "14px", flexShrink: 0 }} />
           {selectedFiliere.bulletinsPublished
-            ? `Bulletins de ${selectedFiliere.name} sont visibles par les etudiants et parents.`
-            : `Bulletins de ${selectedFiliere.name} non publies. Les etudiants et parents ne peuvent pas les consulter.`}
+            ? `Bulletins de ${selectedFiliere.name} sont visibles par les étudiants et parents.`
+            : `Bulletins de ${selectedFiliere.name} non publiés. Les étudiants et parents ne peuvent pas les consulter.`}
         </div>
       )}
 
@@ -173,7 +173,7 @@ export default function BulletinsPage() {
           <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "10px" }}>
             <FileText style={{ width: "15px", height: "15px", color: "#B91C2F" }} />
             <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>{selectedFiliere.name}</span>
-            <span style={{ padding: "2px 8px", background: "#2563eb20", color: "#2563eb", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}>{students.length} etudiants</span>
+            <span style={{ padding: "2px 8px", background: "#2563eb20", color: "#2563eb", borderRadius: "20px", fontSize: "11px", fontWeight: "600" }}>{students.length} étudiants</span>
           </div>
 
           {loadingStudents ? (
@@ -183,7 +183,7 @@ export default function BulletinsPage() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                 <thead>
                   <tr style={{ background: "var(--bg-muted)" }}>
-                    {["#", "Etudiant", "Matricule", "Moyenne", "Credits valides", "Mention", ""].map((h) => (
+                    {["#", "Étudiant", "Matricule", "Moyenne", "Crédits validés", "Mention", ""].map((h) => (
                       <th key={h} style={{ padding: "8px 14px", textAlign: "left", fontWeight: "600", color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{h}</th>
                     ))}
                   </tr>
@@ -222,7 +222,7 @@ export default function BulletinsPage() {
                   {students.length === 0 && (
                     <tr>
                       <td colSpan={7} style={{ padding: "40px", textAlign: "center", color: "var(--text-muted)" }}>
-                        Aucun etudiant actif dans cette filiere.
+                        Aucun étudiant actif dans cette filière.
                       </td>
                     </tr>
                   )}

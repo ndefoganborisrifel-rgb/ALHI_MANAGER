@@ -186,13 +186,13 @@ export default function AbsenceSaisiePage() {
             </div>
             {daySchedules.length > 0 && (
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Cours / Seance</label>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Cours / Séance</label>
                 <select
                   value={selectedScheduleId}
                   onChange={(e) => setSelectedScheduleId(e.target.value)}
                   className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B91C2F]/30 bg-white min-w-48"
                 >
-                  <option value="">Toutes les seances</option>
+                  <option value="">Toutes les séances</option>
                   {daySchedules.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.courseAssignment

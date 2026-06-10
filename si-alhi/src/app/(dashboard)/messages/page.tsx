@@ -7,9 +7,9 @@ import { PageHeader } from "@/components/ui/PageUI";
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Administration",
-  SCOLARITE: "Scolarite",
+  SCOLARITE: "Scolarité",
   ENSEIGNANT: "Enseignant",
-  ETUDIANT: "Etudiant",
+  ETUDIANT: "Étudiant",
   PARENT: "Parent",
 };
 
@@ -88,7 +88,7 @@ export default function MessagesPage() {
     <div style={{ maxWidth: "800px" }}>
       <PageHeader
         title="Messagerie"
-        subtitle="Communication interne entre les membres de l etablissement"
+        subtitle="Communication interne entre les membres de l établissement"
         backHref="/dashboard"
         icon={<MessageSquare style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
         actions={(
@@ -136,7 +136,7 @@ export default function MessagesPage() {
                     </button>
                   ))}
                   {filteredUsers.length === 0 && (
-                    <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "13px", padding: "20px" }}>Aucun utilisateur trouve.</p>
+                    <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "13px", padding: "20px" }}>Aucun utilisateur trouvé.</p>
                   )}
                 </div>
               </>

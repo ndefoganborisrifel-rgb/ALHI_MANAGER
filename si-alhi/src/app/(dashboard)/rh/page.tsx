@@ -43,7 +43,7 @@ type TeacherPayment = {
   teacher: { firstName: string; lastName: string };
 };
 
-const MONTHS = ["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"];
+const MONTHS = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
 const emptyTeacherForm: { firstName: string; lastName: string; email: string; phone: string; speciality: string; type: "PERMANENT" | "VACATAIRE"; hourlyRate: string; courseIds: string[] } = { firstName: "", lastName: "", email: "", phone: "", speciality: "", type: "VACATAIRE", hourlyRate: "", courseIds: [] };
 const emptyPayForm = { teacherId: "", month: String(new Date().getMonth() + 1), year: String(new Date().getFullYear()), hoursValidated: "" };
@@ -135,13 +135,13 @@ export default function RHPage() {
   }
 
   async function handleDisableTeacher(t: Teacher) {
-    if (!confirm(`Desactiver ${t.firstName} ${t.lastName} ?`)) return;
+    if (!confirm(`Désactiver ${t.firstName} ${t.lastName} ?`)) return;
     await fetch(`/api/teachers/${t.id}`, { method: "DELETE" });
     loadData();
   }
 
   async function handleReactivateTeacher(t: Teacher) {
-    if (!confirm(`Reactiver ${t.firstName} ${t.lastName} ?`)) return;
+    if (!confirm(`Réactiver ${t.firstName} ${t.lastName} ?`)) return;
     await fetch(`/api/teachers/${t.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isActive: true }) });
     loadData();
   }
@@ -228,7 +228,7 @@ export default function RHPage() {
       <div style={{ display: "grid", gridTemplateColumns: `repeat(${isTeacher ? 3 : 4}, 1fr)`, gap: "14px", marginBottom: "20px" }}>
         <StatCard label="Enseignants" value={teachers.length} icon={<Users style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="corps enseignant" />
         <StatCard label="Permanents" value={permanents} icon={<UserCheck style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="contrat fixe" />
-        <StatCard label="Vacataires" value={vacataires} icon={<UserX style={{ width: "18px", height: "18px", color: "#7c3aed" }} />} color="#7c3aed" bg="#f5f3ff" sub="payes a l'heure" />
+        <StatCard label="Vacataires" value={vacataires} icon={<UserX style={{ width: "18px", height: "18px", color: "#7c3aed" }} />} color="#7c3aed" bg="#f5f3ff" sub="payés à l'heure" />
         {!isTeacher && <StatCard label="Total vacations" value={formatCFA(totalPayments)} icon={<Wallet style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="cumul 2025-2026" />}
       </div>
 
@@ -244,14 +244,14 @@ export default function RHPage() {
           action={canManage && <PrimaryButton onClick={openAddTeacher}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un enseignant</PrimaryButton>}
         >
           {teachers.length === 0 ? (
-            <EmptyState icon={<Users style={{ width: "24px", height: "24px" }} />} message="Aucun enseignant enregistre." action={canManage ? <PrimaryButton onClick={openAddTeacher}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un enseignant</PrimaryButton> : undefined} />
+            <EmptyState icon={<Users style={{ width: "24px", height: "24px" }} />} message="Aucun enseignant enregistré." action={canManage ? <PrimaryButton onClick={openAddTeacher}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un enseignant</PrimaryButton> : undefined} />
           ) : (
             <>
             <div style={{ position: "relative", marginBottom: "14px", maxWidth: "340px" }}>
               <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: "14px", height: "14px", color: "var(--text-muted)" }} />
               <input
                 type="text"
-                placeholder="Rechercher un enseignant, specialite..."
+                placeholder="Rechercher un enseignant, spécialité..."
                 value={teacherSearch}
                 onChange={(e) => setTeacherSearch(e.target.value)}
                 style={{ width: "100%", padding: "8px 10px 8px 32px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", boxSizing: "border-box" }}
@@ -262,10 +262,10 @@ export default function RHPage() {
                 <thead>
                   <tr style={{ background: "var(--bg-muted)" }}>
                     <th style={th}>Enseignant</th>
-                    <th style={th}>Specialite</th>
+                    <th style={th}>Spécialité</th>
                     <th style={th}>Type</th>
                     {!isTeacher && <th style={th}>Taux horaire</th>}
-                    <th style={th}>Cours assignes</th>
+                    <th style={th}>Cours assignés</th>
                     <th style={th}>Contact</th>
                     <th style={{ ...th, textAlign: "right" }}>Actions</th>
                   </tr>
@@ -300,8 +300,8 @@ export default function RHPage() {
                       <td style={{ ...td, textAlign: "right" }}>
                         <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
                           {canManage && <button onClick={() => openEditTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}>Modifier</button>}
-                          {canManage && teacher.user.isActive && <button onClick={() => handleDisableTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Desactiver</button>}
-                          {canManage && !teacher.user.isActive && <button onClick={() => handleReactivateTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#16a34a", cursor: "pointer" }}>Reactiver</button>}
+                          {canManage && teacher.user.isActive && <button onClick={() => handleDisableTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Désactiver</button>}
+                          {canManage && !teacher.user.isActive && <button onClick={() => handleReactivateTeacher(teacher)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#16a34a", cursor: "pointer" }}>Réactiver</button>}
                           {!canManage && <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>Lecture seule</span>}
                         </div>
                       </td>
@@ -322,15 +322,15 @@ export default function RHPage() {
           action={<PrimaryButton onClick={() => { setPayForm(emptyPayForm); setPayError(""); setShowPayModal(true); }}><Plus style={{ width: "15px", height: "15px" }} />Enregistrer heures</PrimaryButton>}
         >
           {payments.length === 0 ? (
-            <EmptyState icon={<Wallet style={{ width: "24px", height: "24px" }} />} message="Aucune vacation enregistree." />
+            <EmptyState icon={<Wallet style={{ width: "24px", height: "24px" }} />} message="Aucune vacation enregistrée." />
           ) : (
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: "var(--bg-muted)" }}>
                     <th style={th}>Enseignant</th>
-                    <th style={th}>Periode</th>
-                    <th style={th}>Heures validees</th>
+                    <th style={th}>Période</th>
+                    <th style={th}>Heures validées</th>
                     <th style={th}>Taux horaire</th>
                     <th style={th}>Montant</th>
                     <th style={th}>Statut</th>
@@ -349,7 +349,7 @@ export default function RHPage() {
                       <td style={{ ...td, textAlign: "right" }}>
                         <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
                           {p.status === "BROUILLON" && <button onClick={() => handlePaymentStatus(p, "VALIDE")} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#16a34a", cursor: "pointer" }}>Valider</button>}
-                          {p.status === "VALIDE" && <button onClick={() => handlePaymentStatus(p, "PAYE")} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#2563eb", cursor: "pointer" }}>Marquer paye</button>}
+                          {p.status === "VALIDE" && <button onClick={() => handlePaymentStatus(p, "PAYE")} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#2563eb", cursor: "pointer" }}>Marquer payé</button>}
                         </div>
                       </td>
                     </tr>
@@ -368,13 +368,13 @@ export default function RHPage() {
             <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text)", marginBottom: "20px" }}>{editingTeacher ? "Modifier l'enseignant" : "Ajouter un enseignant"}</h2>
             <form onSubmit={handleTeacherSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><Label htmlFor="t-firstname">Prenom</Label><Input id="t-firstname" value={teacherForm.firstName} onChange={(e) => setTeacherForm((f) => ({ ...f, firstName: e.target.value }))} required /></div>
+                <div><Label htmlFor="t-firstname">Prénom</Label><Input id="t-firstname" value={teacherForm.firstName} onChange={(e) => setTeacherForm((f) => ({ ...f, firstName: e.target.value }))} required /></div>
                 <div><Label htmlFor="t-lastname">Nom</Label><Input id="t-lastname" value={teacherForm.lastName} onChange={(e) => setTeacherForm((f) => ({ ...f, lastName: e.target.value }))} required /></div>
               </div>
               <div><Label htmlFor="t-email">Email</Label><Input id="t-email" type="email" value={teacherForm.email} onChange={(e) => setTeacherForm((f) => ({ ...f, email: e.target.value }))} required disabled={!!editingTeacher} /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div><Label htmlFor="t-phone">Telephone</Label><Input id="t-phone" value={teacherForm.phone} onChange={(e) => setTeacherForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+237 6.." /></div>
-                <div><Label htmlFor="t-speciality">Specialite</Label><Input id="t-speciality" value={teacherForm.speciality} onChange={(e) => setTeacherForm((f) => ({ ...f, speciality: e.target.value }))} placeholder="Mathematiques" /></div>
+                <div><Label htmlFor="t-phone">Téléphone</Label><Input id="t-phone" value={teacherForm.phone} onChange={(e) => setTeacherForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+237 6.." /></div>
+                <div><Label htmlFor="t-speciality">Spécialité</Label><Input id="t-speciality" value={teacherForm.speciality} onChange={(e) => setTeacherForm((f) => ({ ...f, speciality: e.target.value }))} placeholder="Mathématiques" /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -388,11 +388,11 @@ export default function RHPage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <Label>Matieres enseignees</Label>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{teacherForm.courseIds.length} selectionnee{teacherForm.courseIds.length > 1 ? "s" : ""}</span>
+                  <Label>Matières enseignées</Label>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{teacherForm.courseIds.length} sélectionnée{teacherForm.courseIds.length > 1 ? "s" : ""}</span>
                 </div>
                 {courses.length === 0 ? (
-                  <p style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic", padding: "8px 0" }}>Aucune matiere disponible. Creez des matieres dans Pedagogie.</p>
+                  <p style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic", padding: "8px 0" }}>Aucune matière disponible. Créez des matières dans Pédagogie.</p>
                 ) : (
                   <div style={{ maxHeight: "11rem", overflowY: "auto", borderRadius: "8px", border: "1px solid var(--border)" }}>
                     {courses.map((c) => {
@@ -409,7 +409,7 @@ export default function RHPage() {
                     })}
                   </div>
                 )}
-                <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>Un enseignant ne peut saisir des notes que pour les matieres qui lui sont assignees ici.</p>
+                <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>Un enseignant ne peut saisir des notes que pour les matières qui lui sont assignées ici.</p>
               </div>
               {teacherError && <p style={{ fontSize: "13px", color: "#dc2626" }}>{teacherError}</p>}
               <div className="flex gap-3 pt-2">
@@ -432,7 +432,7 @@ export default function RHPage() {
               <div>
                 <Label htmlFor="pay-teacher">Enseignant</Label>
                 <Select id="pay-teacher" value={payForm.teacherId} onChange={(e) => setPayForm((f) => ({ ...f, teacherId: e.target.value }))} required>
-                  <option value="">Selectionner un enseignant</option>
+                  <option value="">Sélectionner un enseignant</option>
                   {teachers.filter((t) => t.user.isActive).map((t) => (
                     <option key={t.id} value={t.id}>{t.lastName} {t.firstName} ({formatCFA(t.hourlyRate)}/h)</option>
                   ))}
@@ -445,9 +445,9 @@ export default function RHPage() {
                     {MONTHS.map((m, i) => (<option key={i} value={String(i + 1)}>{m}</option>))}
                   </Select>
                 </div>
-                <div><Label htmlFor="pay-year">Annee</Label><Input id="pay-year" type="number" min={2020} max={2030} value={payForm.year} onChange={(e) => setPayForm((f) => ({ ...f, year: e.target.value }))} required /></div>
+                <div><Label htmlFor="pay-year">Année</Label><Input id="pay-year" type="number" min={2020} max={2030} value={payForm.year} onChange={(e) => setPayForm((f) => ({ ...f, year: e.target.value }))} required /></div>
               </div>
-              <div><Label htmlFor="pay-hours">Heures validees</Label><Input id="pay-hours" type="number" min={0} step={0.5} value={payForm.hoursValidated} onChange={(e) => setPayForm((f) => ({ ...f, hoursValidated: e.target.value }))} required placeholder="20" /></div>
+              <div><Label htmlFor="pay-hours">Heures validées</Label><Input id="pay-hours" type="number" min={0} step={0.5} value={payForm.hoursValidated} onChange={(e) => setPayForm((f) => ({ ...f, hoursValidated: e.target.value }))} required placeholder="20" /></div>
               {payError && <p style={{ fontSize: "13px", color: "#dc2626" }}>{payError}</p>}
               <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" className="flex-1" onClick={() => setShowPayModal(false)}>Annuler</Button>

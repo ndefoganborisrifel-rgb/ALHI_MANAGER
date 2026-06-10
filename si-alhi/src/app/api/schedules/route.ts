@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       where: { roomId, dayOfWeek, startTime, academicYear, semester, filiereId: { notIn: targetFiliereIds } },
     });
     if (roomCollision) {
-      return NextResponse.json({ error: "Collision detectee : cette salle est deja occupee a ce creneau.", collision: true }, { status: 409 });
+      return NextResponse.json({ error: "Collision détectée : cette salle est déjà occupée à ce créneau.", collision: true }, { status: 409 });
     }
   }
 
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
       },
     });
     if (teacherConflict) {
-      return NextResponse.json({ error: "Collision detectee : cet enseignant est deja programme a ce creneau.", collision: true }, { status: 409 });
+      return NextResponse.json({ error: "Collision détectée : cet enseignant est déjà programmé à ce créneau.", collision: true }, { status: 409 });
     }
   }
 
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
   });
   if (filiereConflict) {
     return NextResponse.json({
-      error: `Collision detectee : la filiere ${filiereConflict.filiere.name} a deja un creneau a cette heure.`,
+      error: `Collision détectée : la filière ${filiereConflict.filiere.name} a déjà un créneau à cette heure.`,
       collision: true,
     }, { status: 409 });
   }
@@ -133,11 +133,11 @@ export async function POST(req: Request) {
     const notifs = students
       .filter((s) => s.userId)
       .map((s) => {
-        const fname = filieres.find((f) => f.id === s.filiereId)?.name ?? "votre filiere";
+        const fname = filieres.find((f) => f.id === s.filiereId)?.name ?? "votre filière";
         return {
           userId: s.userId as string,
-          title: "Emploi du temps mis a jour",
-          message: `Un nouveau creneau a ete ajoute le ${dayFr[dayOfWeek] ?? dayOfWeek} de ${startTime} pour ${fname}.`,
+          title: "Emploi du temps mis à jour",
+          message: `Un nouveau créneau a été ajouté le ${dayFr[dayOfWeek] ?? dayOfWeek} de ${startTime} pour ${fname}.`,
           type: "INFO",
         };
       });

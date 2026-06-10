@@ -2,11 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import { isEnglishFiliere } from "@/lib/filiere-lang";
 
 const DAYS = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"];
 const DAY_LABELS: Record<string, string> = {
   LUNDI: "Lundi", MARDI: "Mardi", MERCREDI: "Mercredi",
   JEUDI: "Jeudi", VENDREDI: "Vendredi", SAMEDI: "Samedi",
+};
+const DAY_LABELS_EN: Record<string, string> = {
+  LUNDI: "Monday", MARDI: "Tuesday", MERCREDI: "Wednesday",
+  JEUDI: "Thursday", VENDREDI: "Friday", SAMEDI: "Saturday",
 };
 const TIME_SLOTS = [
   { label: "08h00 - 10h00", start: "08:00" },
@@ -47,9 +52,10 @@ function typeColor(type: string): { bg: string; border: string; text: string } {
   }
 }
 
-function typeLabel(type: string): string {
-  const m: Record<string, string> = { COURS: "Cours", TPE: "TPE", EVALUATION: "Evaluation", PAUSE: "Pause", FERIER: "Ferie", EXCURSION: "Excursion", AUTRE: "Autre" };
-  return m[type] ?? type;
+function typeLabel(type: string, en: boolean): string {
+  const fr: Record<string, string> = { COURS: "Cours", TPE: "TPE", EVALUATION: "Évaluation", PAUSE: "Pause", FERIER: "Férié", EXCURSION: "Excursion", AUTRE: "Autre" };
+  const enM: Record<string, string> = { COURS: "Lecture", TPE: "TPE", EVALUATION: "Assessment", PAUSE: "Break", FERIER: "Holiday", EXCURSION: "Field trip", AUTRE: "Other" };
+  return (en ? enM : fr)[type] ?? type;
 }
 
 export default function PrintTimetablePage() {
@@ -82,9 +88,12 @@ export default function PrintTimetablePage() {
     : semFiltered.filter((s) => s.type !== "EVALUATION");
 
   if (loading) return <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif", color: "#888" }}>Chargement...</div>;
-  if (!filiere) return <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif", color: "#B91C2F" }}>Filiere introuvable.</div>;
+  if (!filiere) return <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif", color: "#B91C2F" }}>Filière introuvable.</div>;
 
-  const dateEdition = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+  // Les filieres anglophones (BBA, MBA) recoivent leur planning en anglais
+  const en = isEnglishFiliere(filiere.code, filiere.name);
+  const dayLabels = en ? DAY_LABELS_EN : DAY_LABELS;
+  const dateEdition = new Date().toLocaleDateString(en ? "en-GB" : "fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 
   return (
     <>
@@ -127,13 +136,15 @@ export default function PrintTimetablePage() {
       {/* Toolbar */}
       <div className="no-print" style={{ position: "sticky", top: 0, zIndex: 100, background: "#1A1A1A", padding: "9px 20px", display: "flex", alignItems: "center", gap: "12px" }}>
         <span style={{ color: "#aaa", fontFamily: "sans-serif", fontSize: "12px" }}>
-          {mode === "examens" ? "Planning des Examens" : "Emploi du Temps"} : {filiere.name} | {year}
+          {mode === "examens"
+            ? (en ? "Examination Schedule" : "Planning des Examens")
+            : (en ? "Timetable" : "Emploi du Temps")} : {filiere.name} | {year}
         </span>
         <button onClick={() => window.print()} style={{ marginLeft: "auto", background: "#B91C2F", color: "white", border: "none", padding: "7px 22px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold", fontSize: "12px", fontFamily: "sans-serif" }}>
-          Imprimer / PDF
+          {en ? "Print / PDF" : "Imprimer / PDF"}
         </button>
         <button onClick={() => window.close()} style={{ background: "rgba(255,255,255,0.1)", color: "white", border: "1px solid rgba(255,255,255,0.2)", padding: "7px 14px", borderRadius: "6px", cursor: "pointer", fontSize: "12px", fontFamily: "sans-serif" }}>
-          Fermer
+          {en ? "Close" : "Fermer"}
         </button>
       </div>
 
@@ -177,10 +188,14 @@ export default function PrintTimetablePage() {
 
         <div style={{ textAlign: "center", marginBottom: "8px", padding: "4px 0", position: "relative", zIndex: 1 }}>
           <div style={{ fontSize: "13px", fontWeight: "900", textTransform: "uppercase", letterSpacing: "2px" }}>
-            {mode === "examens" ? "Planning des Examens" : "Emploi du Temps des Cours"}
+            {mode === "examens"
+              ? (en ? "Examination Schedule" : "Planning des Examens")
+              : (en ? "Course Timetable" : "Emploi du Temps des Cours")}
           </div>
           <div style={{ fontSize: "10px", color: "#666", marginTop: "2px" }}>
-            Filiere : {filiere.name} ({filiere.code}) | Annee Academique {year}{semester ? ` | Semestre ${semester}` : ""}
+            {en
+              ? `Programme: ${filiere.name} (${filiere.code}) | Academic Year ${year}${semester ? ` | Semester ${semester}` : ""}`
+              : `Filière : ${filiere.name} (${filiere.code}) | Année Académique ${year}${semester ? ` | Semestre ${semester}` : ""}`}
           </div>
         </div>
 
@@ -191,7 +206,7 @@ export default function PrintTimetablePage() {
             return (
               <div key={t} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                 <div style={{ width: "12px", height: "10px", background: c.bg, border: `1px solid ${c.border}`, borderRadius: "2px" }} />
-                <span style={{ color: "#555" }}>{typeLabel(t)}</span>
+                <span style={{ color: "#555" }}>{typeLabel(t, en)}</span>
               </div>
             );
           })}
@@ -202,8 +217,8 @@ export default function PrintTimetablePage() {
           <table>
             <thead>
               <tr>
-                <th style={{ width: "60px" }}>Horaire</th>
-                {DAYS.map((d) => <th key={d}>{DAY_LABELS[d]}</th>)}
+                <th style={{ width: "60px" }}>{en ? "Time" : "Horaire"}</th>
+                {DAYS.map((d) => <th key={d}>{dayLabels[d]}</th>)}
               </tr>
             </thead>
             <tbody>
@@ -213,7 +228,7 @@ export default function PrintTimetablePage() {
                     <tr className="pause-row">
                       <td className="time-col">12h - 13h15</td>
                       <td colSpan={6} style={{ textAlign: "center", fontSize: "9px", color: "#b45309", fontStyle: "italic", height: "22px", verticalAlign: "middle" }}>
-                        Pause dejeuner / Lunch break (12h00 - 13h15)
+                        {en ? "Lunch break (12:00, 13:15)" : "Pause déjeuner / Lunch break (12h00, 13h15)"}
                       </td>
                     </tr>
                   )}
@@ -228,7 +243,7 @@ export default function PrintTimetablePage() {
                             return (
                               <div key={s.id} className="slot" style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}>
                                 <div style={{ fontWeight: "700", fontSize: "8px" }}>
-                                  {s.label || (s.courseAssignment ? s.courseAssignment.course.code : typeLabel(s.type))}
+                                  {s.label || (s.courseAssignment ? s.courseAssignment.course.code : typeLabel(s.type, en))}
                                 </div>
                                 {s.courseAssignment && (
                                   <div style={{ fontSize: "8px", opacity: 0.9 }}>{s.courseAssignment.course.name.slice(0, 22)}</div>
@@ -237,11 +252,11 @@ export default function PrintTimetablePage() {
                                   <div style={{ fontSize: "7.5px", opacity: 0.75 }}>{s.courseAssignment.teacher.lastName}</div>
                                 )}
                                 {s.room && (
-                                  <div style={{ fontSize: "7.5px", opacity: 0.75, fontStyle: "italic" }}>Salle : {s.room.code}</div>
+                                  <div style={{ fontSize: "7.5px", opacity: 0.75, fontStyle: "italic" }}>{en ? "Room" : "Salle"} : {s.room.code}</div>
                                 )}
                                 {s.sessionNumber && (
                                   <div style={{ fontSize: "7.5px", fontWeight: "700" }}>
-                                    Seance {s.sessionNumber}{s.totalSessions ? `/${s.totalSessions}` : ""}
+                                    {en ? "Session" : "Séance"} {s.sessionNumber}{s.totalSessions ? `/${s.totalSessions}` : ""}
                                   </div>
                                 )}
                               </div>
@@ -259,13 +274,15 @@ export default function PrintTimetablePage() {
 
         {/* Disclaimer */}
         <div style={{ marginTop: "10px", padding: "6px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "4px", textAlign: "center", fontSize: "8px", color: "#92400e", fontStyle: "italic", position: "relative", zIndex: 1 }}>
-          Cet emploi du temps est susceptible de changer independamment de la volonte des differents intervenants.
+          {en
+            ? "This timetable is subject to change beyond the control of the various parties involved."
+            : "Cet emploi du temps est susceptible de changer indépendamment de la volonté des différents intervenants."}
         </div>
 
         {/* Footer */}
         <div style={{ marginTop: "8px", display: "flex", justifyContent: "space-between", fontSize: "8px", color: "#999", borderTop: "1px solid #eee", paddingTop: "5px", position: "relative", zIndex: 1 }}>
-          <span>Africa Leadership Higher Institute - Yaounde, Cameroun</span>
-          <span>Edite le {dateEdition}</span>
+          <span>Africa Leadership Higher Institute, Yaoundé, Cameroun</span>
+          <span>{en ? "Issued on" : "Édité le"} {dateEdition}</span>
         </div>
       </div>
     </>

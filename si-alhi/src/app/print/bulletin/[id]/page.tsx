@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import { isEnglishFiliere } from "@/lib/filiere-lang";
 
 interface CourseGrade {
   code: string;
@@ -33,6 +34,7 @@ interface BulletinData {
     matricule: string;
     level: number;
     major: string;
+    filiereCode?: string;
   };
   academicYear: string;
   semester: number;
@@ -42,7 +44,29 @@ interface BulletinData {
   totalCredits: number;
   mention: string;
   rank: string;
+  rankNumber?: number;
   decision: string;
+}
+
+// Mention francaise vers equivalent anglophone
+const MENTION_EN: Record<string, string> = {
+  "Très Bien": "Very Good",
+  "Bien": "Good",
+  "Assez Bien": "Fairly Good",
+  "Passable": "Average",
+  "Insuffisant": "Insufficient",
+  "En attente": "Pending",
+};
+
+function ordinalEn(n: number): string {
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
 }
 
 function fmt(n: number | null | undefined): string {
@@ -53,7 +77,7 @@ function fmt(n: number | null | undefined): string {
 // Seuil de validation ALHI
 const PASS = 14;
 
-function GradeLineChart({ ueResults }: { ueResults: UEResult[] }) {
+function GradeLineChart({ ueResults, en }: { ueResults: UEResult[]; en: boolean }) {
   const allCourses = ueResults.flatMap((ue) => ue.courses).filter((c) => c.noteFinal != null);
   if (allCourses.length === 0) return null;
 
@@ -77,7 +101,7 @@ function GradeLineChart({ ueResults }: { ueResults: UEResult[] }) {
   return (
     <div>
       <div style={{ fontSize: "7px", fontWeight: "bold", color: "#555", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.6px" }}>
-        Evolution des notes par matiere
+        {en ? "Grade evolution by course" : "Évolution des notes par matière"}
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}>
         {[0, 5, 10, 14, 20].map((v) => (
@@ -130,10 +154,10 @@ function GradeLineChart({ ueResults }: { ueResults: UEResult[] }) {
         ))}
       </svg>
       <div style={{ fontSize: "6px", color: "#aaa", marginTop: "1px", fontStyle: "italic", display: "flex", gap: "8px" }}>
-        <span style={{ color: "#16a34a" }}>▲ Progression</span>
-        <span style={{ color: "#b91c1c" }}>▼ Regression</span>
-        <span>Seuil vert = 14/20</span>
-        <span>R = Rattrapage</span>
+        <span style={{ color: "#16a34a" }}>{en ? "▲ Increase" : "▲ Progression"}</span>
+        <span style={{ color: "#b91c1c" }}>{en ? "▼ Decrease" : "▼ Régression"}</span>
+        <span>{en ? "Green line = pass mark 14/20" : "Seuil vert = 14/20"}</span>
+        <span>{en ? "R = Resit" : "R = Rattrapage"}</span>
       </div>
     </div>
   );
@@ -161,7 +185,7 @@ export default function PrintBulletinPage() {
   if (error) {
     return (
       <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif" }}>
-        <h2 style={{ color: "#B91C2F" }}>Acces refuse ou document indisponible</h2>
+        <h2 style={{ color: "#B91C2F" }}>Accès refusé ou document indisponible</h2>
         <p style={{ color: "#555", marginTop: "8px" }}>{error}</p>
       </div>
     );
@@ -177,8 +201,14 @@ export default function PrintBulletinPage() {
 
   const avg = data.generalAverage;
   const admis = avg != null && avg >= PASS;
-  const dateEdition = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+  // Les filieres anglophones (BBA, MBA) recoivent un bulletin entierement en anglais
+  const en = isEnglishFiliere(data.student.filiereCode, data.student.major);
+  const locale = en ? "en-GB" : "fr-FR";
+  const dateEdition = new Date().toLocaleDateString(locale, { day: "2-digit", month: "long", year: "numeric" });
   const creditPct = data.totalCredits > 0 ? Math.round((data.totalValidatedCredits / data.totalCredits) * 100) : 0;
+  const rankLabel = en && data.rankNumber ? ordinalEn(data.rankNumber) : data.rank;
+  const mentionLabel = en ? (MENTION_EN[data.mention] ?? data.mention) : data.mention;
+  const decisionLabel = en ? (data.decision === "Admis" ? "Pass" : "Fail") : data.decision;
 
   return (
     <>
@@ -237,13 +267,13 @@ export default function PrintBulletinPage() {
       {/* Print toolbar */}
       <div className="no-print" style={{ position: "sticky", top: 0, zIndex: 100, background: "#1A1A1A", padding: "9px 20px", display: "flex", alignItems: "center", gap: "12px" }}>
         <span style={{ color: "#aaa", fontFamily: "sans-serif", fontSize: "12px" }}>
-          Bulletin : {data.student.lastName} {data.student.firstName} | S{data.semester} | {data.academicYear}
+          {en ? "Transcript" : "Bulletin"} : {data.student.lastName} {data.student.firstName} | S{data.semester} | {data.academicYear}
         </span>
         <button onClick={() => window.print()} style={{ marginLeft: "auto", background: "#B91C2F", color: "white", border: "none", padding: "7px 22px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold", fontSize: "12px", fontFamily: "sans-serif" }}>
-          Imprimer / PDF
+          {en ? "Print / PDF" : "Imprimer / PDF"}
         </button>
         <button onClick={() => window.close()} style={{ background: "rgba(255,255,255,0.1)", color: "white", border: "1px solid rgba(255,255,255,0.2)", padding: "7px 14px", borderRadius: "6px", cursor: "pointer", fontSize: "12px", fontFamily: "sans-serif" }}>
-          Fermer
+          {en ? "Close" : "Fermer"}
         </button>
       </div>
 
@@ -259,13 +289,13 @@ export default function PrintBulletinPage() {
         {/* EN-TETE OFFICIELLE 3 COLONNES */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 72px 1fr", gap: "6px", paddingBottom: "5px", marginBottom: "5px", borderBottom: "1.5px solid #1A1A1A" }}>
           <div style={{ textAlign: "center", fontSize: "8px", lineHeight: "1.5" }}>
-            <div style={{ fontWeight: "900", fontSize: "9.5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>REPUBLIQUE DU CAMEROUN</div>
+            <div style={{ fontWeight: "900", fontSize: "9.5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>RÉPUBLIQUE DU CAMEROUN</div>
             <div style={{ fontStyle: "italic", color: "#444", fontSize: "7.5px" }}>Paix - Travail - Patrie</div>
             <div className="sep" />
-            <div style={{ fontWeight: "700", fontSize: "7.5px", textTransform: "uppercase" }}>Ministere des Enseignements Superieurs</div>
+            <div style={{ fontWeight: "700", fontSize: "7.5px", textTransform: "uppercase" }}>Ministère des Enseignements Supérieurs</div>
             <div className="sep" />
             <div style={{ fontWeight: "800", color: "#B91C2F", fontSize: "8.5px", textTransform: "uppercase" }}>Africa Leadership Higher Institute</div>
-            <div style={{ color: "#555", fontSize: "7px", marginTop: "2px" }}>Chateau Ngoa Ekele, Yaounde, Cameroun</div>
+            <div style={{ color: "#555", fontSize: "7px", marginTop: "2px" }}>Château Ngoa Ekélé, Yaoundé, Cameroun</div>
             <div style={{ color: "#555", fontSize: "7px" }}>Tel : (+237) 657 75 54 87 / 676 25 85 13</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -287,59 +317,63 @@ export default function PrintBulletinPage() {
         {/* Titre */}
         <div style={{ textAlign: "center", marginBottom: "7px", padding: "4px 0" }}>
           <div style={{ fontSize: "12px", fontWeight: "900", textTransform: "uppercase", letterSpacing: "2.5px", color: "#1A1A1A" }}>
-            Releve de Notes Semestriel
+            {en ? "Semester Transcript" : "Relevé de Notes Semestriel"}
           </div>
           <div style={{ fontSize: "9px", fontStyle: "italic", color: "#666", marginTop: "1px" }}>
-            Semester Transcript / Semestre {data.semester}, Annee Academique {data.academicYear}
+            {en
+              ? `Semester ${data.semester}, Academic Year ${data.academicYear}`
+              : `Semester Transcript / Semestre ${data.semester}, Année Académique ${data.academicYear}`}
           </div>
         </div>
 
-        {/* Infos etudiant */}
+        {/* Infos étudiant */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "7px", fontSize: "8.5px" }}>
           <div style={{ border: "1.5px solid #B91C2F", borderRadius: "4px", padding: "6px 9px" }}>
             <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-              <span style={{ fontWeight: "bold", flexShrink: 0 }}>Nom(s) et Prenom(s) :</span>
+              <span style={{ fontWeight: "bold", flexShrink: 0 }}>{en ? "Full name:" : "Nom(s) et Prénom(s) :"}</span>
               <span style={{ fontWeight: "900" }}>{data.student.lastName} {data.student.firstName}</span>
             </div>
-            <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-              <span style={{ fontStyle: "italic", fontSize: "7.5px", color: "#888" }}>Name and surname</span>
-            </div>
+            {!en && (
+              <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
+                <span style={{ fontStyle: "italic", fontSize: "7.5px", color: "#888" }}>Name and surname</span>
+              </div>
+            )}
             {data.student.dateOfBirth && (
               <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-                <span style={{ fontWeight: "bold" }}>Ne(e) le :</span>
-                <span>{new Date(data.student.dateOfBirth).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}</span>
+                <span style={{ fontWeight: "bold" }}>{en ? "Date of birth:" : "Né(e) le :"}</span>
+                <span>{new Date(data.student.dateOfBirth).toLocaleDateString(locale, { day: "2-digit", month: "long", year: "numeric" })}</span>
               </div>
             )}
             {data.student.gender && (
               <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-                <span style={{ fontWeight: "bold" }}>Sexe :</span>
-                <span>{data.student.gender === "M" ? "Masculin" : "Feminin"}</span>
+                <span style={{ fontWeight: "bold" }}>{en ? "Gender:" : "Sexe :"}</span>
+                <span>{data.student.gender === "M" ? (en ? "Male" : "Masculin") : (en ? "Female" : "Féminin")}</span>
               </div>
             )}
             <div style={{ display: "flex", gap: "4px" }}>
-              <span style={{ fontWeight: "bold" }}>Specialite :</span>
+              <span style={{ fontWeight: "bold" }}>{en ? "Programme:" : "Spécialité :"}</span>
               <span>{data.student.major}</span>
             </div>
           </div>
           <div style={{ border: "1.5px solid #ccc", borderRadius: "4px", padding: "6px 9px" }}>
             <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-              <span style={{ fontWeight: "bold" }}>Matricule :</span>
+              <span style={{ fontWeight: "bold" }}>{en ? "Reg. No.:" : "Matricule :"}</span>
               <span style={{ fontFamily: "monospace", fontWeight: "bold", fontSize: "10px" }}>{data.student.matricule}</span>
             </div>
             <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-              <span style={{ fontWeight: "bold" }}>Niveau :</span>
-              <span>Annee {data.student.level}</span>
+              <span style={{ fontWeight: "bold" }}>{en ? "Level:" : "Niveau :"}</span>
+              <span>{en ? `Year ${data.student.level}` : `Année ${data.student.level}`}</span>
             </div>
             <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-              <span style={{ fontWeight: "bold" }}>Classement :</span>
-              <span>{data.rank} de la promotion</span>
+              <span style={{ fontWeight: "bold" }}>{en ? "Rank:" : "Classement :"}</span>
+              <span>{en ? `${rankLabel} of the class` : `${rankLabel} de la promotion`}</span>
             </div>
             <div style={{ display: "flex", gap: "4px", marginBottom: "3px" }}>
-              <span style={{ fontWeight: "bold" }}>Annee Academique :</span>
+              <span style={{ fontWeight: "bold" }}>{en ? "Academic Year:" : "Année Académique :"}</span>
               <span>{data.academicYear}</span>
             </div>
             <div style={{ display: "flex", gap: "4px" }}>
-              <span style={{ fontWeight: "bold" }}>Date d&apos;edition :</span>
+              <span style={{ fontWeight: "bold" }}>{en ? "Issue date:" : "Date d'édition :"}</span>
               <span>{dateEdition}</span>
             </div>
           </div>
@@ -350,14 +384,14 @@ export default function PrintBulletinPage() {
           <thead>
             <tr>
               <th className="left" style={{ width: "7%" }}>Code</th>
-              <th className="left">Matiere / Course</th>
+              <th className="left">{en ? "Course" : "Matière / Course"}</th>
               <th style={{ width: "5%" }}>Crd.</th>
-              <th style={{ width: "6%" }}>CC1</th>
-              <th style={{ width: "6%" }}>CC2</th>
-              <th style={{ width: "9%" }}>Exam. N.</th>
-              <th style={{ width: "9%" }}>Exam. R.</th>
-              <th style={{ width: "7%" }}>Note/20</th>
-              <th style={{ width: "9%" }}>Resultat</th>
+              <th style={{ width: "6%" }}>{en ? "CA1" : "CC1"}</th>
+              <th style={{ width: "6%" }}>{en ? "CA2" : "CC2"}</th>
+              <th style={{ width: "9%" }}>{en ? "Exam" : "Exam. N."}</th>
+              <th style={{ width: "9%" }}>{en ? "Resit" : "Exam. R."}</th>
+              <th style={{ width: "7%" }}>{en ? "Mark/20" : "Note/20"}</th>
+              <th style={{ width: "9%" }}>{en ? "Result" : "Résultat"}</th>
             </tr>
           </thead>
           <tbody>
@@ -369,7 +403,7 @@ export default function PrintBulletinPage() {
                   </td>
                   <td style={{ background: "#B91C2F", color: "white", border: "1px solid #9B1826" }}>{ue.totalCredits}</td>
                   <td colSpan={4} style={{ background: "#B91C2F", color: "white", border: "1px solid #9B1826", fontSize: "7.5px" }}>
-                    Moy. UE : {ue.average != null ? ue.average.toFixed(2) : "-"}
+                    {en ? "Unit avg." : "Moy. UE"} : {ue.average != null ? ue.average.toFixed(2) : "-"}
                   </td>
                   <td style={{ background: "#B91C2F", color: "white", fontWeight: "bold", border: "1px solid #9B1826" }}>
                     {ue.average != null ? ue.average.toFixed(2) : "-"}
@@ -386,7 +420,7 @@ export default function PrintBulletinPage() {
                       <td className="mono">{c.code}</td>
                       <td className="left" style={{ fontSize: "8px" }}>
                         {c.name}
-                        {isRatt && <span style={{ marginLeft: "4px", fontSize: "7px", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: "2px", padding: "0 3px", color: "#92400e" }}>Ratt.</span>}
+                        {isRatt && <span style={{ marginLeft: "4px", fontSize: "7px", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: "2px", padding: "0 3px", color: "#92400e" }}>{en ? "Resit" : "Ratt."}</span>}
                       </td>
                       <td>{c.credits}</td>
                       <td>{fmt(c.cc1)}</td>
@@ -400,7 +434,13 @@ export default function PrintBulletinPage() {
                       </td>
                       <td>
                         <span className={resultClass}>
-                          {c.noteFinal == null ? "-" : c.validated ? "Valide" : c.noteFinal >= 10 ? "Rattrapage" : "Echec"}
+                          {c.noteFinal == null
+                            ? "-"
+                            : c.validated
+                              ? (en ? "Pass" : "Validé")
+                              : c.noteFinal >= 10
+                                ? (en ? "Resit" : "Rattrapage")
+                                : (en ? "Fail" : "Échec")}
                         </span>
                       </td>
                     </tr>
@@ -417,16 +457,16 @@ export default function PrintBulletinPage() {
           <div>
             <div style={{ border: "1.5px solid #1A1A1A", borderRadius: "4px", padding: "5px 7px", fontSize: "8.5px", marginBottom: "5px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
-                <span><strong>Credits valides :</strong> {data.totalValidatedCredits} / {data.totalCredits}</span>
-                <span><strong>Rang :</strong> {data.rank}</span>
+                <span><strong>{en ? "Validated credits:" : "Crédits validés :"}</strong> {data.totalValidatedCredits} / {data.totalCredits}</span>
+                <span><strong>{en ? "Rank:" : "Rang :"}</strong> {rankLabel}</span>
               </div>
               <div style={{ marginBottom: "4px" }}>
-                <strong>Mention :</strong>{" "}
-                <span style={{ color: admis ? "#15803d" : "#b91c1c", fontWeight: "bold" }}>{data.mention}</span>
+                <strong>{en ? "Honours:" : "Mention :"}</strong>{" "}
+                <span style={{ color: admis ? "#15803d" : "#b91c1c", fontWeight: "bold" }}>{mentionLabel}</span>
               </div>
               {/* Barre credits */}
               <div>
-                <div style={{ fontSize: "7px", color: "#777", marginBottom: "2px" }}>Taux de validation des credits</div>
+                <div style={{ fontSize: "7px", color: "#777", marginBottom: "2px" }}>{en ? "Credit validation rate" : "Taux de validation des crédits"}</div>
                 <div style={{ background: "#e5e7eb", borderRadius: "4px", height: "7px", overflow: "hidden" }}>
                   <div style={{ width: `${creditPct}%`, height: "100%", background: admis ? "#15803d" : creditPct >= 50 ? "#d97706" : "#b91c1c", borderRadius: "4px" }} />
                 </div>
@@ -434,18 +474,18 @@ export default function PrintBulletinPage() {
               </div>
             </div>
             {/* Graphique par cours */}
-            <GradeLineChart ueResults={data.ueResults} />
+            <GradeLineChart ueResults={data.ueResults} en={en} />
           </div>
 
           {/* Droite : decision */}
           <div style={{ border: `2.5px solid ${admis ? "#15803d" : "#b91c1c"}`, borderRadius: "6px", padding: "10px 8px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px" }}>
             <div style={{ fontSize: "7.5px", color: "#777", textTransform: "uppercase", letterSpacing: "0.8px" }}>
-              Moyenne Generale / General Average
+              {en ? "General Average" : "Moyenne Générale / General Average"}
             </div>
             <div style={{ fontSize: "28px", fontWeight: "900", color: admis ? "#15803d" : "#b91c1c", lineHeight: 1 }}>
               {avg != null ? avg.toFixed(2) : "-"}<span style={{ fontSize: "13px" }}>/20</span>
             </div>
-            <div style={{ fontSize: "7px", color: "#888" }}>Seuil de validation : 14/20</div>
+            <div style={{ fontSize: "7px", color: "#888" }}>{en ? "Pass mark: 14/20" : "Seuil de validation : 14/20"}</div>
             <div style={{
               fontSize: "13px",
               fontWeight: "900",
@@ -456,10 +496,12 @@ export default function PrintBulletinPage() {
               padding: "4px 14px",
               borderRadius: "4px",
             }}>
-              {data.decision}
+              {decisionLabel}
             </div>
             <div style={{ fontSize: "7px", color: admis ? "#15803d" : "#b91c1c", fontStyle: "italic" }}>
-              {admis ? `${data.totalValidatedCredits} credits valides` : "Insuffisant pour la validation"}
+              {admis
+                ? (en ? `${data.totalValidatedCredits} credits validated` : `${data.totalValidatedCredits} crédits validés`)
+                : (en ? "Below the pass requirement" : "Insuffisant pour la validation")}
             </div>
           </div>
         </div>
@@ -468,31 +510,46 @@ export default function PrintBulletinPage() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px", marginTop: "14px", fontSize: "8.5px", textAlign: "center" }}>
           <div>
             <div style={{ borderTop: "1.5px solid #333", paddingTop: "5px", marginTop: "40px", color: "#333" }}>
-              <div style={{ fontWeight: "bold" }}>La DAAC</div>
-              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "2px" }}>Direction des Affaires Academiques et de la Conformite</div>
+              <div style={{ fontWeight: "bold" }}>{en ? "The DAAC" : "La DAAC"}</div>
+              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "2px" }}>
+                {en ? "Directorate of Academic Affairs and Compliance" : "Direction des Affaires Académiques et de la Conformité"}
+              </div>
             </div>
           </div>
           <div>
             <div style={{ borderTop: "1.5px solid #333", paddingTop: "5px", marginTop: "40px", color: "#333" }}>
-              <div style={{ fontWeight: "bold" }}>La Directrice de l&apos;Institut</div>
-              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "2px" }}>The Director</div>
+              <div style={{ fontWeight: "bold" }}>{en ? "The Director of the Institute" : "La Directrice de l'Institut"}</div>
+              <div style={{ fontSize: "7.5px", color: "#777", marginTop: "2px" }}>{en ? "" : "The Director"}</div>
             </div>
           </div>
         </div>
 
         {/* Legende */}
         <div style={{ marginTop: "6px", display: "flex", gap: "12px", fontSize: "7px", color: "#888", justifyContent: "center" }}>
-          <span><span style={{ color: "#15803d", fontWeight: "bold" }}>Valide</span> : note finale ≥ 14/20</span>
-          <span><span style={{ color: "#d97706", fontWeight: "bold" }}>Rattrapage</span> : 10 ≤ note &lt; 14</span>
-          <span><span style={{ color: "#b91c1c", fontWeight: "bold" }}>Echec</span> : note &lt; 10</span>
-          <span><span style={{ fontWeight: "bold" }}>Ratt.</span> = Session de rattrapage</span>
+          {en ? (
+            <>
+              <span><span style={{ color: "#15803d", fontWeight: "bold" }}>Pass</span>: final mark ≥ 14/20</span>
+              <span><span style={{ color: "#d97706", fontWeight: "bold" }}>Resit</span>: 10 ≤ mark &lt; 14</span>
+              <span><span style={{ color: "#b91c1c", fontWeight: "bold" }}>Fail</span>: mark &lt; 10</span>
+              <span><span style={{ fontWeight: "bold" }}>Resit</span> = resit session</span>
+            </>
+          ) : (
+            <>
+              <span><span style={{ color: "#15803d", fontWeight: "bold" }}>Validé</span> : note finale ≥ 14/20</span>
+              <span><span style={{ color: "#d97706", fontWeight: "bold" }}>Rattrapage</span> : 10 ≤ note &lt; 14</span>
+              <span><span style={{ color: "#b91c1c", fontWeight: "bold" }}>Échec</span> : note &lt; 10</span>
+              <span><span style={{ fontWeight: "bold" }}>Ratt.</span> = Session de rattrapage</span>
+            </>
+          )}
         </div>
 
         {/* Pied de page */}
         <div style={{ marginTop: "5px", textAlign: "center", fontSize: "7.5px", color: "#aaa", borderTop: "1px solid #e0e0e0", paddingTop: "5px" }}>
-          Africa Leadership Higher Institute - Chateau Ngoa Ekele, Yaounde, Cameroun - Tel : (+237) 657 75 54 87
+          Africa Leadership Higher Institute, Château Ngoa Ekélé, Yaoundé, Cameroun, Tel : (+237) 657 75 54 87
           <br />
-          Ce document est un releve officiel de notes. Toute falsification est passible de sanctions disciplinaires et penales.
+          {en
+            ? "This document is an official transcript. Any forgery is subject to disciplinary and legal sanctions."
+            : "Ce document est un relevé officiel de notes. Toute falsification est passible de sanctions disciplinaires et pénales."}
         </div>
         </div>
       </div>

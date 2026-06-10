@@ -35,20 +35,20 @@ export default async function PVListPage() {
   return (
     <div className="space-y-6" style={{ maxWidth: "1200px" }}>
       <PageHeader
-        title="Proces-Verbaux de Notes"
-        subtitle={`PV officiel par filiere : toutes les matieres et tous les etudiants. Annee ${currentYear}.`}
+        title="Procès-Verbaux de Notes"
+        subtitle={`PV officiel par filière : toutes les matières et tous les étudiants. Année ${currentYear}.`}
         backHref="/examens"
         icon={<FileText style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />
 
       <div style={{ padding: "12px 16px", background: "var(--bg-card)", borderRadius: "10px", border: "1px solid var(--border)", fontSize: "12px", color: "var(--text-muted)" }}>
-        Les boutons <strong style={{ color: "var(--text)" }}>PV Normale/Rattrapage</strong> ouvrent le proces-verbal complet de la filiere (toutes les matieres, tous les etudiants, notes et decision) pret a imprimer. Utilisez les boutons <strong style={{ color: "var(--text)" }}>Publier</strong> pour rendre les notes de chaque cours visibles aux etudiants.
+        Les boutons <strong style={{ color: "var(--text)" }}>PV Normale/Rattrapage</strong> ouvrent le procès-verbal complet de la filière (toutes les matières, tous les étudiants, notes et décision) prêt à imprimer. Utilisez les boutons <strong style={{ color: "var(--text)" }}>Publier</strong> pour rendre les notes de chaque cours visibles aux étudiants.
       </div>
 
       {filieres.length === 0 && (
         <Card>
           <CardContent className="p-8 text-center text-gray-500">
-            Aucune filiere trouvee.
+            Aucune filière trouvée.
           </CardContent>
         </Card>
       )}
@@ -109,7 +109,7 @@ export default async function PVListPage() {
           <CardContent className="p-0">
             {filiere.courses.length === 0 ? (
               <p className="px-6 pb-4 text-sm text-gray-400 italic">
-                Aucun cours dans cette filiere.
+                Aucun cours dans cette filière.
               </p>
             ) : (
               <div className="overflow-x-auto">

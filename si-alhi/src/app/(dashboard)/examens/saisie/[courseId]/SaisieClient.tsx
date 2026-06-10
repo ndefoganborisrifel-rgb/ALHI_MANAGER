@@ -241,7 +241,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
       {!canEdit && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2 text-amber-800 text-sm">
           <Eye className="w-4 h-4 shrink-0" />
-          Vous consultez les notes de cette matiere en lecture seule. Seul l&apos;enseignant assigne a cette matiere peut les modifier.
+          Vous consultez les notes de cette matière en lecture seule. Seul l&apos;enseignant assigné à cette matière peut les modifier.
         </div>
       )}
 
@@ -289,12 +289,12 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
               <strong>Formule :</strong> Note finale = Moyenne(CC) x 50% + Examen x 50%.
               Avec 2 CC : (CC1 + CC2) / 2, puis x 50%. Avec un seul CC : CC x 50% + Examen x 50%. Sans CC : note examen seule.
               <span className="ml-2 font-bold text-[#B91C2F]">Seuil de validation : 14/20.</span>
-              Si la note est inferieure a 14, l&apos;etudiant passe en rattrapage (examen uniquement).
+              Si la note est inférieure à 14, l&apos;étudiant passe en rattrapage (examen uniquement).
             </>
           ) : (
             <>
               <strong>Session de rattrapage :</strong> La note de l&apos;examen de rattrapage remplace la note d&apos;examen.
-              Les CC de la session normale sont conserves (affiches en lecture seule).
+              Les CC de la session normale sont conservés (affichés en lecture seule).
               <span className="block mt-1">Formule : Moyenne(CC) x 50% + Exam.Ratt. x 50%, soit (CC1 + CC2) / 2 x 50%.</span>
               <span className="font-bold text-[#B91C2F]">Seuil de validation : 14/20.</span>
             </>
@@ -375,7 +375,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
                       <td className="px-3 py-2">
                         {session === "RATTRAPAGE" && row.normaleValidated ? (
                           <div className="text-center">
-                            <Badge className="bg-green-100 text-green-700 text-xs">Deja valide</Badge>
+                            <Badge className="bg-green-100 text-green-700 text-xs">Déjà validé</Badge>
                           </div>
                         ) : canEdit ? (
                           <input type="number" min="0" max="20" step="0.25" placeholder="0" value={row.examScore}
@@ -394,7 +394,7 @@ export function SaisieClient({ courseId, canEdit }: { courseId: string; canEdit:
                       </td>
                       <td className="px-3 py-2 text-center">
                         {session === "RATTRAPAGE" && row.normaleValidated ? (
-                          <Badge className="bg-green-100 text-green-700">Valide (S.N.)</Badge>
+                          <Badge className="bg-green-100 text-green-700">Validé (S.N.)</Badge>
                         ) : preview != null ? (
                           <Badge className={passed ? "bg-green-100 text-green-700" : preview >= 10 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}>
                             {passed ? "Validé" : preview >= 10 ? "Rattrapage" : "Ajourné"}

@@ -22,9 +22,9 @@ interface Notif {
 
 const roleLabels: Record<string, string> = {
   ADMIN: "Administrateur",
-  SCOLARITE: "Service Scolarite",
+  SCOLARITE: "Service Scolarité",
   ENSEIGNANT: "Enseignant",
-  ETUDIANT: "Etudiant",
+  ETUDIANT: "Étudiant",
   PARENT: "Parent",
 };
 
@@ -112,7 +112,7 @@ export function Navbar({ userName, userRole, onMobileMenuToggle }: NavbarProps) 
           <Menu style={{ width: "16px", height: "16px" }} />
         </button>
         <p style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "500" }} className="hidden sm:block">
-          Annee academique 2025-2026
+          Année académique 2025-2026
         </p>
       </div>
 
@@ -256,7 +256,7 @@ export function Navbar({ userName, userRole, onMobileMenuToggle }: NavbarProps) 
             justifyContent: "center",
             cursor: "pointer",
           }}
-          title="Deconnexion"
+          title="Déconnexion"
         >
           <LogOut style={{ width: "15px", height: "15px" }} />
         </button>

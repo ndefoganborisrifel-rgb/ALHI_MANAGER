@@ -59,7 +59,7 @@ export default function NouvelAdmissionPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       <PageHeader
         title="Nouveau candidat"
-        subtitle={`Etape ${step}/2`}
+        subtitle={`Étape ${step}/2`}
         backHref="/admission"
         icon={<UserPlus style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />

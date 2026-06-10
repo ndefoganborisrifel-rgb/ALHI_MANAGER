@@ -118,19 +118,19 @@ export default async function ExamensPage() {
   }
 
   const actions = [
-    ...(canEnterGrades ? [{ label: "Saisir les notes CC1, CC2, Examen", href: "/examens/saisie", icon: BookOpen, desc: "Remplir les notes des etudiants par cours" }] : []),
-    ...(canManage ? [{ label: "Consulter et publier les bulletins", href: "/examens/bulletins", icon: FileText, desc: "Bulletins semestriels par etudiant" }] : []),
+    ...(canEnterGrades ? [{ label: "Saisir les notes CC1, CC2, Examen", href: "/examens/saisie", icon: BookOpen, desc: "Remplir les notes des étudiants par cours" }] : []),
+    ...(canManage ? [{ label: "Consulter et publier les bulletins", href: "/examens/bulletins", icon: FileText, desc: "Bulletins semestriels par étudiant" }] : []),
     ...(canEnterGrades ? [
-      { label: "PV de notes par cours", href: "/examens/pv", icon: ClipboardList, desc: "Publiez les PV par matiere et par session" },
+      { label: "PV de notes par cours", href: "/examens/pv", icon: ClipboardList, desc: "Publiez les PV par matière et par session" },
     ] : []),
-    ...(canManage ? [{ label: "PV de deliberation", href: "/examens/deliberation", icon: Award, desc: "Deliberation et decisions du jury" }] : []),
+    ...(canManage ? [{ label: "PV de délibération", href: "/examens/deliberation", icon: Award, desc: "Délibération et décisions du jury" }] : []),
   ];
 
   return (
     <div style={{ maxWidth: "1100px" }}>
       <PageHeader
         title="SI-Examens et Notes"
-        subtitle="Saisie des notes et generation des bulletins, 2025-2026."
+        subtitle="Saisie des notes et génération des bulletins, 2025-2026."
         backHref="/dashboard"
         icon={<BookOpen style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
         actions={canEnterGrades ? (
@@ -149,9 +149,9 @@ export default async function ExamensPage() {
 
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "18px" }}>
-        <StatCard label="Notes saisies" value={totalGrades.toLocaleString("fr-FR")} icon={<BookOpen style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="annee 2025-2026" />
-        <StatCard label="Etudiants actifs" value={students.toLocaleString("fr-FR")} icon={<GraduationCap style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="inscrits" />
-        <StatCard label="Filieres" value={filieres.length} icon={<Award style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="filières" />
+        <StatCard label="Notes saisies" value={totalGrades.toLocaleString("fr-FR")} icon={<BookOpen style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="année 2025-2026" />
+        <StatCard label="Étudiants actifs" value={students.toLocaleString("fr-FR")} icon={<GraduationCap style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="inscrits" />
+        <StatCard label="Filières" value={filieres.length} icon={<Award style={{ width: "18px", height: "18px", color: "#B91C2F" }} />} color="#B91C2F" bg="#fef2f2" sub="filières" />
       </div>
 
       {/* Student bulletin card */}
@@ -165,7 +165,7 @@ export default async function ExamensPage() {
             <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>
               {myStudent.bulletinsPublished
                 ? "Bulletin disponible, cliquez pour consulter ou imprimer."
-                : "Le bulletin n'est pas encore publie par la direction."}
+                : "Le bulletin n'est pas encore publié par la direction."}
             </p>
           </div>
           {myStudent.bulletinsPublished ? (
@@ -174,7 +174,7 @@ export default async function ExamensPage() {
             </Link>
           ) : (
             <span style={{ padding: "8px 16px", background: "var(--bg-muted)", color: "var(--text-muted)", borderRadius: "9px", fontWeight: "600", fontSize: "12px" }}>
-              Non publie
+              Non publié
             </span>
           )}
         </div>
@@ -185,13 +185,13 @@ export default async function ExamensPage() {
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", marginBottom: "16px", overflow: "hidden" }}>
           <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "8px" }}>
             <GraduationCap style={{ width: "15px", height: "15px", color: "#B91C2F" }} />
-            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Mes notes publiees par cours</span>
+            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Mes notes publiées par cours</span>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
               <thead>
                 <tr style={{ background: "var(--bg-muted)" }}>
-                  {["Matiere", "Session", "CC1", "CC2", "Examen", "Note finale", "Resultat"].map((h) => (
+                  {["Matière", "Session", "CC1", "CC2", "Examen", "Note finale", "Résultat"].map((h) => (
                     <th key={h} style={{ padding: "8px 14px", textAlign: "left", fontWeight: "600", color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
                   ))}
                 </tr>
@@ -220,7 +220,7 @@ export default async function ExamensPage() {
                       </td>
                       <td style={{ padding: "10px 14px", textAlign: "center" }}>
                         <span style={{ padding: "2px 9px", borderRadius: "20px", fontSize: "10px", fontWeight: "600", background: passed ? "#16a34a18" : "#B91C2F18", color: passed ? "#16a34a" : "#B91C2F" }}>
-                          {passed ? "Valide" : "Ajourne"}
+                          {passed ? "Validé" : "Ajourné"}
                         </span>
                       </td>
                     </tr>
@@ -238,7 +238,7 @@ export default async function ExamensPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
             <Award style={{ width: "20px", height: "20px", color: myDelib.decision === "Admis" ? "#16a34a" : "#dc2626" }} />
             <span style={{ fontWeight: "800", fontSize: "15px", color: myDelib.decision === "Admis" ? "#15803d" : "#991b1b" }}>
-              Resultat de deliberation : {myDelib.decision}
+              Résultat de délibération : {myDelib.decision}
             </span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
@@ -246,11 +246,11 @@ export default async function ExamensPage() {
               <p style={{ fontSize: "22px", fontWeight: "800", color: myDelib.average !== null && myDelib.average >= 14 ? "#16a34a" : "#dc2626" }}>
                 {myDelib.average !== null ? myDelib.average.toFixed(2) : "N.C."}<span style={{ fontSize: "13px", fontWeight: "400", color: "#6b7280" }}>/20</span>
               </p>
-              <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Moyenne generale</p>
+              <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Moyenne générale</p>
             </div>
             <div style={{ background: "white", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
               <p style={{ fontSize: "22px", fontWeight: "800", color: "#2563eb" }}>{myDelib.credits}</p>
-              <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Credits valides</p>
+              <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "2px" }}>Crédits validés</p>
             </div>
             <div style={{ background: "white", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
               <p style={{ fontSize: "14px", fontWeight: "800", color: "#7c3aed" }}>{myDelib.mention}</p>
@@ -264,7 +264,7 @@ export default async function ExamensPage() {
       {role === "PARENT" && myChildren.length > 0 && (
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", marginBottom: "16px", overflow: "hidden" }}>
           <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
-            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Bulletins et resultats de mes enfants</span>
+            <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Bulletins et résultats de mes enfants</span>
           </div>
           <div style={{ padding: "6px" }}>
             {myChildren.map((c) => (
@@ -276,7 +276,7 @@ export default async function ExamensPage() {
                   <div style={{ flex: 1 }}>
                     <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--text)" }}>{c.firstName} {c.lastName}</p>
                     <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                      {c.bulletinsPublished ? "Bulletin publie" : "Bulletin non encore publie"}
+                      {c.bulletinsPublished ? "Bulletin publié" : "Bulletin non encore publié"}
                       {c.delib ? ` • PV: ${c.delib.decision}` : ""}
                     </p>
                   </div>
@@ -300,7 +300,7 @@ export default async function ExamensPage() {
                     </div>
                     <div style={{ background: "#eff6ff", borderRadius: "8px", padding: "8px 10px", textAlign: "center" }}>
                       <p style={{ fontSize: "16px", fontWeight: "800", color: "#2563eb" }}>{c.delib.credits}</p>
-                      <p style={{ fontSize: "10px", color: "#6b7280" }}>Credits</p>
+                      <p style={{ fontSize: "10px", color: "#6b7280" }}>Crédits</p>
                     </div>
                     <div style={{ background: "#f5f3ff", borderRadius: "8px", padding: "8px 10px", textAlign: "center" }}>
                       <p style={{ fontSize: "12px", fontWeight: "700", color: "#7c3aed" }}>{c.delib.mention}</p>
@@ -347,7 +347,7 @@ export default async function ExamensPage() {
         {canManage && (
           <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", overflow: "hidden" }}>
             <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
-              <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Filieres</span>
+              <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Filières</span>
             </div>
             <div style={{ padding: "8px" }}>
               {filieres.map((f, i) => (

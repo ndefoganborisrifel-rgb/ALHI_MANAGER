@@ -150,20 +150,20 @@ export default function PrintPvFilierePage() {
               Africa Leadership Higher Institute
             </div>
             <div style={{ fontSize: "10px", color: "#666", marginTop: "2px" }}>
-              Chateau Ngoa Ekele, Yaounde, Cameroun. Tel. : +237 657 75 54 87
+              Château Ngoa Ekélé, Yaoundé, Cameroun. Tel. : +237 657 75 54 87
             </div>
             <div style={{ fontSize: "13px", fontWeight: "bold", color: "#B91C2F", marginTop: "6px", textTransform: "uppercase", letterSpacing: "1.5px" }}>
-              Proces-Verbal de Notes, Session {sessionLabel}
+              Procès-Verbal de Notes, Session {sessionLabel}
             </div>
           </div>
         </div>
 
         {/* Bandeau infos */}
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", marginBottom: "8px", fontSize: "10px" }}>
-          <span><strong>Filiere :</strong> {data.filiere.name} ({data.filiere.code})</span>
+          <span><strong>Filière :</strong> {data.filiere.name} ({data.filiere.code})</span>
           <span><strong>Semestre :</strong> S{data.semester}</span>
-          <span><strong>Annee :</strong> {data.academicYear}</span>
-          <span><strong>Effectif :</strong> {data.stats.total} etudiant{data.stats.total > 1 ? "s" : ""}</span>
+          <span><strong>Année :</strong> {data.academicYear}</span>
+          <span><strong>Effectif :</strong> {data.stats.total} étudiant{data.stats.total > 1 ? "s" : ""}</span>
           <span><strong>Date :</strong> {dateEdition}</span>
         </div>
 
@@ -173,7 +173,7 @@ export default function PrintPvFilierePage() {
             <tr>
               <th style={{ width: "26px" }}>Rang</th>
               <th style={{ width: "78px" }}>Matricule</th>
-              <th className="left">Nom et Prenom</th>
+              <th className="left">Nom et Prénom</th>
               {data.courses.map((c) => (
                 <th key={c.id} title={c.name} style={{ minWidth: "24px" }}>{c.code}</th>
               ))}
@@ -186,7 +186,7 @@ export default function PrintPvFilierePage() {
             {data.students.length === 0 && (
               <tr>
                 <td colSpan={data.courses.length + 6} style={{ padding: "16px", color: "#888", fontStyle: "italic" }}>
-                  Aucun etudiant actif dans cette filiere.
+                  Aucun étudiant actif dans cette filiere.
                 </td>
               </tr>
             )}
@@ -215,7 +215,7 @@ export default function PrintPvFilierePage() {
 
         {/* Legende des matieres */}
         <div style={{ marginTop: "8px", fontSize: "8px", color: "#555" }}>
-          <strong>Matieres :</strong>{" "}
+          <strong>Matières :</strong>{" "}
           {data.courses.map((c, i) => (
             <span key={c.id}>
               {c.code} = {c.name} ({c.credits} crd.){i < data.courses.length - 1 ? " | " : ""}
@@ -226,8 +226,8 @@ export default function PrintPvFilierePage() {
         {/* Synthese */}
         <div style={{ marginTop: "10px", display: "flex", gap: "18px", fontSize: "10px", flexWrap: "wrap" }}>
           <span><strong>Admis :</strong> <span style={{ color: "#15803d", fontWeight: "bold" }}>{data.stats.admis}</span></span>
-          <span><strong>Ajournes :</strong> <span style={{ color: "#b91c1c", fontWeight: "bold" }}>{data.stats.ajourne}</span></span>
-          <span><strong>Taux de reussite :</strong> {reussite}%</span>
+          <span><strong>Ajournés :</strong> <span style={{ color: "#b91c1c", fontWeight: "bold" }}>{data.stats.ajourne}</span></span>
+          <span><strong>Taux de réussite :</strong> {reussite}%</span>
           <span style={{ color: "#777" }}>Seuil de validation : 14/20</span>
         </div>
 
@@ -236,7 +236,7 @@ export default function PrintPvFilierePage() {
           <div>
             <div style={{ borderTop: "1.5px solid #333", paddingTop: "5px", marginTop: "36px" }}>
               <div style={{ fontWeight: "bold" }}>La DAAC</div>
-              <div style={{ fontSize: "8px", color: "#777" }}>Direction des Affaires Academiques et de la Conformite</div>
+              <div style={{ fontSize: "8px", color: "#777" }}>Direction des Affaires Académiques et de la Conformité</div>
             </div>
           </div>
           <div>
@@ -249,8 +249,8 @@ export default function PrintPvFilierePage() {
 
         {/* Pied de page */}
         <div style={{ marginTop: "12px", textAlign: "center", fontSize: "8px", color: "#aaa", borderTop: "1px solid #e0e0e0", paddingTop: "6px" }}>
-          Africa Leadership Higher Institute, Chateau Ngoa Ekele, Yaounde, Cameroun.
-          Ce document est un proces-verbal officiel. Toute falsification est passible de sanctions disciplinaires et penales.
+          Africa Leadership Higher Institute, Château Ngoa Ekélé, Yaoundé, Cameroun.
+          Ce document est un procès-verbal officiel. Toute falsification est passible de sanctions disciplinaires et pénales.
         </div>
       </div>
     </>

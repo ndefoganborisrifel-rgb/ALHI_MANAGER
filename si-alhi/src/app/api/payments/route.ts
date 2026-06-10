@@ -71,10 +71,10 @@ export async function POST(req: Request) {
   try {
     const typeLabels: Record<string, string> = {
       INSCRIPTION: "frais d'inscription",
-      TRANCHE1: "1re tranche de scolarite",
-      TRANCHE2: "2e tranche de scolarite",
-      TRANCHE3: "3e tranche de scolarite",
-      TRANCHE4: "4e tranche de scolarite",
+      TRANCHE1: "1re tranche de scolarité",
+      TRANCHE2: "2e tranche de scolarité",
+      TRANCHE3: "3e tranche de scolarité",
+      TRANCHE4: "4e tranche de scolarité",
       AUTRE: "versement",
     };
     const typeLabel = typeLabels[parsed.data.type] ?? "paiement";
@@ -83,8 +83,8 @@ export async function POST(req: Request) {
     if (payment.student.userId) {
       notifs.push({
         userId: payment.student.userId,
-        title: "Paiement enregistre",
-        message: `Un paiement de ${amountFmt} (${typeLabel}) a ete enregistre sur votre compte. Recu : ${receiptNumber}.`,
+        title: "Paiement enregistré",
+        message: `Un paiement de ${amountFmt} (${typeLabel}) a été enregistré sur votre compte. Reçu : ${receiptNumber}.`,
         type: "SUCCESS",
         link: "/scolarite",
       });
@@ -92,8 +92,8 @@ export async function POST(req: Request) {
     if (payment.student.parent?.userId) {
       notifs.push({
         userId: payment.student.parent.userId,
-        title: "Paiement enregistre",
-        message: `Un paiement de ${amountFmt} (${typeLabel}) a ete enregistre pour ${payment.student.firstName} ${payment.student.lastName}.`,
+        title: "Paiement enregistré",
+        message: `Un paiement de ${amountFmt} (${typeLabel}) a été enregistré pour ${payment.student.firstName} ${payment.student.lastName}.`,
         type: "SUCCESS",
         link: "/parent",
       });

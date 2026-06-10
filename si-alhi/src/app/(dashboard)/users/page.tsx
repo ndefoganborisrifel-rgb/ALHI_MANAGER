@@ -27,9 +27,9 @@ type User = {
 
 const roleLabels: Record<string, string> = {
   ADMIN: "Administrateur",
-  SCOLARITE: "Scolarite",
+  SCOLARITE: "Scolarité",
   ENSEIGNANT: "Enseignant",
-  ETUDIANT: "Etudiant",
+  ETUDIANT: "Étudiant",
   PARENT: "Parent",
 };
 
@@ -119,7 +119,7 @@ export default function UsersPage() {
   }
 
   async function handleResetPassword(user: User) {
-    if (!confirm(`Reinitialiser le mot de passe de ${user.firstName} ${user.lastName} ?`)) return;
+    if (!confirm(`Réinitialiser le mot de passe de ${user.firstName} ${user.lastName} ?`)) return;
     const res = await fetch(`/api/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -127,7 +127,7 @@ export default function UsersPage() {
     });
     const data = await res.json();
     if (!res.ok) {
-      alert(data.error ?? "Erreur lors de la reinitialisation.");
+      alert(data.error ?? "Erreur lors de la réinitialisation.");
       return;
     }
     setTempPassword(data.tempPassword ?? "");
@@ -138,7 +138,7 @@ export default function UsersPage() {
   }
 
   async function handleDeactivate(user: User) {
-    if (!confirm(`Desactiver le compte de ${user.firstName} ${user.lastName} ? L'utilisateur ne pourra plus se connecter.`)) return;
+    if (!confirm(`Désactiver le compte de ${user.firstName} ${user.lastName} ? L'utilisateur ne pourra plus se connecter.`)) return;
     await fetch(`/api/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -148,7 +148,7 @@ export default function UsersPage() {
   }
 
   async function handleReactivate(user: User) {
-    if (!confirm(`Reactiver le compte de ${user.firstName} ${user.lastName} ? L'utilisateur pourra de nouveau se connecter.`)) return;
+    if (!confirm(`Réactiver le compte de ${user.firstName} ${user.lastName} ? L'utilisateur pourra de nouveau se connecter.`)) return;
     await fetch(`/api/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -222,7 +222,7 @@ export default function UsersPage() {
                 <th style={th}>Role</th>
                 <th style={th}>Statut</th>
                 <th style={th}>MDP initial</th>
-                <th style={th}>Cree le</th>
+                <th style={th}>Créé le</th>
                 <th style={{ ...th, textAlign: "right" }}>Actions</th>
               </tr>
             </thead>
@@ -243,10 +243,10 @@ export default function UsersPage() {
                   <td style={{ ...td, textAlign: "right" }}>
                     <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
                       <button onClick={() => openEdit(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}>Modifier</button>
-                      <button onClick={() => handleResetPassword(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#d97706", cursor: "pointer" }}>Reinitialiser MDP</button>
+                      <button onClick={() => handleResetPassword(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#d97706", cursor: "pointer" }}>Réinitialiser MDP</button>
                       {user.isActive
-                        ? <button onClick={() => handleDeactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Desactiver</button>
-                        : <button onClick={() => handleReactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid #16a34a", background: "#16a34a", color: "white", cursor: "pointer" }}>Reactiver</button>}
+                        ? <button onClick={() => handleDeactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}>Désactiver</button>
+                        : <button onClick={() => handleReactivate(user)} style={{ fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid #16a34a", background: "#16a34a", color: "white", cursor: "pointer" }}>Réactiver</button>}
                     </div>
                   </td>
                 </tr>
@@ -264,7 +264,7 @@ export default function UsersPage() {
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="u-firstname">Prenom</Label>
+                  <Label htmlFor="u-firstname">Prénom</Label>
                   <Input id="u-firstname" value={editForm.firstName} onChange={(e) => setEditForm((f) => ({ ...f, firstName: e.target.value }))} required />
                 </div>
                 <div>
@@ -275,15 +275,15 @@ export default function UsersPage() {
               <div>
                 <Label htmlFor="u-email">Email</Label>
                 <Input id="u-email" type="email" value={editForm.email} disabled className="bg-gray-50 text-gray-500" />
-                <p className="text-xs text-gray-400 mt-1">L&apos;email ne peut pas etre modifie</p>
+                <p className="text-xs text-gray-400 mt-1">L&apos;email ne peut pas être modifié</p>
               </div>
               <div>
                 <Label htmlFor="u-role">Role</Label>
                 <Select id="u-role" value={editForm.role} onChange={(e) => setEditForm((f) => ({ ...f, role: e.target.value }))}>
                   <option value="ADMIN">Administrateur</option>
-                  <option value="SCOLARITE">Scolarite</option>
+                  <option value="SCOLARITE">Scolarité</option>
                   <option value="ENSEIGNANT">Enseignant</option>
-                  <option value="ETUDIANT">Etudiant</option>
+                  <option value="ETUDIANT">Étudiant</option>
                   <option value="PARENT">Parent</option>
                 </Select>
               </div>
@@ -309,7 +309,7 @@ export default function UsersPage() {
       {showPasswordDialog && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowPasswordDialog(false)}>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">Mot de passe reinitialise</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-2">Mot de passe réinitialisé</h2>
             <p className="text-sm text-gray-600 mb-5">Le mot de passe temporaire de <strong>{resetUserName}</strong> est :</p>
             <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5">
               <span className="font-mono text-lg font-bold text-gray-900 flex-1 select-all">{tempPassword}</span>

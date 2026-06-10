@@ -11,7 +11,7 @@ interface RouteParams {
 
 export async function GET(_req: Request, { params }: RouteParams) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const { id } = await params;
   const photo = await prisma.memoryPhoto.findUnique({ where: { id } });

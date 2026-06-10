@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const conversations = await prisma.conversation.findMany({
     where: { participants: { some: { userId: session.user.id } } },
@@ -41,11 +41,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const body = await req.json() as { targetUserId: string; content: string };
   if (!body.targetUserId || !body.content?.trim()) {
-    return NextResponse.json({ error: "Donnees invalides" }, { status: 400 });
+    return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
 
   const targetUser = await prisma.user.findUnique({ where: { id: body.targetUserId } });

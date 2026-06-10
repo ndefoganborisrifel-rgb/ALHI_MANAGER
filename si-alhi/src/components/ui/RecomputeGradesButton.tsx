@@ -9,7 +9,7 @@ export function RecomputeGradesButton() {
   const [errorMsg, setErrorMsg] = useState("");
 
   async function run() {
-    if (!confirm("Recalculer toutes les notes finales avec la formule actuelle (CC 50% + Examen 50%) ? Les notes saisies avant le changement seront mises a jour.")) return;
+    if (!confirm("Recalculer toutes les notes finales avec la formule actuelle (CC 50% + Examen 50%) ? Les notes saisies avant le changement seront mises à jour.")) return;
     setStatus("loading");
     setResult(null);
     setErrorMsg("");
@@ -19,7 +19,7 @@ export function RecomputeGradesButton() {
       let data: { error?: string; updated?: number; total?: number } = {};
       if (raw) {
         try { data = JSON.parse(raw); }
-        catch { throw new Error(`Reponse serveur invalide (code ${res.status}). Reessayez ou rechargez la page.`); }
+        catch { throw new Error(`Réponse serveur invalide (code ${res.status}). Réessayez ou rechargez la page.`); }
       }
       if (!res.ok) throw new Error(data.error ?? `Erreur serveur (code ${res.status})`);
       setResult({ updated: data.updated ?? 0, total: data.total ?? 0 });
@@ -38,7 +38,7 @@ export function RecomputeGradesButton() {
             Recalculer les notes finales
           </p>
           <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-            Applique la formule actuelle (CC 50% + Examen 50%) a toutes les notes deja saisies. A lancer apres un changement de formule.
+            Applique la formule actuelle (CC 50% + Examen 50%) à toutes les notes déjà saisies. À lancer après un changement de formule.
           </p>
         </div>
         <button
@@ -62,7 +62,7 @@ export function RecomputeGradesButton() {
           {status === "loading" && <Loader2 style={{ width: "13px", height: "13px" }} className="animate-spin" />}
           {status === "done" && <CheckCircle style={{ width: "13px", height: "13px" }} />}
           {status === "idle" && <Calculator style={{ width: "13px", height: "13px" }} />}
-          {status === "loading" ? "Recalcul en cours..." : status === "done" ? "Recalcul effectue" : "Recalculer les notes"}
+          {status === "loading" ? "Recalcul en cours..." : status === "done" ? "Recalcul effectué" : "Recalculer les notes"}
         </button>
       </div>
 
@@ -70,7 +70,7 @@ export function RecomputeGradesButton() {
         <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 14px", background: "#16a34a18", border: "1px solid #16a34a40", borderRadius: "8px", fontSize: "12px", color: "#16a34a" }}>
           <CheckCircle style={{ width: "14px", height: "14px", flexShrink: 0 }} />
           <span>
-            <strong>{result.updated}</strong> note{result.updated !== 1 ? "s" : ""} mise{result.updated !== 1 ? "s" : ""} a jour sur <strong>{result.total}</strong>.
+            <strong>{result.updated}</strong> note{result.updated !== 1 ? "s" : ""} mise{result.updated !== 1 ? "s" : ""} à jour sur <strong>{result.total}</strong>.
           </span>
         </div>
       )}

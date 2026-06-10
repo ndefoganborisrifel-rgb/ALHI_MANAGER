@@ -48,8 +48,8 @@ export default async function SettingsPage() {
             <Settings className="w-5 h-5 text-[#B91C2F]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Parametres du compte</h1>
-            <p className="text-gray-500 text-sm">Gerez votre compte et les preferences du systeme</p>
+            <h1 className="text-2xl font-bold text-gray-900">Paramètres du compte</h1>
+            <p className="text-gray-500 text-sm">Gérez votre compte et les préférences du système</p>
           </div>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default async function SettingsPage() {
           <div style={{ background: "var(--bg-muted)", borderRadius: "10px", border: "1px solid var(--border)", padding: "16px" }}>
             <div style={{ marginBottom: "12px" }}>
               <p style={{ fontSize: "14px", fontWeight: "600", color: "var(--text)", marginBottom: "3px" }}>Mot de passe</p>
-              <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>Changez votre mot de passe pour securiser votre compte.</p>
+              <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>Changez votre mot de passe pour sécuriser votre compte.</p>
             </div>
             <ChangePasswordForm />
           </div>

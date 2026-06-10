@@ -45,7 +45,7 @@ export function PvPublishToggle({ filiereId, initialPublished, filiereName }: Pv
       }}
     >
       {published
-        ? <><ToggleRight style={{ width: "13px", height: "13px" }} />PV publies</>
+        ? <><ToggleRight style={{ width: "13px", height: "13px" }} />PV publiés</>
         : <><ToggleLeft style={{ width: "13px", height: "13px" }} />Publier PV</>
       }
     </button>

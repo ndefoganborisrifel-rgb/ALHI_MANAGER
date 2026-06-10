@@ -74,7 +74,7 @@ export default function LoginPage() {
           </p>
           <div style={{ marginTop: "8px", padding: "8px 18px", border: "1px solid rgba(255,255,255,0.20)", borderRadius: "20px" }}>
             <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.70)", letterSpacing: "1.5px", textTransform: "uppercase" }}>
-              Systeme d&apos;Information
+              Système d&apos;Information
             </p>
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function LoginPage() {
             {/* Forgot password */}
             <div style={{ textAlign: "right", marginBottom: "24px" }}>
               <Link href="/mot-de-passe-oublie" style={{ fontSize: "13px", color: "#B91C2F", textDecoration: "none", fontWeight: "500" }}>
-                Mot de passe oublie ?
+                Mot de passe oublié ?
               </Link>
             </div>
 

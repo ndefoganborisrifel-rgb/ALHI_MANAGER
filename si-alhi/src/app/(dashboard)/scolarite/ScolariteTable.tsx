@@ -29,12 +29,12 @@ export function ScolariteTable({ rows }: { rows: ScolariteRow[] }) {
   return (
     <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
-        <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Etat des paiements ({rows.length} etudiants actifs)</span>
+        <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>État des paiements ({rows.length} étudiants actifs)</span>
         <div style={{ position: "relative", minWidth: "260px", flex: "0 1 320px" }}>
           <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: "14px", height: "14px", color: "var(--text-muted)" }} />
           <input
             type="text"
-            placeholder="Rechercher par nom, matricule, filiere..."
+            placeholder="Rechercher par nom, matricule, filière..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{ width: "100%", padding: "8px 10px 8px 32px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", boxSizing: "border-box" }}
@@ -45,7 +45,7 @@ export function ScolariteTable({ rows }: { rows: ScolariteRow[] }) {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
           <thead>
             <tr style={{ background: "var(--bg-muted)", borderBottom: "1px solid var(--border)" }}>
-              {["Etudiant", "Matricule", "Filiere", "Frais totaux", "Verse", "Solde", "Progression", ""].map((h) => (
+              {["Étudiant", "Matricule", "Filière", "Frais totaux", "Versé", "Solde", "Progression", ""].map((h) => (
                 <th key={h} style={{ padding: "9px 14px", textAlign: "left", fontWeight: "600", color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{h}</th>
               ))}
             </tr>
@@ -76,14 +76,14 @@ export function ScolariteTable({ rows }: { rows: ScolariteRow[] }) {
                   </td>
                   <td style={{ padding: "10px 14px" }}>
                     <Link href={`/scolarite/${student.id}`} style={{ padding: "3px 11px", background: "#B91C2F", color: "white", borderRadius: "6px", fontSize: "11px", fontWeight: "600", textDecoration: "none" }}>
-                      Gerer
+                      Gérer
                     </Link>
                   </td>
                 </tr>
               );
             })}
             {filtered.length === 0 && (
-              <tr><td colSpan={8} style={{ padding: "36px", textAlign: "center", color: "var(--text-muted)" }}>Aucun etudiant ne correspond a la recherche.</td></tr>
+              <tr><td colSpan={8} style={{ padding: "36px", textAlign: "center", color: "var(--text-muted)" }}>Aucun étudiant ne correspond à la recherche.</td></tr>
             )}
           </tbody>
         </table>

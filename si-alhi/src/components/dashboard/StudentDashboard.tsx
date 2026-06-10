@@ -14,7 +14,7 @@ export async function StudentDashboard({ userId }: { userId: string }) {
   });
 
   if (!student) return (
-    <div style={{ textAlign: "center", padding: "48px", color: "var(--text-muted)" }}>Profil etudiant non trouve.</div>
+    <div style={{ textAlign: "center", padding: "48px", color: "var(--text-muted)" }}>Profil étudiant non trouvé.</div>
   );
 
   const totalPaid = student.payments.reduce((sum, p) => sum + p.amount, 0);
@@ -36,7 +36,7 @@ export async function StudentDashboard({ userId }: { userId: string }) {
         overflow: "hidden",
       }}>
         <div style={{ position: "absolute", top: "-30px", right: "-30px", width: "120px", height: "120px", borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
-        <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.55)", marginBottom: "3px", textTransform: "uppercase", letterSpacing: "1px" }}>Espace etudiant</p>
+        <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.55)", marginBottom: "3px", textTransform: "uppercase", letterSpacing: "1px" }}>Espace étudiant</p>
         <h1 style={{ fontSize: "20px", fontWeight: "800" }}>{student.firstName} {student.lastName}</h1>
         <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.65)" }}>{student.matricule} &bull; {student.filiere.name}</p>
       </div>
@@ -50,14 +50,14 @@ export async function StudentDashboard({ userId }: { userId: string }) {
                 <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <CreditCard style={{ width: "16px", height: "16px", color: "white" }} />
                 </div>
-                <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Scolarite</span>
+                <span style={{ fontWeight: "700", fontSize: "14px", color: "var(--text)" }}>Scolarité</span>
               </div>
               <span style={{ padding: "2px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700", background: isPaidFull ? "#16a34a20" : "#B91C2F20", color: isPaidFull ? "#16a34a" : "#B91C2F" }}>
                 {isPaidFull ? "Solde" : `Reste : ${formatCFA(balance)}`}
               </span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>Verse</span>
+              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>Versé</span>
               <span style={{ fontSize: "12px", fontWeight: "700", color: "#16a34a" }}>{formatCFA(totalPaid)}</span>
             </div>
             <div style={{ background: "var(--border)", borderRadius: "6px", height: "7px", overflow: "hidden", marginBottom: "6px" }}>
@@ -75,7 +75,7 @@ export async function StudentDashboard({ userId }: { userId: string }) {
               <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
                   <BookOpen style={{ width: "15px", height: "15px", color: "#B91C2F" }} />
-                  <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Notes recentes</span>
+                  <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Notes récentes</span>
                 </div>
                 <Link href="/examens" style={{ fontSize: "11px", color: "#B91C2F", textDecoration: "none", fontWeight: "600", display: "flex", alignItems: "center", gap: "3px" }}>
                   Tout voir <ArrowRight style={{ width: "11px", height: "11px" }} />
@@ -103,7 +103,7 @@ export async function StudentDashboard({ userId }: { userId: string }) {
         {/* Quick actions */}
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
-            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Acces rapide</span>
+            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Accès rapide</span>
           </div>
           <div style={{ padding: "6px" }}>
             {[
@@ -128,7 +128,7 @@ export async function StudentDashboard({ userId }: { userId: string }) {
           </div>
           <div style={{ margin: "6px 8px 8px", background: "var(--bg-muted)", borderRadius: "8px", padding: "12px" }}>
             <p style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>Informations</p>
-            {[["Filiere", student.filiere.name], ["Niveau", `Annee ${student.level}`], ["Promo", String(student.promotionYear)]].map(([l, v]) => (
+            {[["Filière", student.filiere.name], ["Niveau", `Année ${student.level}`], ["Promo", String(student.promotionYear)]].map(([l, v]) => (
               <div key={l} style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
                 <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>{l}</span>
                 <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--text)" }}>{v}</span>

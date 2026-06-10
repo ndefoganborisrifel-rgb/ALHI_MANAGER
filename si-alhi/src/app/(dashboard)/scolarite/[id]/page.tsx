@@ -42,8 +42,8 @@ export default async function ScolariteStudentPage({ params }: PageProps) {
 
       {/* Financial Summary */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px" }}>
-        <StatCard label="Frais totaux" value={formatCFA(student.filiere.totalFees)} icon={<CreditCard style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="scolarite annuelle" />
-        <StatCard label="Paye" value={formatCFA(totalPaid)} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="versements valides" />
+        <StatCard label="Frais totaux" value={formatCFA(student.filiere.totalFees)} icon={<CreditCard style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="scolarité annuelle" />
+        <StatCard label="Payé" value={formatCFA(totalPaid)} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="versements validés" />
         <StatCard label="Solde restant" value={balance <= 0 ? "Solde" : formatCFA(balance)} icon={<AlertCircle style={{ width: "18px", height: "18px", color: balance > 0 ? "#dc2626" : "#16a34a" }} />} color={balance > 0 ? "#dc2626" : "#16a34a"} bg={balance > 0 ? "#fef2f2" : "#f0fdf4"} sub={balance > 0 ? "a regler" : "compte solde"} />
       </div>
 

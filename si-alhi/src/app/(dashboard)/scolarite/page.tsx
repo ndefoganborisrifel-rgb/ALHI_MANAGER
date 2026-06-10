@@ -43,9 +43,9 @@ export default async function ScolaritePage() {
 
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "18px" }}>
-        <StatCard label="Total collecte" value={formatCFA(totalCollected)} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="paiements valides" />
+        <StatCard label="Total collecté" value={formatCFA(totalCollected)} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="paiements validés" />
         <StatCard label="Taux recouvrement" value={`${recoveryRate}%`} icon={<TrendingUp style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="de l objectif" />
-        <StatCard label="Etudiants a jour" value={fullySolved} icon={<CreditCard style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="solde regle" />
+        <StatCard label="Étudiants à jour" value={fullySolved} icon={<CreditCard style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="solde réglé" />
         <StatCard label="Avec solde restant" value={studentsWithDebt} icon={<AlertCircle style={{ width: "18px", height: "18px", color: "#d97706" }} />} color="#d97706" bg="#fff7ed" sub="a relancer" />
       </div>
 

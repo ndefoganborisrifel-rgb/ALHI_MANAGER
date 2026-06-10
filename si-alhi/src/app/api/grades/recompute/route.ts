@@ -15,7 +15,7 @@ export async function POST() {
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
     }
 
     const grades = await prisma.grade.findMany({
@@ -38,7 +38,7 @@ export async function POST() {
     await Promise.all(updates);
 
     return NextResponse.json({
-      message: `Recalcul termine : ${updated} note(s) mise(s) a jour sur ${grades.length}.`,
+      message: `Recalcul terminé : ${updated} note(s) mise(s) à jour sur ${grades.length}.`,
       updated,
       total: grades.length,
     });

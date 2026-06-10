@@ -7,9 +7,9 @@ import { ArrowLeft, Send } from "lucide-react";
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Administration",
-  SCOLARITE: "Scolarite",
+  SCOLARITE: "Scolarité",
   ENSEIGNANT: "Enseignant",
-  ETUDIANT: "Etudiant",
+  ETUDIANT: "Étudiant",
   PARENT: "Parent",
 };
 
@@ -171,7 +171,7 @@ export default function ConversationPage({ params }: { params: Promise<{ id: str
           </div>
         ))}
         {conv.messages.length === 0 && (
-          <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "13px", padding: "40px" }}>Aucun message pour l instant. Ecrivez le premier !</p>
+          <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "13px", padding: "40px" }}>Aucun message pour l instant. Écrivez le premier !</p>
         )}
         <div ref={bottomRef} />
       </div>
@@ -182,7 +182,7 @@ export default function ConversationPage({ params }: { params: Promise<{ id: str
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKey}
-          placeholder="Ecrivez votre message... (Entree pour envoyer)"
+          placeholder="Écrivez votre message... (Entrée pour envoyer)"
           rows={2}
           style={{
             flex: 1,

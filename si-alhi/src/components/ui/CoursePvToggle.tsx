@@ -29,7 +29,7 @@ export function CoursePvToggle({ courseId, session, initialPublished }: CoursePv
     <button
       onClick={toggle}
       disabled={toggling}
-      title={published ? `PV ${session === "NORMALE" ? "Normale" : "Rattrapage"} visible aux etudiants` : `Publier PV ${session === "NORMALE" ? "Normale" : "Rattrapage"}`}
+      title={published ? `PV ${session === "NORMALE" ? "Normale" : "Rattrapage"} visible aux étudiants` : `Publier PV ${session === "NORMALE" ? "Normale" : "Rattrapage"}`}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -48,7 +48,7 @@ export function CoursePvToggle({ courseId, session, initialPublished }: CoursePv
       }}
     >
       {published
-        ? <><ToggleRight style={{ width: "11px", height: "11px" }} />Publie</>
+        ? <><ToggleRight style={{ width: "11px", height: "11px" }} />Publié</>
         : <><ToggleLeft style={{ width: "11px", height: "11px" }} />Publier</>
       }
     </button>

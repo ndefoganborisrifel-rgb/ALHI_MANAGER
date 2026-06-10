@@ -116,17 +116,17 @@ export default async function DeliberationPage() {
   return (
     <div className="space-y-8" style={{ maxWidth: "1200px" }}>
       <PageHeader
-        title="PV de Deliberation"
-        subtitle={`Semestre ${SEMESTER}, Annee academique ${ACADEMIC_YEAR}`}
+        title="PV de Délibération"
+        subtitle={`Semestre ${SEMESTER}, Année académique ${ACADEMIC_YEAR}`}
         backHref="/examens"
         icon={<Award style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />
 
       {/* Global summary */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px" }}>
-        <StatCard label="Etudiants deliberes" value={totalAll} icon={<Users style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="toutes filieres" />
-        <StatCard label="Admis" value={totalAdmis} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub={`${totalAll > 0 ? Math.round((totalAdmis / totalAll) * 100) : 0}% de reussite`} />
-        <StatCard label="Ajournes" value={totalAjourne} icon={<XCircle style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="a rattraper" />
+        <StatCard label="Étudiants délibérés" value={totalAll} icon={<Users style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="toutes filières" />
+        <StatCard label="Admis" value={totalAdmis} icon={<CheckCircle style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub={`${totalAll > 0 ? Math.round((totalAdmis / totalAll) * 100) : 0}% de réussite`} />
+        <StatCard label="Ajournés" value={totalAjourne} icon={<XCircle style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="à rattraper" />
       </div>
 
       {/* Per-filiere PV */}

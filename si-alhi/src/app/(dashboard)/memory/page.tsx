@@ -96,7 +96,7 @@ export default function MemoryPage() {
     <div className="space-y-6" style={{ maxWidth: "1200px" }}>
       <PageHeader
         title="Memory"
-        subtitle="Les photos souvenirs des etudiants, promotion par promotion."
+        subtitle="Les photos souvenirs des étudiants, promotion par promotion."
         icon={<Camera style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />
 
@@ -138,10 +138,10 @@ export default function MemoryPage() {
                 </div>
                 <div>
                   <label style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
-                    Legende (facultatif)
+                    Légende (facultatif)
                   </label>
                   <input
-                    type="text" maxLength={120} placeholder="Ex : Remise des diplomes"
+                    type="text" maxLength={120} placeholder="Ex : Remise des diplômes"
                     value={form.caption}
                     onChange={(e) => setForm((f) => ({ ...f, caption: e.target.value }))}
                     style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", fontSize: "13px" }}
@@ -184,7 +184,7 @@ export default function MemoryPage() {
         <div style={{ textAlign: "center", padding: "60px 20px", background: "var(--bg-card)", border: "1px dashed var(--border)", borderRadius: "14px", color: "var(--text-muted)" }}>
           <ImageOff style={{ width: "36px", height: "36px", margin: "0 auto 10px", opacity: 0.4 }} />
           <p style={{ fontSize: "14px", fontWeight: "600" }}>Aucune photo pour le moment.</p>
-          {canManage && <p style={{ fontSize: "12px", marginTop: "4px" }}>Cliquez sur "Ajouter une photo" pour creer le premier souvenir.</p>}
+          {canManage && <p style={{ fontSize: "12px", marginTop: "4px" }}>Cliquez sur "Ajouter une photo" pour créer le premier souvenir.</p>}
         </div>
       ) : (
         years.map((year) => {

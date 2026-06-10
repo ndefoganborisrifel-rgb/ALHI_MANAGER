@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
   if (!parsed.success) {
     // Still return 200 to avoid leaking info, but accept only valid input
-    return NextResponse.json({ message: "Demande envoyee" });
+    return NextResponse.json({ message: "Demande envoyée" });
   }
 
   const { email } = parsed.data;
@@ -34,8 +34,8 @@ export async function POST(req: Request) {
         await prisma.notification.createMany({
           data: admins.map((admin) => ({
             userId: admin.id,
-            title: "Demande de reinitialisation",
-            message: `L'utilisateur ${email} a demande la reinitialisation de son mot de passe.`,
+            title: "Demande de réinitialisation",
+            message: `L'utilisateur ${email} a demandé la réinitialisation de son mot de passe.`,
             type: "WARNING",
           })),
         });
@@ -45,5 +45,5 @@ export async function POST(req: Request) {
     // Swallow errors silently: always return 200 for security
   }
 
-  return NextResponse.json({ message: "Demande envoyee" });
+  return NextResponse.json({ message: "Demande envoyée" });
 }

@@ -9,7 +9,7 @@ export function CleanupDuplicatesButton() {
   const [errorMsg, setErrorMsg] = useState("");
 
   async function run() {
-    if (!confirm("Supprimer tous les creneaux dupliques ? Cette operation est irreversible. Les creneaux les plus complets seront conserves.")) return;
+    if (!confirm("Supprimer tous les créneaux dupliqués ? Cette opération est irréversible. Les créneaux les plus complets seront conservés.")) return;
     setStatus("loading");
     setResult(null);
     setErrorMsg("");
@@ -20,7 +20,7 @@ export function CleanupDuplicatesButton() {
       let data: { error?: string; deleted?: number; groupsAffected?: number } = {};
       if (raw) {
         try { data = JSON.parse(raw); }
-        catch { throw new Error(`Reponse serveur invalide (code ${res.status}). Reessayez ou rechargez la page.`); }
+        catch { throw new Error(`Réponse serveur invalide (code ${res.status}). Réessayez ou rechargez la page.`); }
       }
       if (!res.ok) throw new Error(data.error ?? `Erreur serveur (code ${res.status})`);
       setResult({ deleted: data.deleted ?? 0, groupsAffected: data.groupsAffected ?? 0 });
@@ -36,10 +36,10 @@ export function CleanupDuplicatesButton() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
         <div>
           <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--text)", marginBottom: "2px" }}>
-            Supprimer les creneaux dupliques
+            Supprimer les créneaux dupliqués
           </p>
           <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-            Nettoie les doublons dans l emploi du temps : meme filiere, meme jour, meme heure. Le creneau le plus complet est conserve.
+            Nettoie les doublons dans l emploi du temps : même filière, même jour, même heure. Le créneau le plus complet est conservé.
           </p>
         </div>
         <button
@@ -63,7 +63,7 @@ export function CleanupDuplicatesButton() {
           {status === "loading" && <Loader2 style={{ width: "13px", height: "13px" }} className="animate-spin" />}
           {status === "done" && <CheckCircle style={{ width: "13px", height: "13px" }} />}
           {status === "idle" && <Trash2 style={{ width: "13px", height: "13px" }} />}
-          {status === "loading" ? "Nettoyage en cours..." : status === "done" ? "Nettoyage effectue" : "Nettoyer les doublons"}
+          {status === "loading" ? "Nettoyage en cours..." : status === "done" ? "Nettoyage effectué" : "Nettoyer les doublons"}
         </button>
       </div>
 
@@ -71,14 +71,14 @@ export function CleanupDuplicatesButton() {
         <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 14px", background: "#16a34a18", border: "1px solid #16a34a40", borderRadius: "8px", fontSize: "12px", color: "#16a34a" }}>
           <CheckCircle style={{ width: "14px", height: "14px", flexShrink: 0 }} />
           <span>
-            <strong>{result.deleted}</strong> doublon{result.deleted !== 1 ? "s" : ""} supprime{result.deleted !== 1 ? "s" : ""} dans <strong>{result.groupsAffected}</strong> groupe{result.groupsAffected !== 1 ? "s" : ""}. Les collisions doivent avoir disparu.
+            <strong>{result.deleted}</strong> doublon{result.deleted !== 1 ? "s" : ""} supprimé{result.deleted !== 1 ? "s" : ""} dans <strong>{result.groupsAffected}</strong> groupe{result.groupsAffected !== 1 ? "s" : ""}. Les collisions doivent avoir disparu.
           </span>
         </div>
       )}
 
       {status === "done" && result?.deleted === 0 && (
         <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-          Aucun doublon detecte, vos donnees sont propres.
+          Aucun doublon détecté, vos données sont propres.
         </p>
       )}
 

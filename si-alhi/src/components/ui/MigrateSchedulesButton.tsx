@@ -9,7 +9,7 @@ export function MigrateSchedulesButton() {
   const [errorMsg, setErrorMsg] = useState("");
 
   async function run() {
-    if (!confirm("Lancer la migration des emplois du temps ? Cette operation est sans risque et idempotente.")) return;
+    if (!confirm("Lancer la migration des emplois du temps ? Cette opération est sans risque et idempotente.")) return;
     setStatus("loading");
     setResult(null);
     setErrorMsg("");
@@ -19,7 +19,7 @@ export function MigrateSchedulesButton() {
       let data: { error?: string; groupsCreated?: number; schedulePatched?: number } = {};
       if (raw) {
         try { data = JSON.parse(raw); }
-        catch { throw new Error(`Reponse serveur invalide (code ${res.status}). Reessayez ou rechargez la page.`); }
+        catch { throw new Error(`Réponse serveur invalide (code ${res.status}). Réessayez ou rechargez la page.`); }
       }
       if (!res.ok) throw new Error(data.error ?? `Erreur serveur (code ${res.status})`);
       setResult({ groupsCreated: data.groupsCreated ?? 0, schedulePatched: data.schedulePatched ?? 0 });
@@ -38,7 +38,7 @@ export function MigrateSchedulesButton() {
             Corriger les collisions de l emploi du temps
           </p>
           <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-            Regroupe les anciens creneaux mutualises qui n ont pas encore de sharedGroupId. A executer une seule fois.
+            Regroupe les anciens créneaux mutualisés qui n ont pas encore de sharedGroupId. À exécuter une seule fois.
           </p>
         </div>
         <button
@@ -62,7 +62,7 @@ export function MigrateSchedulesButton() {
           {status === "loading" && <Loader2 style={{ width: "13px", height: "13px" }} className="animate-spin" />}
           {status === "done" && <CheckCircle style={{ width: "13px", height: "13px" }} />}
           {status === "idle" && <Wrench style={{ width: "13px", height: "13px" }} />}
-          {status === "loading" ? "Migration en cours..." : status === "done" ? "Migration effectuee" : "Lancer la migration"}
+          {status === "loading" ? "Migration en cours..." : status === "done" ? "Migration effectuée" : "Lancer la migration"}
         </button>
       </div>
 
@@ -70,7 +70,7 @@ export function MigrateSchedulesButton() {
         <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 14px", background: "#16a34a18", border: "1px solid #16a34a40", borderRadius: "8px", fontSize: "12px", color: "#16a34a" }}>
           <CheckCircle style={{ width: "14px", height: "14px", flexShrink: 0 }} />
           <span>
-            <strong>{result.groupsCreated}</strong> groupe{result.groupsCreated !== 1 ? "s" : ""} cree{result.groupsCreated !== 1 ? "s" : ""}, <strong>{result.schedulePatched}</strong> creneau{result.schedulePatched !== 1 ? "x" : ""} corrige{result.schedulePatched !== 1 ? "s" : ""}. Les collisions doivent avoir disparu.
+            <strong>{result.groupsCreated}</strong> groupe{result.groupsCreated !== 1 ? "s" : ""} créé{result.groupsCreated !== 1 ? "s" : ""}, <strong>{result.schedulePatched}</strong> créneau{result.schedulePatched !== 1 ? "x" : ""} corrigé{result.schedulePatched !== 1 ? "s" : ""}. Les collisions doivent avoir disparu.
           </span>
         </div>
       )}
@@ -84,7 +84,7 @@ export function MigrateSchedulesButton() {
 
       {status === "done" && result?.schedulePatched === 0 && (
         <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-          Aucun creneau a corriger — vos donnees sont deja a jour.
+          Aucun créneau à corriger : vos données sont déjà à jour.
         </p>
       )}
     </div>

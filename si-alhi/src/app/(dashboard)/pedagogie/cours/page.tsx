@@ -150,8 +150,8 @@ export default function CoursPage() {
   async function togglePublish(filiere: Filiere) {
     const willPublish = !filiere.coursesPublished;
     const confirmMsg = willPublish
-      ? `Publier la liste des matieres de ${filiere.name} ? Les etudiants et parents pourront la consulter.`
-      : `Retirer la publication des matieres de ${filiere.name} ?`;
+      ? `Publier la liste des matières de ${filiere.name} ? Les étudiants et parents pourront la consulter.`
+      : `Retirer la publication des matières de ${filiere.name} ?`;
     if (!confirm(confirmMsg)) return;
     setPublishLoading(true);
     try {
@@ -193,12 +193,12 @@ export default function CoursPage() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
             <Link href="/pedagogie" style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", color: "var(--text-muted)", textDecoration: "none", fontWeight: "500" }}>
-              <ArrowLeft style={{ width: "13px", height: "13px" }} />Pedagogie
+              <ArrowLeft style={{ width: "13px", height: "13px" }} />Pédagogie
             </Link>
           </div>
-          <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>Matieres et UE</h1>
+          <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text)", marginBottom: "3px" }}>Matières et UE</h1>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-            Gestion des cours, unites d&apos;enseignement et credits
+            Gestion des cours, unités d&apos;enseignement et crédits
           </p>
         </div>
         {canManage && (
@@ -216,7 +216,7 @@ export default function CoursPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "16px" }}>
         {[
           { label: "Cours total", value: filtered.length, icon: BookOpen, color: "#2563eb" },
-          { label: "Credits totaux", value: totalCredits, icon: GraduationCap, color: "#16a34a" },
+          { label: "Crédits totaux", value: totalCredits, icon: GraduationCap, color: "#16a34a" },
           { label: "Heures totales", value: totalHours, icon: BookOpen, color: "#B91C2F" },
         ].map((kpi) => {
           const Icon = kpi.icon;
@@ -251,7 +251,7 @@ export default function CoursPage() {
           onChange={(e) => setFilterFiliereId(e.target.value)}
           style={{ padding: "8px 12px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", minWidth: "180px" }}
         >
-          <option value="">Toutes les filieres</option>
+          <option value="">Toutes les filières</option>
           {filieres.map((f) => (
             <option key={f.id} value={f.id}>{f.code} - {f.name}</option>
           ))}
@@ -276,7 +276,7 @@ export default function CoursPage() {
                 whiteSpace: "nowrap",
               }}
             >
-              {sel.coursesPublished ? "Matieres publiees" : "Publier les matieres"}
+              {sel.coursesPublished ? "Matières publiées" : "Publier les matières"}
             </button>
           );
         })()}
@@ -286,7 +286,7 @@ export default function CoursPage() {
         <div style={{ textAlign: "center", padding: "60px", color: "var(--text-muted)" }}>Chargement...</div>
       ) : filtered.length === 0 ? (
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", padding: "60px", textAlign: "center", color: "var(--text-muted)" }}>
-          Aucun cours trouve. Commencez par ajouter un cours.
+          Aucun cours trouvé. Commencez par ajouter un cours.
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -303,7 +303,7 @@ export default function CoursPage() {
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                     <thead>
                       <tr style={{ background: "var(--bg-muted)" }}>
-                        {["Code", "Intitule", "UE", "Filiere", "Credits", "Heures", ""].map((h) => (
+                        {["Code", "Intitulé", "UE", "Filière", "Crédits", "Heures", ""].map((h) => (
                           <th key={h} style={{ padding: "8px 14px", textAlign: "left", fontWeight: "600", color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{h}</th>
                         ))}
                       </tr>
@@ -393,14 +393,14 @@ export default function CoursPage() {
             <form onSubmit={handleSubmit} style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "14px" }}>
               {/* Filiere */}
               <div>
-                <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>Filiere</label>
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>Filière</label>
                 <select
                   required
                   value={form.filiereId}
                   onChange={(e) => setForm((f) => ({ ...f, filiereId: e.target.value }))}
                   style={{ width: "100%", padding: "9px 12px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none" }}
                 >
-                  <option value="">Selectionner une filiere...</option>
+                  <option value="">Sélectionner une filière...</option>
                   {filieres.map((f) => (
                     <option key={f.id} value={f.id}>{f.code} - {f.name}</option>
                   ))}
@@ -410,11 +410,11 @@ export default function CoursPage() {
               {/* Mutualisation : autres filieres concernees */}
               <div>
                 <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                  Autres filieres concernees (cours commun, optionnel)
+                  Autres filières concernées (cours commun, optionnel)
                 </label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {filieres.filter((f) => f.id !== form.filiereId).length === 0 ? (
-                    <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>Selectionnez d&apos;abord une filiere principale.</span>
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>Sélectionnez d&apos;abord une filière principale.</span>
                   ) : (
                     filieres.filter((f) => f.id !== form.filiereId).map((f) => {
                       const active = form.filiereIds.includes(f.id);
@@ -437,7 +437,7 @@ export default function CoursPage() {
                   )}
                 </div>
                 <p style={{ fontSize: "10.5px", color: "var(--text-muted)", marginTop: "5px" }}>
-                  Si vous selectionnez d&apos;autres filieres, programmer ce cours dans l&apos;une le programme automatiquement dans toutes (meme prof, meme salle, meme horaire).
+                  Si vous sélectionnez d&apos;autres filières, programmer ce cours dans l&apos;une le programme automatiquement dans toutes (même prof, même salle, même horaire).
                 </p>
               </div>
 
@@ -455,11 +455,11 @@ export default function CoursPage() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>Intitule du cours</label>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>Intitulé du cours</label>
                   <input
                     required
                     type="text"
-                    placeholder="ex: Algorithmique et structures de donnees"
+                    placeholder="ex: Algorithmique et structures de données"
                     value={form.name}
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                     style={{ width: "100%", padding: "9px 12px", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", boxSizing: "border-box" }}
@@ -509,7 +509,7 @@ export default function CoursPage() {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>Credits</label>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.4px" }}>Crédits</label>
                   <input
                     required
                     type="number"
@@ -564,7 +564,7 @@ export default function CoursPage() {
                   disabled={submitting}
                   style={{ flex: 1, padding: "10px", background: "#B91C2F", border: "none", borderRadius: "9px", fontSize: "13px", fontWeight: "700", color: "white", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.7 : 1 }}
                 >
-                  {submitting ? "Enregistrement..." : editing ? "Enregistrer" : "Creer le cours"}
+                  {submitting ? "Enregistrement..." : editing ? "Enregistrer" : "Créer le cours"}
                 </button>
               </div>
             </form>

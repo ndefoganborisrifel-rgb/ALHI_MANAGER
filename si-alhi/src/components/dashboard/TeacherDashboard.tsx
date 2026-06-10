@@ -28,16 +28,16 @@ export async function TeacherDashboard({ userId }: { userId: string }) {
       }}>
         <div style={{ position: "absolute", top: "-30px", right: "-30px", width: "120px", height: "120px", borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
         <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.55)", marginBottom: "3px", textTransform: "uppercase", letterSpacing: "1px" }}>Espace enseignant</p>
-        <h1 style={{ fontSize: "20px", fontWeight: "800" }}>Mes cours et activites</h1>
-        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.65)" }}>Annee academique 2025-2026</p>
+        <h1 style={{ fontSize: "20px", fontWeight: "800" }}>Mes cours et activités</h1>
+        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.65)" }}>Année académique 2025-2026</p>
       </div>
 
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "18px" }}>
         {[
-          { label: "Cours assignes", value: totalCourses, icon: BookOpen, color: "#2563eb" },
-          { label: "Credits totaux", value: totalCredits, icon: ClipboardList, color: "#7c3aed" },
-          { label: "Etudiants", value: "...", icon: Users, color: "#16a34a" },
+          { label: "Cours assignés", value: totalCourses, icon: BookOpen, color: "#2563eb" },
+          { label: "Crédits totaux", value: totalCredits, icon: ClipboardList, color: "#7c3aed" },
+          { label: "Étudiants", value: "...", icon: Users, color: "#16a34a" },
         ].map((kpi) => {
           const Icon = kpi.icon;
           return (
@@ -69,7 +69,7 @@ export async function TeacherDashboard({ userId }: { userId: string }) {
             <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Mes cours 2025-2026</span>
           </div>
           {assignments.length === 0 && (
-            <p style={{ padding: "28px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>Aucun cours assigne.</p>
+            <p style={{ padding: "28px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>Aucun cours assigné.</p>
           )}
           {assignments.map((a, i) => (
             <div key={a.id} style={{
@@ -96,7 +96,7 @@ export async function TeacherDashboard({ userId }: { userId: string }) {
         {/* Quick actions */}
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", border: "1px solid var(--border)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
-            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Acces rapide</span>
+            <span style={{ fontWeight: "700", fontSize: "13px", color: "var(--text)" }}>Accès rapide</span>
           </div>
           <div style={{ padding: "6px" }}>
             {[

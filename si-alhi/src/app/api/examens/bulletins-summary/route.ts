@@ -5,9 +5,9 @@ import { calculateGeneralAverage, getMention } from "@/lib/grade-calculator";
 
 export async function GET(req: Request) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   if (!["ADMIN", "SCOLARITE", "ENSEIGNANT"].includes(session.user.role)) {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
   const { searchParams } = new URL(req.url);

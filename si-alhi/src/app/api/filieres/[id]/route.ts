@@ -8,9 +8,9 @@ interface RouteParams {
 
 export async function PATCH(req: Request, { params }: RouteParams) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
   const { id } = await params;
@@ -23,7 +23,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
   }
 
   if (Object.keys(data).length === 0) {
-    return NextResponse.json({ error: "Aucun champ a mettre a jour" }, { status: 400 });
+    return NextResponse.json({ error: "Aucun champ à mettre à jour" }, { status: 400 });
   }
 
   // Check current state before updating (for notifications)
@@ -36,17 +36,17 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
   // Send notifications when bulletinsPublished becomes true
   if (data.bulletinsPublished === true && !currentFiliere?.bulletinsPublished) {
-    await sendNotifications(id, currentFiliere?.name ?? "la filiere", "bulletins");
+    await sendNotifications(id, currentFiliere?.name ?? "la filière", "bulletins");
   }
 
   // Send notifications when pvPublished becomes true
   if (data.pvPublished === true && !currentFiliere?.pvPublished) {
-    await sendNotifications(id, currentFiliere?.name ?? "la filiere", "pv");
+    await sendNotifications(id, currentFiliere?.name ?? "la filière", "pv");
   }
 
   // Send notifications when coursesPublished becomes true
   if (data.coursesPublished === true && !currentFiliere?.coursesPublished) {
-    await sendNotifications(id, currentFiliere?.name ?? "la filiere", "courses");
+    await sendNotifications(id, currentFiliere?.name ?? "la filière", "courses");
   }
 
   return NextResponse.json(filiere);
@@ -64,7 +64,7 @@ async function sendNotifications(filiereId: string, filiereName: string, type: "
     distinct: ["teacherId"],
   });
 
-  const title = type === "bulletins" ? "Bulletins disponibles" : type === "pv" ? "PV de notes disponibles" : "Matieres disponibles";
+  const title = type === "bulletins" ? "Bulletins disponibles" : type === "pv" ? "PV de notes disponibles" : "Matières disponibles";
   const studentLink = type === "courses" ? "/pedagogie/matieres" : "/examens";
   const teacherLink = type === "bulletins" ? "/examens/bulletins" : "/examens/pv";
 
@@ -75,16 +75,16 @@ async function sendNotifications(filiereId: string, filiereName: string, type: "
     const msg = type === "bulletins"
       ? `Les bulletins de notes de ${filiereName} sont maintenant disponibles.`
       : type === "pv"
-      ? `Les PV de notes de ${filiereName} ont ete publies. Consultez vos resultats.`
-      : `La liste des matieres de ${filiereName} est maintenant disponible.`;
+      ? `Les PV de notes de ${filiereName} ont été publiés. Consultez vos résultats.`
+      : `La liste des matières de ${filiereName} est maintenant disponible.`;
     notifications.push({ userId: student.userId, title, message: msg, type: "INFO", link: studentLink });
 
     if (student.parent?.userId) {
       const parentMsg = type === "bulletins"
         ? `Les bulletins de notes de ${filiereName} pour ${student.firstName} ${student.lastName} sont disponibles.`
         : type === "pv"
-        ? `Les PV de notes de ${filiereName} pour ${student.firstName} ${student.lastName} ont ete publies.`
-        : `La liste des matieres de ${filiereName} pour ${student.firstName} ${student.lastName} est disponible.`;
+        ? `Les PV de notes de ${filiereName} pour ${student.firstName} ${student.lastName} ont été publiés.`
+        : `La liste des matières de ${filiereName} pour ${student.firstName} ${student.lastName} est disponible.`;
       notifications.push({ userId: student.parent.userId, title, message: parentMsg, type: "INFO", link: studentLink });
     }
   }
@@ -95,10 +95,10 @@ async function sendNotifications(filiereId: string, filiereName: string, type: "
   }
 
   for (const a of assignments) {
-    const teacherTitle = type === "bulletins" ? "Bulletins publies" : "PV publies";
+    const teacherTitle = type === "bulletins" ? "Bulletins publiés" : "PV publiés";
     const teacherMsg = type === "bulletins"
-      ? `Les bulletins de ${filiereName} ont ete publies et sont visibles par les etudiants.`
-      : `Les PV de notes de ${filiereName} ont ete publies.`;
+      ? `Les bulletins de ${filiereName} ont été publiés et sont visibles par les étudiants.`
+      : `Les PV de notes de ${filiereName} ont été publiés.`;
     notifications.push({ userId: a.teacher.userId, title: teacherTitle, message: teacherMsg, type: "INFO", link: teacherLink });
   }
 

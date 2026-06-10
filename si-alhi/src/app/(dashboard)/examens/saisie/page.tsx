@@ -55,7 +55,7 @@ export default async function SaisieNotesPage() {
     <div className="space-y-6" style={{ maxWidth: "1200px" }}>
       <PageHeader
         title="Saisie des notes"
-        subtitle="Annee academique 2025-2026"
+        subtitle="Année académique 2025-2026"
         backHref="/examens"
         icon={<PenLine style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />

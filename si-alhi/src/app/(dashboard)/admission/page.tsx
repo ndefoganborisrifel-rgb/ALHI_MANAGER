@@ -6,9 +6,9 @@ import { AdmissionTable } from "./AdmissionTable";
 
 const STAGE_CONFIG = [
   { key: "PROSPECT", label: "Prospects", dot: "#6b7280" },
-  { key: "DOSSIER_RECU", label: "Dossier recu", dot: "#d97706" },
+  { key: "DOSSIER_RECU", label: "Dossier reçu", dot: "#d97706" },
   { key: "ENTRETIEN", label: "Entretien", dot: "#7c3aed" },
-  { key: "ACCEPTE", label: "Acceptes", dot: "#2563eb" },
+  { key: "ACCEPTE", label: "Acceptés", dot: "#2563eb" },
   { key: "INSCRIT", label: "Inscrits", dot: "#0891b2" },
   { key: "ACTIF", label: "Actifs", dot: "#16a34a" },
 ];

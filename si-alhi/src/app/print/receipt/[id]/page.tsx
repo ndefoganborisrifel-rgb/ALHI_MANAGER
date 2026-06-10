@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { isEnglishFiliere } from "@/lib/filiere-lang";
 
 interface ReceiptData {
   receiptNumber: string;
@@ -19,6 +20,8 @@ interface ReceiptData {
   amount: number;
   balance: number;
   amountInWords: string;
+  amountInWordsEn?: string;
+  student?: { filiere?: { code?: string; name?: string } };
 }
 
 const typeLabels: Record<string, { fr: string; en: string }> = {
@@ -30,7 +33,7 @@ const typeLabels: Record<string, { fr: string; en: string }> = {
   AUTRE: { fr: "Autre versement", en: "Other payment" },
 };
 
-const methodLabels: Record<string, string> = {
+const methodLabelsFr: Record<string, string> = {
   ESPECES: "Espèces / Cash",
   VIREMENT: "Virement bancaire / Bank transfer",
   ORANGE_MONEY: "Orange Money",
@@ -38,22 +41,26 @@ const methodLabels: Record<string, string> = {
   CHEQUE: "Chèque / Cheque",
 };
 
+const methodLabelsEn: Record<string, string> = {
+  ESPECES: "Cash",
+  VIREMENT: "Bank transfer",
+  ORANGE_MONEY: "Orange Money",
+  MTN_MOMO: "MTN MoMo",
+  CHEQUE: "Cheque",
+};
+
 function fmtCFA(amount: number): string {
   return new Intl.NumberFormat("fr-FR").format(amount) + " FCFA";
 }
 
-function fmtDate(d: string): string {
-  return new Date(d).toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string }) {
-  const typeInfo = typeLabels[data.type] ?? { fr: data.description ?? "Versement", en: "Payment" };
-  const methodLabel = methodLabels[data.paymentMethod] ?? data.paymentMethod;
-  const today = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+function ReceiptCopy({ data, copyLabel, en }: { data: ReceiptData; copyLabel: string; en: boolean }) {
+  const typeInfo = typeLabels[data.type] ?? { fr: data.description ?? "Versement", en: data.description ?? "Payment" };
+  const methodLabel = en
+    ? (methodLabelsEn[data.paymentMethod] ?? data.paymentMethod)
+    : (methodLabelsFr[data.paymentMethod] ?? data.paymentMethod);
+  const locale = en ? "en-GB" : "fr-FR";
+  const fmtDate = (d: string) => new Date(d).toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" });
+  const today = new Date().toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <div className="copy">
@@ -101,13 +108,13 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
           </div>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: "15px", fontWeight: "bold", color: "#B91C2F", letterSpacing: "2px", textTransform: "uppercase" }}>
-              Reçu / Receipt
+              {en ? "Receipt" : "Reçu / Receipt"}
             </div>
             <div style={{ fontSize: "9px", color: "#555", marginTop: "2px" }}>
               N. <strong style={{ color: "#1A1A1A" }}>{data.receiptNumber}</strong>
             </div>
             <div style={{ fontSize: "9px", color: "#555" }}>
-              Année / Year: <strong style={{ color: "#1A1A1A" }}>{data.academicYear}</strong>
+              {en ? "Academic year" : "Année / Year"}: <strong style={{ color: "#1A1A1A" }}>{data.academicYear}</strong>
             </div>
             <div
               style={{
@@ -138,20 +145,20 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
         >
           <div style={{ fontWeight: "bold", fontSize: "12px", color: "#1A1A1A" }}>{data.studentName}</div>
           <div style={{ fontSize: "9px", color: "#555", marginTop: "2px" }}>
-            Matr. <span style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: "bold" }}>{data.matricule}</span>
+            {en ? "Reg. No." : "Matr."} <span style={{ fontFamily: "monospace", color: "#1A1A1A", fontWeight: "bold" }}>{data.matricule}</span>
             {" "}
-            Filière: <strong>{data.filiere}</strong>
+            {en ? "Programme" : "Filière"}: <strong>{data.filiere}</strong>
             {" "}
-            Niv. {data.level}
+            {en ? "Level" : "Niv."} {data.level}
           </div>
         </div>
 
         {/* Payment details table */}
         <div style={{ marginBottom: "7px" }}>
-          <Row label="Date du paiement / Payment date" value={fmtDate(data.paymentDate)} />
-          <Row label="Nature / Nature" value={`${typeInfo.fr} / ${typeInfo.en}`} />
-          <Row label="Mode / Method" value={methodLabel} />
-          <Row label="Statut / Status" value="Validé / Validated" valueStyle={{ color: "#15803d", fontWeight: "bold" }} />
+          <Row label={en ? "Payment date" : "Date du paiement / Payment date"} value={fmtDate(data.paymentDate)} />
+          <Row label={en ? "Description" : "Nature / Nature"} value={en ? typeInfo.en : `${typeInfo.fr} / ${typeInfo.en}`} />
+          <Row label={en ? "Payment method" : "Mode / Method"} value={methodLabel} />
+          <Row label={en ? "Status" : "Statut / Status"} value={en ? "Validated" : "Validé / Validated"} valueStyle={{ color: "#15803d", fontWeight: "bold" }} />
         </div>
 
         {/* Amount box */}
@@ -165,13 +172,13 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
           }}
         >
           <div style={{ fontSize: "9px", color: "#888", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "4px" }}>
-            Montant reçu / Amount received
+            {en ? "Amount received" : "Montant reçu / Amount received"}
           </div>
           <div style={{ fontSize: "24px", fontWeight: "bold", color: "#1A1A1A", letterSpacing: "0.5px" }}>
             {fmtCFA(data.amount)}
           </div>
           <div style={{ fontSize: "9px", color: "#666", fontStyle: "italic", marginTop: "4px" }}>
-            ({data.amountInWords})
+            ({en ? (data.amountInWordsEn ?? data.amountInWords) : data.amountInWords})
           </div>
         </div>
 
@@ -190,17 +197,17 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
               fontSize: "9.5px",
             }}
           >
-            <span style={{ color: "#555" }}>Solde restant / Remaining balance</span>
+            <span style={{ color: "#555" }}>{en ? "Remaining balance" : "Solde restant / Remaining balance"}</span>
             <strong style={{ color: data.balance === 0 ? "#15803d" : "#b91c1c" }}>
-              {data.balance === 0 ? "Soldé / Settled" : fmtCFA(data.balance)}
+              {data.balance === 0 ? (en ? "Settled" : "Soldé / Settled") : fmtCFA(data.balance)}
             </strong>
           </div>
         )}
 
         {/* Signatures */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-          <SigLine label="Le Caissier / Cashier" />
-          <SigLine label="L'Étudiant(e) / Student" />
+          <SigLine label={en ? "The Cashier" : "Le Caissier / Cashier"} />
+          <SigLine label={en ? "The Student" : "L'Étudiant(e) / Student"} />
         </div>
 
         {/* Footer */}
@@ -214,9 +221,15 @@ function ReceiptCopy({ data, copyLabel }: { data: ReceiptData; copyLabel: string
             paddingTop: "6px",
           }}
         >
-          Yaoundé, le {today}.
-          Ce reçu est un document officiel. Toute falsification est passible de poursuites judiciaires.
-          / This receipt is an official document. Any forgery is subject to legal prosecution.
+          {en ? (
+            <>Yaounde, {today}. This receipt is an official document. Any forgery is subject to legal prosecution.</>
+          ) : (
+            <>
+              Yaoundé, le {today}.
+              Ce reçu est un document officiel. Toute falsification est passible de poursuites judiciaires.
+              / This receipt is an official document. Any forgery is subject to legal prosecution.
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -277,6 +290,9 @@ export default function PrintReceiptPage() {
       </div>
     );
   }
+
+  // Les filieres anglophones (BBA, MBA) recoivent un recu entierement en anglais
+  const en = isEnglishFiliere(data.student?.filiere?.code, data.student?.filiere?.name ?? data.filiere);
 
   return (
     <>
@@ -346,7 +362,7 @@ export default function PrintReceiptPage() {
         }}
       >
         <span style={{ color: "#aaa", fontSize: "13px" }}>
-          Reçu N. {data.receiptNumber} , {data.studentName}
+          {en ? "Receipt No." : "Reçu N."} {data.receiptNumber} , {data.studentName}
         </span>
         <button
           onClick={() => window.print()}
@@ -362,15 +378,15 @@ export default function PrintReceiptPage() {
             fontSize: "13px",
           }}
         >
-          Imprimer / Print
+          {en ? "Print / PDF" : "Imprimer / Print"}
         </button>
       </div>
 
       {/* A4 page with 2 copies */}
       <div className="page">
-        <ReceiptCopy data={data} copyLabel="Exemplaire etudiant / Student copy" />
-        <div className="cut-line">DECOUPER ICI / CUT HERE</div>
-        <ReceiptCopy data={data} copyLabel="Exemplaire etablissement / School copy" />
+        <ReceiptCopy data={data} en={en} copyLabel={en ? "Student copy" : "Exemplaire étudiant / Student copy"} />
+        <div className="cut-line">{en ? "CUT HERE" : "DÉCOUPER ICI / CUT HERE"}</div>
+        <ReceiptCopy data={data} en={en} copyLabel={en ? "School copy" : "Exemplaire établissement / School copy"} />
       </div>
     </>
   );

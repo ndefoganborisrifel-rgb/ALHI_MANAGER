@@ -138,7 +138,7 @@ export default function NouveauUtilisateurPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       <PageHeader
         title="Nouveau compte utilisateur"
-        subtitle="Creer un acces a l'application"
+        subtitle="Créer un accès à l'application"
         backHref="/users"
         icon={<UserPlus style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
       />

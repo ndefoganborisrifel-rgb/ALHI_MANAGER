@@ -48,9 +48,9 @@ const TIME_SLOTS = [
 const TYPE_STYLE: Record<string, { bg: string; border: string; text: string; dot: string; label: string }> = {
   COURS:      { bg: "#e0f2fe", border: "#7dd3fc", text: "#0c4a6e", dot: "#0ea5e9",  label: "Cours" },
   TPE:        { bg: "#dcfce7", border: "#86efac", text: "#14532d", dot: "#22c55e",  label: "TPE" },
-  EVALUATION: { bg: "#fef3c7", border: "#fcd34d", text: "#78350f", dot: "#f59e0b",  label: "Evaluation" },
+  EVALUATION: { bg: "#fef3c7", border: "#fcd34d", text: "#78350f", dot: "#f59e0b",  label: "Évaluation" },
   PAUSE:      { bg: "#f3f4f6", border: "#d1d5db", text: "#6b7280", dot: "#9ca3af",  label: "Pause" },
-  FERIER:     { bg: "#f3e8ff", border: "#d8b4fe", text: "#581c87", dot: "#a855f7",  label: "Ferie" },
+  FERIER:     { bg: "#f3e8ff", border: "#d8b4fe", text: "#581c87", dot: "#a855f7",  label: "Férié" },
   EXCURSION:  { bg: "#ecfdf5", border: "#6ee7b7", text: "#064e3b", dot: "#10b981",  label: "Excursion" },
   AUTRE:      { bg: "#f8fafc", border: "#cbd5e1", text: "#475569", dot: "#94a3b8",  label: "Autre" },
 };
@@ -187,7 +187,7 @@ export default function PedagogiePage() {
   const tomorrowLast = tomorrowSlots.length > 0 ? TIME_SLOTS.find((t) => t.start === tomorrowSlots[tomorrowSlots.length - 1]?.startTime) : null;
 
   async function deleteSlot(id: string) {
-    if (!confirm("Supprimer ce creneau ?")) return;
+    if (!confirm("Supprimer ce créneau ?")) return;
     const res = await fetch(`/api/schedules/${id}`, { method: "DELETE" });
     if (!res.ok) { const d = await res.json().catch(() => ({})); alert(d.error ?? "Erreur"); return; }
     setSchedules((prev) => prev.filter((s) => s.id !== id));
@@ -299,7 +299,7 @@ export default function PedagogiePage() {
                         {hasDuplicates && (
                           <div style={{ display: "flex", alignItems: "center", gap: "3px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: "5px", padding: "2px 6px", marginBottom: "3px", fontSize: "9px", fontWeight: "700", color: "#991b1b" }}>
                             <AlertTriangle style={{ width: "9px", height: "9px" }} />
-                            {allMatching.length} doublons, allez dans Parametres pour nettoyer
+                            {allMatching.length} doublons, allez dans Paramètres pour nettoyer
                           </div>
                         )}
                         {matching.map((s) => {
@@ -338,7 +338,7 @@ export default function PedagogiePage() {
                               )}
                               {s.sessionNumber && (
                                 <div style={{ fontSize: "8px", color: style.text, opacity: 0.75, fontWeight: "700" }}>
-                                  Seance {s.sessionNumber}{s.totalSessions ? `/${s.totalSessions}` : ""}
+                                  Séance {s.sessionNumber}{s.totalSessions ? `/${s.totalSessions}` : ""}
                                 </div>
                               )}
                               {canManage && (
@@ -416,10 +416,10 @@ export default function PedagogiePage() {
         {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "12px", marginBottom: "18px" }}>
           {[
-            { label: "Creneaux", value: schedules.length, color: "#2563eb" },
+            { label: "Créneaux", value: schedules.length, color: "#2563eb" },
             { label: "Collisions", value: totalCollisions, color: "#B91C2F" },
             { label: "Salles", value: rooms.length, color: "#16a34a" },
-            { label: "Filieres", value: filieres.length, color: "#7c3aed" },
+            { label: "Filières", value: filieres.length, color: "#7c3aed" },
           ].map((kpi) => (
             <div key={kpi.label} style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "14px 16px", border: "1px solid var(--border)", textAlign: "center" }}>
               <p style={{ fontSize: "26px", fontWeight: "800", color: kpi.color, lineHeight: 1 }}>{kpi.value}</p>
@@ -452,7 +452,7 @@ export default function PedagogiePage() {
             </button>
           ))}
           <span style={{ marginLeft: "8px", fontSize: "10px", color: "var(--text-muted)", fontStyle: "italic" }}>
-            {filiereSchedules.length} creneau{filiereSchedules.length !== 1 ? "x" : ""} planifie{filiereSchedules.length !== 1 ? "s" : ""}
+            {filiereSchedules.length} créneau{filiereSchedules.length !== 1 ? "x" : ""} planifié{filiereSchedules.length !== 1 ? "s" : ""}
           </span>
         </div>
 
@@ -533,21 +533,21 @@ export default function PedagogiePage() {
               {/* Disclaimer */}
               <div style={{ padding: "10px 18px", borderTop: "1px solid var(--border)", background: "var(--bg-muted)" }}>
                 <p style={{ fontSize: "10.5px", color: "var(--text-muted)", fontStyle: "italic", textAlign: "center" }}>
-                  Cet emploi du temps est susceptible de changer independamment de la volonte des differents intervenants.
+                  Cet emploi du temps est susceptible de changer indépendamment de la volonté des différents intervenants.
                 </p>
               </div>
             </div>
 
             {canManage && filiereAssignments.length === 0 && (
               <div style={{ marginTop: "10px", padding: "10px 14px", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: "8px", fontSize: "12px", color: "#92400e" }}>
-                Aucun cours assigne pour cette filiere. Allez dans RH pour affecter des enseignants avant d&apos;ajouter des creneaux.
+                Aucun cours assigné pour cette filière. Allez dans RH pour affecter des enseignants avant d&apos;ajouter des créneaux.
               </div>
             )}
           </div>
         )}
 
         {filieres.length === 0 && (
-          <div style={{ textAlign: "center", padding: "60px", color: "var(--text-muted)" }}>Aucune filiere configuree.</div>
+          <div style={{ textAlign: "center", padding: "60px", color: "var(--text-muted)" }}>Aucune filière configurée.</div>
         )}
       </div>
 
@@ -557,8 +557,8 @@ export default function PedagogiePage() {
           <div style={{ background: "var(--bg-card)", borderRadius: "16px", width: "100%", maxWidth: "520px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 24px 80px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid var(--border)" }}>
               <div>
-                <h2 style={{ fontSize: "15px", fontWeight: "800", color: "var(--text)" }}>Ajouter un creneau</h2>
-                {filiere && <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" }}>Filiere : {filiere.name}</p>}
+                <h2 style={{ fontSize: "15px", fontWeight: "800", color: "var(--text)" }}>Ajouter un créneau</h2>
+                {filiere && <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" }}>Filière : {filiere.name}</p>}
               </div>
               <button onClick={() => setShowModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
                 <X style={{ width: "18px", height: "18px" }} />
@@ -569,13 +569,13 @@ export default function PedagogiePage() {
               {/* Type + Jour */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
-                  <label className="form-label">Type de creneau</label>
+                  <label className="form-label">Type de créneau</label>
                   <select className="form-input" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
                     <option value="COURS">Cours</option>
                     <option value="TPE">TPE</option>
-                    <option value="EVALUATION">Evaluation</option>
+                    <option value="EVALUATION">Évaluation</option>
                     <option value="PAUSE">Pause</option>
-                    <option value="FERIER">Jour ferie</option>
+                    <option value="FERIER">Jour férié</option>
                     <option value="EXCURSION">Excursion</option>
                     <option value="AUTRE">Autre</option>
                   </select>
@@ -591,7 +591,7 @@ export default function PedagogiePage() {
               {/* Heure + Semestre */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
-                  <label className="form-label">Creneau horaire</label>
+                  <label className="form-label">Créneau horaire</label>
                   <select className="form-input" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}>
                     {TIME_SLOTS.map((t) => (
                       <option key={t.start} value={t.start}>{t.label} - {t.end}</option>
@@ -599,7 +599,7 @@ export default function PedagogiePage() {
                   </select>
                   {(() => {
                     const slot = TIME_SLOTS.find((t) => t.start === form.startTime);
-                    return slot ? <p style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "3px" }}>Duree : 2h ({slot.label} a {slot.end})</p> : null;
+                    return slot ? <p style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "3px" }}>Durée : 2h ({slot.label} à {slot.end})</p> : null;
                   })()}
                 </div>
                 <div>
@@ -624,7 +624,7 @@ export default function PedagogiePage() {
               {/* Cours assigne (pour COURS, TPE, EVALUATION) */}
               {(form.type === "COURS" || form.type === "TPE" || form.type === "EVALUATION") && (
                 <div>
-                  <label className="form-label">Matiere / Cours assigne</label>
+                  <label className="form-label">Matière / Cours assigné</label>
                   <select
                     className="form-input"
                     value={form.courseAssignmentId}
@@ -637,15 +637,15 @@ export default function PedagogiePage() {
                       setForm((f) => ({ ...f, courseAssignmentId: selectedId, totalSessions: autoTotal }));
                     }}
                   >
-                    <option value="">Selectionner un cours...</option>
+                    <option value="">Sélectionner un cours...</option>
                     {filiereAssignments.map((a) => (
                       <option key={a.id} value={a.id}>
-                        {a.course.code} - {a.course.name} ({a.teacher.lastName} {a.teacher.firstName[0]}.) [{Math.ceil(a.course.totalHours / 2)} seances]
+                        {a.course.code} - {a.course.name} ({a.teacher.lastName} {a.teacher.firstName[0]}.) [{Math.ceil(a.course.totalHours / 2)} séances]
                       </option>
                     ))}
                   </select>
                   {filiereAssignments.length === 0 && (
-                    <p style={{ fontSize: "11px", color: "#d97706", marginTop: "4px" }}>Aucun cours assigne. Creez des affectations dans RH.</p>
+                    <p style={{ fontSize: "11px", color: "#d97706", marginTop: "4px" }}>Aucun cours assigné. Créez des affectations dans RH.</p>
                   )}
                   {(() => {
                     const sel = filiereAssignments.find((a) => a.id === form.courseAssignmentId);
@@ -654,7 +654,7 @@ export default function PedagogiePage() {
                     const names = filieres.filter((f) => ids.includes(f.id)).map((f) => f.code);
                     return (
                       <p style={{ fontSize: "11px", color: "#7c3aed", marginTop: "5px", background: "#f5f3ff", border: "1px solid #d8b4fe", borderRadius: "6px", padding: "6px 8px" }}>
-                        Cours commun : ce creneau sera programme automatiquement pour {names.join(", ")}.
+                        Cours commun : ce créneau sera programmé automatiquement pour {names.join(", ")}.
                       </p>
                     );
                   })()}
@@ -665,7 +665,7 @@ export default function PedagogiePage() {
               {(form.type === "COURS" || form.type === "TPE") && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                   <div>
-                    <label className="form-label">No. seance</label>
+                    <label className="form-label">No. séance</label>
                     <input
                       type="number"
                       min={1}
@@ -682,7 +682,7 @@ export default function PedagogiePage() {
                     />
                   </div>
                   <div>
-                    <label className="form-label">Total seances{form.courseAssignmentId ? " (auto)" : ""}</label>
+                    <label className="form-label">Total séances{form.courseAssignmentId ? " (auto)" : ""}</label>
                     <input
                       type="number"
                       min={1}
@@ -700,7 +700,7 @@ export default function PedagogiePage() {
               {/* Libelle libre (pour FERIER, EXCURSION, AUTRE) */}
               {(form.type === "FERIER" || form.type === "EXCURSION" || form.type === "AUTRE" || form.type === "PAUSE" || form.type === "EVALUATION") && (
                 <div>
-                  <label className="form-label">Intitule / Description</label>
+                  <label className="form-label">Intitulé / Description</label>
                   <input
                     type="text"
                     className="form-input"
@@ -708,7 +708,7 @@ export default function PedagogiePage() {
                     onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
                     placeholder={
                       form.type === "EVALUATION" ? "ex: Examen final S1, Devoir surveille N°2..." :
-                      form.type === "PAUSE" ? "ex: Pause cafe, Evenement..." :
+                      form.type === "PAUSE" ? "ex: Pause café, Événement..." :
                       form.type === "FERIER" ? "ex: Fete Nationale" :
                       form.type === "EXCURSION" ? "ex: Visite entreprise XYZ" :
                       "ex: Rattrapage"
@@ -728,7 +728,7 @@ export default function PedagogiePage() {
               <div style={{ display: "flex", gap: "10px", paddingTop: "4px" }}>
                 <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: "10px", background: "var(--bg-muted)", border: "1.5px solid var(--border)", borderRadius: "9px", fontSize: "13px", fontWeight: "600", color: "var(--text)", cursor: "pointer" }}>Annuler</button>
                 <button type="submit" disabled={submitting} style={{ flex: 1, padding: "10px", background: "#B91C2F", border: "none", borderRadius: "9px", fontSize: "13px", fontWeight: "700", color: "white", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.7 : 1 }}>
-                  {submitting ? "Enregistrement..." : "Ajouter le creneau"}
+                  {submitting ? "Enregistrement..." : "Ajouter le créneau"}
                 </button>
               </div>
             </form>

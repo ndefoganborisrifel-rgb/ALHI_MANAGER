@@ -6,7 +6,7 @@ interface RouteParams { params: Promise<{ id: string }> }
 
 export async function GET(_req: Request, { params }: RouteParams) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   const { id } = await params;
 
   const conv = await prisma.conversation.findUnique({
@@ -24,7 +24,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
   if (!conv) return NextResponse.json({ error: "Conversation introuvable" }, { status: 404 });
   if (!conv.participants.some((p) => p.userId === session.user!.id)) {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
   // Mark as read
@@ -38,7 +38,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
 export async function POST(req: Request, { params }: RouteParams) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   const { id } = await params;
 
   const conv = await prisma.conversation.findUnique({
@@ -47,7 +47,7 @@ export async function POST(req: Request, { params }: RouteParams) {
   });
   if (!conv) return NextResponse.json({ error: "Conversation introuvable" }, { status: 404 });
   if (!conv.participants.some((p) => p.userId === session.user!.id)) {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
   const body = await req.json() as { content: string };

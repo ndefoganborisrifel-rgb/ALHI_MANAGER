@@ -16,8 +16,8 @@ export function PublishPvButton({ filiereId, filiereName, published }: Props) {
 
   async function handleToggle() {
     const msg = current
-      ? `Retirer la publication du PV pour ${filiereName} ? Les etudiants n'y auront plus acces.`
-      : `Publier le PV de deliberation pour ${filiereName} ? Les etudiants et parents seront notifies.`;
+      ? `Retirer la publication du PV pour ${filiereName} ? Les étudiants n'y auront plus accès.`
+      : `Publier le PV de délibération pour ${filiereName} ? Les étudiants et parents seront notifiés.`;
     if (!confirm(msg)) return;
 
     setLoading(true);
@@ -50,7 +50,7 @@ export function PublishPvButton({ filiereId, filiereName, published }: Props) {
         title="Cliquer pour retirer la publication"
       >
         <CheckCircle style={{ width: "12px", height: "12px" }} />
-        PV publie
+        PV publié
       </button>
     );
   }

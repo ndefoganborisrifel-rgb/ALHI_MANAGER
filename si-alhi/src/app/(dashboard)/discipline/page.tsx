@@ -30,7 +30,7 @@ export default async function DisciplinePage() {
     <div style={{ maxWidth: "1100px" }}>
       <PageHeader
         title="SI-Discipline"
-        subtitle="Suivi des absences et de l'assiduite"
+        subtitle="Suivi des absences et de l'assiduité"
         backHref="/dashboard"
         icon={<ClipboardList style={{ width: "22px", height: "22px", color: "#B91C2F" }} />}
         actions={isStaff ? (
@@ -41,8 +41,8 @@ export default async function DisciplinePage() {
       />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "20px" }}>
-        <StatCard label="Emargements" value={totalAttendances} icon={<ClipboardList style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="seances enregistrees" />
-        <StatCard label="Absences totales" value={absentCount} icon={<UserX style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="toutes filieres" />
+        <StatCard label="Émargements" value={totalAttendances} icon={<ClipboardList style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="séances enregistrées" />
+        <StatCard label="Absences totales" value={absentCount} icon={<UserX style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="toutes filières" />
         <StatCard label="Taux absenteisme" value={`${absentRate}%`} icon={<AlertTriangle style={{ width: "18px", height: "18px", color: absentRate > 20 ? "#dc2626" : "#16a34a" }} />} color={absentRate > 20 ? "#dc2626" : "#16a34a"} bg={absentRate > 20 ? "#fef2f2" : "#f0fdf4"} sub="moyenne globale" />
       </div>
 
@@ -50,15 +50,15 @@ export default async function DisciplinePage() {
         <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "12px", padding: "14px 16px", marginBottom: "20px" }}>
           <AlertTriangle style={{ width: "18px", height: "18px", color: "#d97706", flexShrink: 0 }} />
           <div>
-            <p style={{ fontSize: "13px", color: "#b45309", fontWeight: 600 }}>Aucun emargement enregistre</p>
-            <p style={{ fontSize: "12px", color: "#b45309", marginTop: "2px" }}>Cliquez sur Saisir des absences pour enregistrer les presences et absences des etudiants.</p>
+            <p style={{ fontSize: "13px", color: "#b45309", fontWeight: 600 }}>Aucun émargement enregistré</p>
+            <p style={{ fontSize: "12px", color: "#b45309", marginTop: "2px" }}>Cliquez sur Saisir des absences pour enregistrer les présences et absences des étudiants.</p>
           </div>
         </div>
       )}
 
-      <Panel title="Tableau de bord par etudiant" icon={<ClipboardList style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}>
+      <Panel title="Tableau de bord par étudiant" icon={<ClipboardList style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}>
         {students.length === 0 ? (
-          <EmptyState icon={<UserX style={{ width: "24px", height: "24px" }} />} message="Aucun etudiant actif dans le systeme." />
+          <EmptyState icon={<UserX style={{ width: "24px", height: "24px" }} />} message="Aucun étudiant actif dans le système." />
         ) : (
           <div style={{ padding: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
             {students.map((student) => {
@@ -84,7 +84,7 @@ export default async function DisciplinePage() {
                       {absent} absence{absent !== 1 ? "s" : ""}{late > 0 ? `, ${late} retard${late !== 1 ? "s" : ""}` : ""}
                     </p>
                     <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                      {total > 0 ? `${rate}% sur ${total} seances` : "Aucune seance enregistree"}
+                      {total > 0 ? `${rate}% sur ${total} séances` : "Aucune séance enregistrée"}
                     </p>
                   </div>
                 </div>

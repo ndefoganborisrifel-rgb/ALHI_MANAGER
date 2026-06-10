@@ -7,9 +7,9 @@ import { getStatusLabel, formatDate } from "@/lib/utils";
 
 const STAGE_CONFIG = [
   { key: "PROSPECT", label: "Prospects", dot: "#6b7280" },
-  { key: "DOSSIER_RECU", label: "Dossier recu", dot: "#d97706" },
+  { key: "DOSSIER_RECU", label: "Dossier reçu", dot: "#d97706" },
   { key: "ENTRETIEN", label: "Entretien", dot: "#7c3aed" },
-  { key: "ACCEPTE", label: "Acceptes", dot: "#2563eb" },
+  { key: "ACCEPTE", label: "Acceptés", dot: "#2563eb" },
   { key: "INSCRIT", label: "Inscrits", dot: "#0891b2" },
   { key: "ACTIF", label: "Actifs", dot: "#16a34a" },
 ];
@@ -72,7 +72,7 @@ export function AdmissionTable({ rows }: { rows: AdmissionRow[] }) {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
           <thead>
             <tr style={{ background: "var(--bg-muted)", borderBottom: "1px solid var(--border)" }}>
-              {["Candidat", "Matricule", "Filiere", "Date dossier", "Statut", ""].map((h) => (
+              {["Candidat", "Matricule", "Filière", "Date dossier", "Statut", ""].map((h) => (
                 <th key={h} style={{ padding: "9px 14px", textAlign: "left", fontWeight: "600", color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{h}</th>
               ))}
             </tr>

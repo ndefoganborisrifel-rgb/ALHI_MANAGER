@@ -34,9 +34,9 @@ type Internship = {
 
 const STATUS_OPTIONS = [
   { value: "EN_RECHERCHE", label: "En recherche" },
-  { value: "CONVENTION_SIGNEE", label: "Convention signee" },
+  { value: "CONVENTION_SIGNEE", label: "Convention signée" },
   { value: "EN_COURS", label: "En cours" },
-  { value: "TERMINE", label: "Termine" },
+  { value: "TERMINE", label: "Terminé" },
   { value: "SOUTENU", label: "Soutenu" },
 ];
 
@@ -184,16 +184,16 @@ export default function StagesPage() {
 
       <Panel title={`Conventions de stage (${internships.length})`} icon={<Briefcase style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}>
         {internships.length === 0 ? (
-          <EmptyState icon={<Briefcase style={{ width: "24px", height: "24px" }} />} message="Aucun stage enregistre." action={canManage ? <PrimaryButton onClick={() => { setCreateForm(emptyCreateForm); setCreateError(""); setShowCreateModal(true); }}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un stage</PrimaryButton> : undefined} />
+          <EmptyState icon={<Briefcase style={{ width: "24px", height: "24px" }} />} message="Aucun stage enregistré." action={canManage ? <PrimaryButton onClick={() => { setCreateForm(emptyCreateForm); setCreateError(""); setShowCreateModal(true); }}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un stage</PrimaryButton> : undefined} />
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "var(--bg-muted)" }}>
-                  <th style={th}>Etudiant</th>
+                  <th style={th}>Étudiant</th>
                   <th style={th}>Entreprise</th>
                   <th style={th}>Sujet</th>
-                  <th style={th}>Periode</th>
+                  <th style={th}>Période</th>
                   <th style={th}>Statut</th>
                   <th style={{ ...th, textAlign: "right" }}>Actions</th>
                 </tr>
@@ -206,12 +206,12 @@ export default function StagesPage() {
                       <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{i.student.filiere.name}</div>
                     </td>
                     <td style={{ ...td, fontWeight: 600 }}>{i.companyName}</td>
-                    <td style={{ ...td, maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.topic ?? <span style={{ color: "var(--text-muted)", fontStyle: "italic" }}>Non defini</span>}</td>
+                    <td style={{ ...td, maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.topic ?? <span style={{ color: "var(--text-muted)", fontStyle: "italic" }}>Non défini</span>}</td>
                     <td style={{ ...td, color: "var(--text-secondary)", fontSize: "12px" }}>{i.startDate && i.endDate ? `${formatDate(i.startDate)} au ${formatDate(i.endDate)}` : <span style={{ color: "var(--text-muted)" }}>,</span>}</td>
                     <td style={td}><StatusBadge label={getStatusLabel(i.status)} color={getStatusHex(i.status)} /></td>
                     <td style={{ ...td, textAlign: "right" }}>
                       <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-                        {canManage && <button onClick={() => openUpdate(i)} style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}><Pencil style={{ width: "12px", height: "12px" }} />Mettre a jour</button>}
+                        {canManage && <button onClick={() => openUpdate(i)} style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)", cursor: "pointer" }}><Pencil style={{ width: "12px", height: "12px" }} />Mettre à jour</button>}
                         {canManage && <button onClick={() => handleDelete(i)} style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", fontWeight: 600, padding: "5px 10px", borderRadius: "7px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "#dc2626", cursor: "pointer" }}><Trash2 style={{ width: "12px", height: "12px" }} />Supprimer</button>}
                         {!canManage && <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>Lecture seule</span>}
                       </div>
@@ -231,9 +231,9 @@ export default function StagesPage() {
             <h2 className="text-lg font-bold text-gray-900 mb-5">Ajouter un stage</h2>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <Label htmlFor="s-student">Etudiant</Label>
+                <Label htmlFor="s-student">Étudiant</Label>
                 <Select id="s-student" value={createForm.studentId} onChange={(e) => setCreateForm((f) => ({ ...f, studentId: e.target.value }))} required>
-                  <option value="">Selectionner un etudiant</option>
+                  <option value="">Sélectionner un étudiant</option>
                   {students.map((s) => (
                     <option key={s.id} value={s.id}>{s.lastName} {s.firstName} - {s.filiere.name}</option>
                   ))}
@@ -249,7 +249,7 @@ export default function StagesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="s-start">Date de debut</Label>
+                  <Label htmlFor="s-start">Date de début</Label>
                   <Input id="s-start" type="date" value={createForm.startDate} onChange={(e) => setCreateForm((f) => ({ ...f, startDate: e.target.value }))} />
                 </div>
                 <div>
@@ -273,7 +273,7 @@ export default function StagesPage() {
       {showUpdateModal && editingInternship && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowUpdateModal(false)}>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Mettre a jour le stage</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Mettre à jour le stage</h2>
             <p className="text-sm text-gray-500 mb-5">{editingInternship.student.lastName} {editingInternship.student.firstName} chez {editingInternship.companyName}</p>
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>

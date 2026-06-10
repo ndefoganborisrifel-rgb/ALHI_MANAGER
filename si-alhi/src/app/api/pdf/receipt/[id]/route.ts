@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { amountToWords } from "@/lib/amount-to-words";
+import { amountToWords, amountToWordsEn } from "@/lib/amount-to-words";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -38,6 +38,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
     description: payment.description,
     amount: payment.amount,
     amountInWords: amountToWords(payment.amount),
+    amountInWordsEn: amountToWordsEn(payment.amount),
     balance,
     studentName: `${payment.student.lastName} ${payment.student.firstName}`,
     matricule: payment.student.matricule,

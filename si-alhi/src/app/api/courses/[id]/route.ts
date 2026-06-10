@@ -9,7 +9,7 @@ interface RouteParams {
 
 export async function GET(_req: Request, { params }: RouteParams) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   const { id } = await params;
   const course = await prisma.course.findUnique({
     where: { id },
@@ -40,14 +40,14 @@ const updateSchema = z.object({
 
 export async function PATCH(req: Request, { params }: RouteParams) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
   const { id } = await params;
   const body = await req.json() as unknown;
   const parsed = updateSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "Donnees invalides" }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 });
 
   const { filiereIds, ...scalarData } = parsed.data;
 
@@ -100,10 +100,10 @@ export async function PATCH(req: Request, { params }: RouteParams) {
         .filter((s) => s.userId)
         .map((s) => ({
           userId: s.userId as string,
-          title: normaleJustPublished ? "Resultats publies" : "Resultats de rattrapage publies",
+          title: normaleJustPublished ? "Résultats publiés" : "Résultats de rattrapage publiés",
           message: normaleJustPublished
-            ? `Les resultats de la session normale de "${existing?.name ?? "votre cours"}" sont disponibles.`
-            : `Les resultats de la session de rattrapage de "${existing?.name ?? "votre cours"}" sont disponibles.`,
+            ? `Les résultats de la session normale de "${existing?.name ?? "votre cours"}" sont disponibles.`
+            : `Les résultats de la session de rattrapage de "${existing?.name ?? "votre cours"}" sont disponibles.`,
           type: "SUCCESS",
         }));
 
@@ -120,8 +120,8 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
 export async function DELETE(_req: Request, { params }: RouteParams) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
-  if (session.user.role !== "ADMIN") return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  if (session.user.role !== "ADMIN") return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
 
   const { id } = await params;
 
@@ -132,7 +132,7 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
 
   const grades = await prisma.grade.count({ where: { courseId: id } });
   if (grades > 0) {
-    return NextResponse.json({ error: "Ce cours a des notes enregistrees. Impossible de le supprimer sans perdre les notes des etudiants." }, { status: 409 });
+    return NextResponse.json({ error: "Ce cours a des notes enregistrées. Impossible de le supprimer sans perdre les notes des étudiants." }, { status: 409 });
   }
 
   await prisma.course.delete({ where: { id } });

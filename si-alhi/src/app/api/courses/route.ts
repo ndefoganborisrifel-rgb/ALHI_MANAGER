@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export async function GET(req: Request) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const filiereId = searchParams.get("filiereId");
@@ -39,17 +39,17 @@ const createSchema = z.object({
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   if (!["ADMIN", "SCOLARITE"].includes(session.user.role)) {
-    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
   const body = await req.json() as unknown;
   const parsed = createSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "Donnees invalides", details: parsed.error.flatten() }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Données invalides", details: parsed.error.flatten() }, { status: 400 });
 
   const existing = await prisma.course.findFirst({ where: { code: parsed.data.code } });
-  if (existing) return NextResponse.json({ error: "Un cours avec ce code existe deja" }, { status: 409 });
+  if (existing) return NextResponse.json({ error: "Un cours avec ce code existe déjà" }, { status: 409 });
 
   const { filiereIds, ...courseData } = parsed.data;
   // Liste complete des filieres concernees (primaire incluse, sans doublon)

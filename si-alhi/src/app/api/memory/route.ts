@@ -16,7 +16,7 @@ const MAX_SIZE = 8 * 1024 * 1024; // 8 Mo
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  if (!session?.user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const photos = await prisma.memoryPhoto.findMany({
     orderBy: [{ promotionYear: "desc" }, { createdAt: "desc" }],
@@ -36,14 +36,14 @@ export async function POST(req: Request) {
     const caption = String(form.get("caption") ?? "").trim() || null;
 
     if (!(file instanceof File)) {
-      return NextResponse.json({ error: "Aucun fichier recu" }, { status: 400 });
+      return NextResponse.json({ error: "Aucun fichier reçu" }, { status: 400 });
     }
     if (!promotionYear || promotionYear < 2000 || promotionYear > 2100) {
-      return NextResponse.json({ error: "Annee de promotion invalide" }, { status: 400 });
+      return NextResponse.json({ error: "Année de promotion invalide" }, { status: 400 });
     }
     const ext = ALLOWED_TYPES[file.type];
     if (!ext) {
-      return NextResponse.json({ error: "Format non supporte. Utilisez JPG, PNG ou WebP." }, { status: 400 });
+      return NextResponse.json({ error: "Format non supporté. Utilisez JPG, PNG ou WebP." }, { status: 400 });
     }
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: "Fichier trop volumineux (8 Mo maximum)" }, { status: 400 });

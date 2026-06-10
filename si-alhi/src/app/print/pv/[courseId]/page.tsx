@@ -215,7 +215,7 @@ export default function PrintPVPage() {
                 Africa Leadership Higher Institute
               </div>
               <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>
-                Chateau Ngoa Ekele, Yaounde, Cameroun. Tel. : +237 657 75 54 87
+                Château Ngoa Ekélé, Yaoundé, Cameroun. Tel. : +237 657 75 54 87
               </div>
             </div>
           </div>
@@ -229,7 +229,7 @@ export default function PrintPVPage() {
               letterSpacing: "2px",
             }}
           >
-            Proces-Verbal de Notes / Grade Sheet
+            Procès-Verbal de Notes / Grade Sheet
           </div>
         </div>
 
@@ -248,10 +248,10 @@ export default function PrintPVPage() {
               <strong>Code :</strong> <span style={{ fontFamily: "monospace" }}>{course.code}</span>
             </div>
             <div style={{ marginBottom: "5px" }}>
-              <strong>Intitule du cours :</strong> {course.name}
+              <strong>Intitulé du cours :</strong> {course.name}
             </div>
             <div style={{ marginBottom: "5px" }}>
-              <strong>Filiere :</strong> {course.filiere.name} ({course.filiere.code})
+              <strong>Filière :</strong> {course.filiere.name} ({course.filiere.code})
             </div>
             {course.ue && (
               <div>
@@ -267,7 +267,7 @@ export default function PrintPVPage() {
               <strong>Credits :</strong> {course.credits}
             </div>
             <div style={{ marginBottom: "5px" }}>
-              <strong>Annee academique :</strong> {year}
+              <strong>Année académique :</strong> {year}
             </div>
             <div>
               <strong>Session :</strong>{" "}
@@ -289,7 +289,7 @@ export default function PrintPVPage() {
             <tr>
               <th style={{ width: "5%" }}>N&deg;</th>
               <th style={{ width: "12%" }}>Matricule</th>
-              <th className="left">Nom et Prenom</th>
+              <th className="left">Nom et Prénom</th>
               <th style={{ width: "8%" }}>CC1/20</th>
               <th style={{ width: "8%" }}>CC2/20</th>
               <th style={{ width: "10%" }}>Examen/20</th>
@@ -317,7 +317,7 @@ export default function PrintPVPage() {
                   </td>
                   <td>
                     <span className={g.noteFinal == null ? "neutral" : validated ? "validated" : "failed"}>
-                      {g.noteFinal == null ? "n/a" : validated ? "Valide" : "Ajourne"}
+                      {g.noteFinal == null ? "n/a" : validated ? "Validé" : "Ajourné"}
                     </span>
                   </td>
                 </tr>
@@ -333,9 +333,9 @@ export default function PrintPVPage() {
             {grades.length > 0 && (
               <tr className="summary-row">
                 <td colSpan={7} className="left" style={{ paddingLeft: "10px" }}>
-                  TOTAL : {admitted} admis sur {total} etudiants
+                  TOTAL : {admitted} admis sur {total} étudiants
                   {total > 0
-                    ? ` (${((admitted / total) * 100).toFixed(1)}% de reussite)`
+                    ? ` (${((admitted / total) * 100).toFixed(1)}% de réussite)`
                     : ""}
                 </td>
                 <td>
@@ -384,8 +384,8 @@ export default function PrintPVPage() {
             paddingTop: "8px",
           }}
         >
-          Africa Leadership Higher Institute, Chateau Ngoa Ekele, Yaounde, Cameroun<br />
-          Ce document est un proces-verbal officiel de notes. Toute falsification est passible de sanctions disciplinaires et penales.
+          Africa Leadership Higher Institute, Château Ngoa Ekélé, Yaoundé, Cameroun<br />
+          Ce document est un procès-verbal officiel de notes. Toute falsification est passible de sanctions disciplinaires et pénales.
         </div>
       </div>
     </>

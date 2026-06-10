@@ -70,7 +70,7 @@ export default function LogistiquePage() {
       setRooms(await roomsRes.json());
       setEquipment(await eqRes.json());
     } catch {
-      setError("Impossible de charger les donnees.");
+      setError("Impossible de charger les données.");
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ export default function LogistiquePage() {
   }
 
   async function handleDeleteRoom(room: Room) {
-    if (!confirm(`Supprimer la salle ${room.code} ? Cette action est irreversible.`)) return;
+    if (!confirm(`Supprimer la salle ${room.code} ? Cette action est irréversible.`)) return;
     const res = await fetch(`/api/rooms/${room.id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -171,7 +171,7 @@ export default function LogistiquePage() {
   }
 
   async function handleDeleteEq(eq: Equipment) {
-    if (!confirm(`Supprimer "${eq.name}" ? Cette action est irreversible.`)) return;
+    if (!confirm(`Supprimer "${eq.name}" ? Cette action est irréversible.`)) return;
     const res = await fetch(`/api/equipment/${eq.id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -225,7 +225,7 @@ export default function LogistiquePage() {
 
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "20px" }}>
-        <StatCard label="Equipements" value={equipment.length} icon={<Monitor style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="parc total" />
+        <StatCard label="Équipements" value={equipment.length} icon={<Monitor style={{ width: "18px", height: "18px", color: "#2563eb" }} />} color="#2563eb" bg="#eff6ff" sub="parc total" />
         <StatCard label="Fonctionnels" value={fonctionnel} icon={<CheckCircle2 style={{ width: "18px", height: "18px", color: "#16a34a" }} />} color="#16a34a" bg="#f0fdf4" sub="en service" />
         <StatCard label="En panne" value={enPanne} icon={<XCircle style={{ width: "18px", height: "18px", color: "#dc2626" }} />} color="#dc2626" bg="#fef2f2" sub="a reparer" />
         <StatCard label="Maintenance due" value={maintenanceDue} icon={<AlertTriangle style={{ width: "18px", height: "18px", color: "#d97706" }} />} color="#d97706" bg="#fff7ed" sub="entretien a prevoir" />
@@ -249,7 +249,7 @@ export default function LogistiquePage() {
         </div>
 
         {rooms.length === 0 ? (
-          <Panel><EmptyState icon={<Building2 style={{ width: "24px", height: "24px" }} />} message="Aucune salle enregistree pour le moment." action={<PrimaryButton onClick={openAddRoom}><Plus style={{ width: "15px", height: "15px" }} />Ajouter une salle</PrimaryButton>} /></Panel>
+          <Panel><EmptyState icon={<Building2 style={{ width: "24px", height: "24px" }} />} message="Aucune salle enregistrée pour le moment." action={<PrimaryButton onClick={openAddRoom}><Plus style={{ width: "15px", height: "15px" }} />Ajouter une salle</PrimaryButton>} /></Panel>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "14px" }}>
             {rooms.map((room) => (
@@ -267,7 +267,7 @@ export default function LogistiquePage() {
                 </div>
                 <div style={{ padding: "16px 18px", display: "flex", flexDirection: "column", gap: "10px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Capacite</span>
+                    <span style={{ color: "var(--text-muted)" }}>Capacité</span>
                     <span style={{ fontWeight: 600, color: "var(--text)" }}>{room.capacity} places</span>
                   </div>
                   {room.building && (
@@ -289,7 +289,7 @@ export default function LogistiquePage() {
                     )}
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "var(--text-muted)", borderTop: "1px solid var(--border-muted)", paddingTop: "10px" }}>
-                    <span>{room._count.schedules} cours planifies</span>
+                    <span>{room._count.schedules} cours planifiés</span>
                     <span>{room._count.equipment} equip.</span>
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
@@ -309,20 +309,20 @@ export default function LogistiquePage() {
 
       {/* Equipements */}
       <Panel
-        title={`Inventaire des equipements (${equipment.length})`}
+        title={`Inventaire des équipements (${equipment.length})`}
         icon={<Monitor style={{ width: "15px", height: "15px", color: "#B91C2F" }} />}
-        action={<PrimaryButton onClick={openAddEq}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un equipement</PrimaryButton>}
+        action={<PrimaryButton onClick={openAddEq}><Plus style={{ width: "15px", height: "15px" }} />Ajouter un équipement</PrimaryButton>}
       >
         {equipment.length === 0 ? (
-          <EmptyState icon={<Monitor style={{ width: "24px", height: "24px" }} />} message="Aucun equipement enregistre." />
+          <EmptyState icon={<Monitor style={{ width: "24px", height: "24px" }} />} message="Aucun équipement enregistré." />
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "var(--bg-muted)" }}>
                   <th style={th}>Code</th>
-                  <th style={th}>Equipement</th>
-                  <th style={th}>Categorie</th>
+                  <th style={th}>Équipement</th>
+                  <th style={th}>Catégorie</th>
                   <th style={th}>Salle</th>
                   <th style={th}>Statut</th>
                   <th style={th}>Prochain entretien</th>
@@ -376,7 +376,7 @@ export default function LogistiquePage() {
                   <Input id="room-code" value={roomForm.code} onChange={(e) => setRoomForm((f) => ({ ...f, code: e.target.value }))} required placeholder="A101" />
                 </div>
                 <div>
-                  <Label htmlFor="room-capacity">Capacite</Label>
+                  <Label htmlFor="room-capacity">Capacité</Label>
                   <Input id="room-capacity" type="number" min={1} value={roomForm.capacity} onChange={(e) => setRoomForm((f) => ({ ...f, capacity: e.target.value }))} required placeholder="30" />
                 </div>
               </div>
@@ -420,7 +420,7 @@ export default function LogistiquePage() {
       {showEqModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowEqModal(false)}>
           <div style={{ background: "var(--bg-card)", borderRadius: "16px", boxShadow: "0 24px 80px rgba(0,0,0,0.3)", width: "100%", maxWidth: "32rem", padding: "24px" }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text)", marginBottom: "20px" }}>{editingEq ? "Modifier l'equipement" : "Ajouter un equipement"}</h2>
+            <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text)", marginBottom: "20px" }}>{editingEq ? "Modifier l'équipement" : "Ajouter un équipement"}</h2>
             <form onSubmit={handleEqSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -428,7 +428,7 @@ export default function LogistiquePage() {
                   <Input id="eq-code" value={eqForm.code} onChange={(e) => setEqForm((f) => ({ ...f, code: e.target.value }))} required placeholder="EQ-001" />
                 </div>
                 <div>
-                  <Label htmlFor="eq-category">Categorie</Label>
+                  <Label htmlFor="eq-category">Catégorie</Label>
                   <Input id="eq-category" value={eqForm.category} onChange={(e) => setEqForm((f) => ({ ...f, category: e.target.value }))} required placeholder="Informatique" />
                 </div>
               </div>

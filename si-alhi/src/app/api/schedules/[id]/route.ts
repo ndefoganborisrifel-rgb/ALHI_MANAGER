@@ -77,7 +77,7 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
 
   const { id } = await params;
   const existing = await prisma.schedule.findUnique({ where: { id }, select: { sharedGroupId: true } });
-  if (!existing) return NextResponse.json({ error: "Creneau introuvable" }, { status: 404 });
+  if (!existing) return NextResponse.json({ error: "Créneau introuvable" }, { status: 404 });
 
   if (existing.sharedGroupId) {
     // Creneau mutualise : recuperer tous les IDs du groupe

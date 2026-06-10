@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
         setSuccess(true);
       }
     } catch {
-      setError("Une erreur est survenue. Veuillez reessayer.");
+      setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
             <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "12px", marginTop: "6px" }}>
-              Systeme d&apos;Information SI-ALHI
+              Système d&apos;Information SI-ALHI
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export default function ForgotPasswordPage() {
                     marginBottom: "12px",
                   }}
                 >
-                  Demande envoyee
+                  Demande envoyée
                 </h2>
                 <p
                   style={{
@@ -125,7 +125,7 @@ export default function ForgotPasswordPage() {
                     marginBottom: "20px",
                   }}
                 >
-                  Si un compte existe pour cet email, l&apos;administrateur systeme a ete notifie.
+                  Si un compte existe pour cet email, l&apos;administrateur système a été notifié.
                   Contactez l&apos;administration au{" "}
                   <strong style={{ color: "#1A1A1A" }}>+237 657 75 54 87</strong>{" "}
                   pour obtenir votre nouveau mot de passe.
@@ -160,7 +160,7 @@ export default function ForgotPasswordPage() {
                     Mot de passe oublie ?
                   </h1>
                   <p style={{ fontSize: "13px", color: "#666", lineHeight: "1.5" }}>
-                    Entrez votre adresse email et un administrateur sera notifie pour reinitialiser votre mot de passe.
+                    Entrez votre adresse email et un administrateur sera notifié pour réinitialiser votre mot de passe.
                   </p>
                 </div>
 

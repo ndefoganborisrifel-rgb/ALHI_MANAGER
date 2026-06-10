@@ -14,7 +14,7 @@ export async function POST() {
   try {
     const session = await auth();
     if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
     }
 
     const allSchedules = await prisma.schedule.findMany({
@@ -77,7 +77,7 @@ export async function POST() {
     }
 
     return NextResponse.json({
-      message: `Nettoyage termine : ${deleted} doublon(s) supprime(s) dans ${groupsAffected} groupe(s).`,
+      message: `Nettoyage terminé : ${deleted} doublon(s) supprimé(s) dans ${groupsAffected} groupe(s).`,
       deleted,
       groupsAffected,
     });

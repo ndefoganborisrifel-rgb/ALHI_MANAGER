@@ -16,7 +16,7 @@ export function ChangePasswordForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (newPwd.length < 8) { setError("Le mot de passe doit contenir au moins 8 caracteres."); return; }
+    if (newPwd.length < 8) { setError("Le mot de passe doit contenir au moins 8 caractères."); return; }
     if (newPwd !== confirm) { setError("Les mots de passe ne correspondent pas."); return; }
     setLoading(true);
     try {
@@ -53,7 +53,7 @@ export function ChangePasswordForm() {
       {success ? (
         <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#16a34a", fontWeight: "600", fontSize: "13px" }}>
           <CheckCircle style={{ width: "16px", height: "16px" }} />
-          Mot de passe modifie avec succes !
+          Mot de passe modifié avec succès !
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -71,7 +71,7 @@ export function ChangePasswordForm() {
                   type={showNew ? "text" : "password"}
                   value={newPwd}
                   onChange={(e) => setNewPwd(e.target.value)}
-                  placeholder="Minimum 8 caracteres"
+                  placeholder="Minimum 8 caractères"
                   required
                   style={{ width: "100%", padding: "8px 36px 8px 12px", border: "1.5px solid var(--border)", borderRadius: "7px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", boxSizing: "border-box" }}
                 />
@@ -86,7 +86,7 @@ export function ChangePasswordForm() {
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                placeholder="Repetez le mot de passe"
+                placeholder="Répétez le mot de passe"
                 required
                 style={{ width: "100%", padding: "8px 12px", border: "1.5px solid var(--border)", borderRadius: "7px", fontSize: "13px", background: "var(--bg-card)", color: "var(--text)", outline: "none", boxSizing: "border-box" }}
               />
@@ -99,7 +99,7 @@ export function ChangePasswordForm() {
               style={{ padding: "8px 16px", background: loading || !newPwd || !confirm ? "var(--bg-muted)" : "#B91C2F", color: loading || !newPwd || !confirm ? "var(--text-muted)" : "white", border: "none", borderRadius: "7px", fontSize: "13px", fontWeight: "700", cursor: loading || !newPwd || !confirm ? "not-allowed" : "pointer", display: "inline-flex", alignItems: "center", gap: "6px" }}
             >
               {loading && <Loader2 style={{ width: "13px", height: "13px" }} className="animate-spin" />}
-              {loading ? "Mise a jour..." : "Valider"}
+              {loading ? "Mise à jour..." : "Valider"}
             </button>
             <button
               type="button"
