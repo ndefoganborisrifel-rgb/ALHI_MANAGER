@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AlertTriangle, Plus, Trash2, Calendar, ChevronLeft, ChevronRight, Printer, X, Eye } from "lucide-react";
 import { useCanManage } from "@/components/providers/RoleProvider";
 import { PageHeader } from "@/components/ui/PageUI";
@@ -48,7 +48,8 @@ const TIME_SLOTS = [
 const TYPE_STYLE: Record<string, { bg: string; border: string; text: string; dot: string; label: string }> = {
   COURS:      { bg: "#e0f2fe", border: "#7dd3fc", text: "#0c4a6e", dot: "#0ea5e9",  label: "Cours" },
   TPE:        { bg: "#dcfce7", border: "#86efac", text: "#14532d", dot: "#22c55e",  label: "TPE" },
-  EVALUATION: { bg: "#fef3c7", border: "#fcd34d", text: "#78350f", dot: "#f59e0b",  label: "Évaluation" },
+  CC:         { bg: "#fae8ff", border: "#f0abfc", text: "#701a75", dot: "#d946ef",  label: "Contrôle continu" },
+  EVALUATION: { bg: "#fef3c7", border: "#fcd34d", text: "#78350f", dot: "#f59e0b",  label: "Évaluation (session normale)" },
   PAUSE:      { bg: "#f3f4f6", border: "#d1d5db", text: "#6b7280", dot: "#9ca3af",  label: "Pause" },
   FERIER:     { bg: "#f3e8ff", border: "#d8b4fe", text: "#581c87", dot: "#a855f7",  label: "Férié" },
   EXCURSION:  { bg: "#ecfdf5", border: "#6ee7b7", text: "#064e3b", dot: "#10b981",  label: "Excursion" },
@@ -95,6 +96,17 @@ function fmtDateLong(d: Date): string {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
+// Date locale au format AAAA-MM-JJ, sans decalage de fuseau horaire (toISOString
+// convertirait en UTC et pourrait renvoyer la veille).
+function toISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+const RECURRING_TYPES = new Set(["COURS", "TPE", "CC"]);
+
 export default function PedagogiePage() {
   const canManage = useCanManage();
   const [filieres, setFilieres] = useState<Filiere[]>([]);
@@ -103,7 +115,7 @@ export default function PedagogiePage() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFiliereId, setActiveFiliereId] = useState("");
-  const [activeTab, setActiveTab] = useState<"emploi" | "examens">("emploi");
+  const [activeTab, setActiveTab] = useState<"emploi" | "tpe" | "examens">("emploi");
   const [weekStart, setWeekStart] = useState<Date>(() => getMonday(new Date()));
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -112,31 +124,45 @@ export default function PedagogiePage() {
   const [collisionWarn, setCollisionWarn] = useState(false);
   const [activeSemester, setActiveSemester] = useState(1);
 
+  // Recharge les creneaux pour une semaine donnee : les creneaux recurrents
+  // (cours, TPE, CC) apparaissent toutes les semaines, les creneaux ponctuels
+  // (evaluations, feries...) uniquement pour leur semaine.
+  const loadSchedules = useCallback(async (week: Date) => {
+    const res = await fetch(`/api/schedules?academicYear=2025-2026&weekStart=${toISODate(week)}`);
+    if (res.ok) setSchedules(await res.json());
+  }, []);
+
   const loadData = useCallback(async () => {
     try {
-      const [fRes, rRes, aRes, sRes] = await Promise.all([
+      const [fRes, rRes, aRes] = await Promise.all([
         fetch("/api/filieres"),
         fetch("/api/rooms"),
         fetch("/api/course-assignments?academicYear=2025-2026"),
-        fetch("/api/schedules?academicYear=2025-2026"),
       ]);
-      const [f, r, a, s] = await Promise.all([
+      const [f, r, a] = await Promise.all([
         fRes.ok ? fRes.json() : [],
         rRes.ok ? rRes.json() : [],
         aRes.ok ? aRes.json() : [],
-        sRes.ok ? sRes.json() : [],
       ]);
       setFilieres(f);
       setRooms(r);
       setAssignments(a);
-      setSchedules(s);
       if (f.length > 0 && !activeFiliereId) setActiveFiliereId(f[0].id);
+      await loadSchedules(weekStart);
     } finally {
       setLoading(false);
     }
-  }, [activeFiliereId]);
+  }, [activeFiliereId, weekStart, loadSchedules]);
 
   useEffect(() => { loadData(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Recharger les creneaux quand on change de semaine (les creneaux ponctuels
+  // sont differents d'une semaine a l'autre).
+  const isFirstWeek = useRef(true);
+  useEffect(() => {
+    if (isFirstWeek.current) { isFirstWeek.current = false; return; }
+    loadSchedules(weekStart);
+  }, [weekStart, loadSchedules]);
 
   // Detection des collisions : meme jour, meme creneau, meme semestre.
   // Regles d exemption (pas une vraie collision) :
@@ -171,6 +197,7 @@ export default function PedagogiePage() {
   const filiere = filieres.find((f) => f.id === activeFiliereId);
   const filiereSchedules = schedules.filter((s) => s.filiereId === activeFiliereId && s.semester === activeSemester);
   const coursSlots = filiereSchedules.filter((s) => s.type !== "EVALUATION");
+  const tpeSlots = filiereSchedules.filter((s) => s.type === "TPE");
   const examSlots = filiereSchedules.filter((s) => s.type === "EVALUATION");
   const filiereAssignments = assignments.filter((a) => {
     const ids = a.course.courseFilieres?.map((cf) => cf.filiereId) ?? [];
@@ -208,22 +235,24 @@ export default function PedagogiePage() {
         academicYear: "2025-2026",
         semester: parseInt(form.semester),
         roomId: form.roomId || undefined,
-        courseAssignmentId: (form.type === "COURS" || form.type === "TPE" || form.type === "EVALUATION") ? (form.courseAssignmentId || undefined) : undefined,
+        courseAssignmentId: (form.type === "COURS" || form.type === "TPE" || form.type === "CC" || form.type === "EVALUATION") ? (form.courseAssignmentId || undefined) : undefined,
         sessionNumber: form.sessionNumber ? parseInt(form.sessionNumber) : undefined,
         totalSessions: form.totalSessions ? parseInt(form.totalSessions) : undefined,
         label: form.label.trim() || undefined,
+        weekStart: RECURRING_TYPES.has(form.type) ? undefined : toISODate(weekStart),
       };
       const res = await fetch("/api/schedules", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      const data = await res.json();
+      const raw = await res.text();
+      let data: { error?: string; collision?: boolean } = {};
+      if (raw) { try { data = JSON.parse(raw); } catch { /* reponse non JSON */ } }
       if (!res.ok) {
-        if (data.collision) { setCollisionWarn(true); setFormError(data.error); }
-        else setFormError(data.error ?? "Erreur.");
+        if (data.collision) { setCollisionWarn(true); setFormError(data.error ?? "Collision détectée."); }
+        else setFormError(data.error ?? `Erreur serveur (code ${res.status})`);
         return;
       }
       setShowModal(false);
       setForm(EMPTY_FORM);
-      const sRes = await fetch("/api/schedules?academicYear=2025-2026");
-      if (sRes.ok) setSchedules(await sRes.json());
+      await loadSchedules(weekStart);
     } finally { setSubmitting(false); }
   }
 
@@ -473,12 +502,13 @@ export default function PedagogiePage() {
               <div style={{ display: "flex", gap: "4px", background: "var(--bg-muted)", borderRadius: "9px", padding: "4px" }}>
                 {[
                   { key: "emploi", label: `Emploi du temps (${coursSlots.length})` },
-                  { key: "examens", label: `Planning examens (${examSlots.length})` },
+                  { key: "tpe", label: `Planning TPE (${tpeSlots.length})` },
+                  { key: "examens", label: `Planning examens, session normale (${examSlots.length})` },
                 ].map((tab) => (
                   <button
                     key={tab.key}
                     className="tab-btn"
-                    onClick={() => setActiveTab(tab.key as "emploi" | "examens")}
+                    onClick={() => setActiveTab(tab.key as "emploi" | "tpe" | "examens")}
                     style={{ background: activeTab === tab.key ? "var(--bg-card)" : "transparent", color: activeTab === tab.key ? "var(--text)" : "var(--text-muted)", borderColor: activeTab === tab.key ? "var(--border)" : "transparent", boxShadow: activeTab === tab.key ? "0 1px 3px rgba(0,0,0,0.08)" : "none" }}
                   >
                     {tab.label}
@@ -498,7 +528,7 @@ export default function PedagogiePage() {
                   <ChevronRight style={{ width: "13px", height: "13px" }} />
                 </button>
                 <button
-                  onClick={() => window.open(`/print/timetable/${activeFiliereId}?mode=${activeTab === "examens" ? "examens" : "cours"}&year=2025-2026&semester=${activeSemester}&weekStart=${weekStart.toISOString().slice(0, 10)}`, "_blank")}
+                  onClick={() => window.open(`/print/timetable/${activeFiliereId}?mode=${activeTab}&year=2025-2026&semester=${activeSemester}&weekStart=${toISODate(weekStart)}`, "_blank")}
                   style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", background: "var(--bg-card)", border: "1.5px solid var(--border)", borderRadius: "8px", fontSize: "12px", fontWeight: "600", color: "var(--text)", cursor: "pointer" }}
                 >
                   <Printer style={{ width: "12px", height: "12px" }} />Imprimer
@@ -528,7 +558,7 @@ export default function PedagogiePage() {
                 </span>
               </div>
               <div style={{ padding: "12px" }}>
-                {renderGrid(activeTab === "emploi" ? coursSlots : examSlots)}
+                {renderGrid(activeTab === "emploi" ? coursSlots : activeTab === "tpe" ? tpeSlots : examSlots)}
               </div>
               {/* Disclaimer */}
               <div style={{ padding: "10px 18px", borderTop: "1px solid var(--border)", background: "var(--bg-muted)" }}>
@@ -573,7 +603,8 @@ export default function PedagogiePage() {
                   <select className="form-input" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
                     <option value="COURS">Cours</option>
                     <option value="TPE">TPE</option>
-                    <option value="EVALUATION">Évaluation</option>
+                    <option value="CC">Contrôle continu (CC)</option>
+                    <option value="EVALUATION">Évaluation (session normale)</option>
                     <option value="PAUSE">Pause</option>
                     <option value="FERIER">Jour férié</option>
                     <option value="EXCURSION">Excursion</option>
@@ -586,6 +617,14 @@ export default function PedagogiePage() {
                     {DAYS.map((d) => <option key={d} value={d}>{DAY_FR[d]}</option>)}
                   </select>
                 </div>
+              </div>
+
+              {/* Indication recurrence : cours/TPE/CC se repetent chaque semaine,
+                  les autres types sont ponctuels et lies a la semaine affichee. */}
+              <div style={{ fontSize: "11px", color: "var(--text-muted)", background: "var(--bg-muted)", borderRadius: "8px", padding: "8px 10px", lineHeight: 1.5 }}>
+                {RECURRING_TYPES.has(form.type)
+                  ? "Ce créneau est récurrent : il sera appliqué automatiquement chaque semaine du semestre."
+                  : `Ce créneau est ponctuel : il ne sera visible que pour la semaine du ${fmtDateLong(weekStart)} au ${fmtDateLong(weekEnd)}.`}
               </div>
 
               {/* Heure + Semestre */}
@@ -621,8 +660,8 @@ export default function PedagogiePage() {
                 </select>
               </div>
 
-              {/* Cours assigne (pour COURS, TPE, EVALUATION) */}
-              {(form.type === "COURS" || form.type === "TPE" || form.type === "EVALUATION") && (
+              {/* Cours assigne (pour COURS, TPE, CC, EVALUATION) */}
+              {(form.type === "COURS" || form.type === "TPE" || form.type === "CC" || form.type === "EVALUATION") && (
                 <div>
                   <label className="form-label">Matière / Cours assigné</label>
                   <select
@@ -661,8 +700,8 @@ export default function PedagogiePage() {
                 </div>
               )}
 
-              {/* Seance X/Y (seulement pour COURS et TPE, pas EVALUATION) */}
-              {(form.type === "COURS" || form.type === "TPE") && (
+              {/* Seance X/Y (pour COURS, TPE et CC, pas EVALUATION) */}
+              {(form.type === "COURS" || form.type === "TPE" || form.type === "CC") && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                   <div>
                     <label className="form-label">No. séance</label>
@@ -707,7 +746,7 @@ export default function PedagogiePage() {
                     value={form.label}
                     onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
                     placeholder={
-                      form.type === "EVALUATION" ? "ex: Examen final S1, Devoir surveille N°2..." :
+                      form.type === "EVALUATION" ? "ex: Examen final S1 (session normale)..." :
                       form.type === "PAUSE" ? "ex: Pause café, Événement..." :
                       form.type === "FERIER" ? "ex: Fete Nationale" :
                       form.type === "EXCURSION" ? "ex: Visite entreprise XYZ" :

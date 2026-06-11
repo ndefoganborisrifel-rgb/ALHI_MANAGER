@@ -146,6 +146,7 @@ export type GradeSession = (typeof GradeSession)[keyof typeof GradeSession]
 export const ScheduleType = {
   COURS: 'COURS',
   TPE: 'TPE',
+  CC: 'CC',
   EVALUATION: 'EVALUATION',
   PAUSE: 'PAUSE',
   FERIER: 'FERIER',

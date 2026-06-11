@@ -12,11 +12,18 @@ const createSchema = z.object({
   academicYear: z.string().default("2025-2026"),
   semester: z.number().int().default(1),
   filiereId: z.string().cuid(),
-  type: z.enum(["COURS", "TPE", "EVALUATION", "PAUSE", "FERIER", "EXCURSION", "AUTRE"]).default("COURS"),
+  type: z.enum(["COURS", "TPE", "CC", "EVALUATION", "PAUSE", "FERIER", "EXCURSION", "AUTRE"]).default("COURS"),
   sessionNumber: z.number().int().optional(),
   totalSessions: z.number().int().optional(),
   label: z.string().optional(),
+  weekStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
+
+// Creneaux recurrents (cours, tpe, controle continu) : un seul creneau couvre
+// automatiquement toutes les semaines du semestre. Les autres types
+// (evaluation, ferie, excursion...) sont ponctuels et rattaches a une semaine
+// precise (weekStart), donc independants d'une semaine a l'autre.
+const RECURRING_TYPES = new Set(["COURS", "TPE", "CC"]);
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -25,11 +32,16 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const filiereId = searchParams.get("filiereId");
   const academicYear = searchParams.get("academicYear") ?? "2025-2026";
+  const weekStartParam = searchParams.get("weekStart");
+  const weekStartDate = weekStartParam ? new Date(`${weekStartParam}T00:00:00.000Z`) : null;
 
   const schedules = await prisma.schedule.findMany({
     where: {
       academicYear,
       ...(filiereId ? { filiereId } : {}),
+      // Un creneau recurrent (weekStart nul) apparait toutes les semaines ;
+      // un creneau ponctuel n'apparait que pour sa semaine.
+      ...(weekStartDate ? { OR: [{ weekStart: null }, { weekStart: weekStartDate }] } : {}),
     },
     include: {
       courseAssignment: { include: { course: true, teacher: true } },
@@ -53,7 +65,24 @@ export async function POST(req: Request) {
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 });
 
-  const { roomId, dayOfWeek, startTime, academicYear, semester, courseAssignmentId, filiereId } = parsed.data;
+  const { roomId, dayOfWeek, startTime, academicYear, semester, courseAssignmentId, filiereId, type, weekStart } = parsed.data;
+
+  // Creneaux ponctuels (evaluation, ferie, excursion...) : rattaches a une
+  // semaine precise, independants des autres semaines.
+  const isRecurring = RECURRING_TYPES.has(type);
+  if (!isRecurring && !weekStart) {
+    return NextResponse.json({ error: "La semaine est requise pour ce type de créneau." }, { status: 400 });
+  }
+  const weekStartDate = isRecurring ? null : new Date(`${weekStart}T00:00:00.000Z`);
+
+  // Portee des collisions : un creneau recurrent n'entre en collision qu'avec
+  // d'autres creneaux recurrents (toutes semaines confondues). Un creneau
+  // ponctuel entre en collision avec les creneaux recurrents (toujours
+  // presents) et avec les creneaux ponctuels de la meme semaine uniquement :
+  // les semaines sont independantes les unes des autres.
+  const weekScope = isRecurring
+    ? { weekStart: null }
+    : { OR: [{ weekStart: null }, { weekStart: weekStartDate }] };
 
   // Determiner les filieres concernees : si la matiere est mutualisee, on
   // programme automatiquement le creneau dans toutes ses filieres.
@@ -81,7 +110,7 @@ export async function POST(req: Request) {
   // Collision salle (hors filieres mutualisees du meme creneau)
   if (roomId) {
     const roomCollision = await prisma.schedule.findFirst({
-      where: { roomId, dayOfWeek, startTime, academicYear, semester, filiereId: { notIn: targetFiliereIds } },
+      where: { roomId, dayOfWeek, startTime, academicYear, semester, filiereId: { notIn: targetFiliereIds }, ...weekScope },
     });
     if (roomCollision) {
       return NextResponse.json({ error: "Collision détectée : cette salle est déjà occupée à ce créneau.", collision: true }, { status: 409 });
@@ -95,6 +124,7 @@ export async function POST(req: Request) {
         dayOfWeek, startTime, academicYear, semester,
         filiereId: { notIn: targetFiliereIds },
         courseAssignment: { teacherId },
+        ...weekScope,
       },
     });
     if (teacherConflict) {
@@ -104,7 +134,7 @@ export async function POST(req: Request) {
 
   // Collision filiere : chaque filiere concernee doit etre libre a ce creneau
   const filiereConflict = await prisma.schedule.findFirst({
-    where: { filiereId: { in: targetFiliereIds }, dayOfWeek, startTime, academicYear, semester },
+    where: { filiereId: { in: targetFiliereIds }, dayOfWeek, startTime, academicYear, semester, ...weekScope },
     include: { filiere: { select: { name: true } } },
   });
   if (filiereConflict) {
@@ -118,7 +148,7 @@ export async function POST(req: Request) {
   const sharedGroupId = isMutualized ? `grp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}` : null;
   const created = await prisma.$transaction(
     targetFiliereIds.map((fid) =>
-      prisma.schedule.create({ data: { ...parsed.data, filiereId: fid, sharedGroupId } })
+      prisma.schedule.create({ data: { ...parsed.data, filiereId: fid, sharedGroupId, weekStart: weekStartDate } })
     )
   );
 

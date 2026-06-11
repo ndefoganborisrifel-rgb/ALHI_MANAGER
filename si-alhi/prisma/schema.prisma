@@ -106,6 +106,7 @@ enum GradeSession {
 enum ScheduleType {
   COURS
   TPE
+  CC
   EVALUATION
   PAUSE
   FERIER

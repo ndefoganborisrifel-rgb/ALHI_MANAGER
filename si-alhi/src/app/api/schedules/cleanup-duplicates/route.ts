@@ -27,15 +27,19 @@ export async function POST() {
         academicYear: true,
         courseAssignmentId: true,
         sharedGroupId: true,
+        weekStart: true,
         createdAt: true,
       },
       orderBy: { createdAt: "asc" },
     });
 
     // Regroupe par cle unique : meme filiere + jour + heure + semestre + annee
+    // + semaine (les creneaux ponctuels de semaines differentes ne sont pas
+    // des doublons : les semaines sont independantes).
     const groups = new Map<string, typeof allSchedules>();
     for (const s of allSchedules) {
-      const key = `${s.filiereId}|${s.dayOfWeek}|${s.startTime}|${s.semester}|${s.academicYear}`;
+      const week = s.weekStart ? s.weekStart.toISOString().slice(0, 10) : "recurrent";
+      const key = `${s.filiereId}|${s.dayOfWeek}|${s.startTime}|${s.semester}|${s.academicYear}|${week}`;
       const arr = groups.get(key) ?? [];
       arr.push(s);
       groups.set(key, arr);

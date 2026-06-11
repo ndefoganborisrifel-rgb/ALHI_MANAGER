@@ -44,6 +44,7 @@ function typeColor(type: string): { bg: string; border: string; text: string } {
   switch (type) {
     case "COURS":      return { bg: "#dbeafe", border: "#93c5fd", text: "#1e40af" };
     case "TPE":        return { bg: "#dcfce7", border: "#86efac", text: "#166534" };
+    case "CC":         return { bg: "#fae8ff", border: "#f0abfc", text: "#701a75" };
     case "EVALUATION": return { bg: "#ffedd5", border: "#fdba74", text: "#9a3412" };
     case "PAUSE":      return { bg: "#f3f4f6", border: "#d1d5db", text: "#4b5563" };
     case "FERIER":     return { bg: "#f3e8ff", border: "#d8b4fe", text: "#581c87" };
@@ -53,9 +54,15 @@ function typeColor(type: string): { bg: string; border: string; text: string } {
 }
 
 function typeLabel(type: string, en: boolean): string {
-  const fr: Record<string, string> = { COURS: "Cours", TPE: "TPE", EVALUATION: "Évaluation", PAUSE: "Pause", FERIER: "Férié", EXCURSION: "Excursion", AUTRE: "Autre" };
-  const enM: Record<string, string> = { COURS: "Lecture", TPE: "TPE", EVALUATION: "Assessment", PAUSE: "Break", FERIER: "Holiday", EXCURSION: "Field trip", AUTRE: "Other" };
+  const fr: Record<string, string> = { COURS: "Cours", TPE: "TPE", CC: "Contrôle continu", EVALUATION: "Évaluation (session normale)", PAUSE: "Pause", FERIER: "Férié", EXCURSION: "Excursion", AUTRE: "Autre" };
+  const enM: Record<string, string> = { COURS: "Lecture", TPE: "TPE", CC: "Continuous assessment", EVALUATION: "Assessment (regular session)", PAUSE: "Break", FERIER: "Holiday", EXCURSION: "Field trip", AUTRE: "Other" };
   return (en ? enM : fr)[type] ?? type;
+}
+
+function modeTitle(mode: string, en: boolean): string {
+  if (mode === "examens") return en ? "Examination Schedule (Regular Session)" : "Planning des Examens (Session normale)";
+  if (mode === "tpe") return en ? "TPE Schedule" : "Planning TPE";
+  return en ? "Course Timetable" : "Emploi du Temps des Cours";
 }
 
 export default function PrintTimetablePage() {
@@ -64,27 +71,31 @@ export default function PrintTimetablePage() {
   const mode = searchParams.get("mode") ?? "cours";
   const year = searchParams.get("year") ?? "2025-2026";
   const semester = searchParams.get("semester") ?? "";
+  const weekStart = searchParams.get("weekStart") ?? "";
 
   const [filiere, setFiliere] = useState<Filiere | null>(null);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const scheduleUrl = `/api/schedules?filiereId=${filiereId}&academicYear=${year}${weekStart ? `&weekStart=${weekStart}` : ""}`;
     Promise.all([
       fetch("/api/filieres").then((r) => r.ok ? r.json() : []),
-      fetch(`/api/schedules?filiereId=${filiereId}&academicYear=${year}`).then((r) => r.ok ? r.json() : []),
+      fetch(scheduleUrl).then((r) => r.ok ? r.json() : []),
     ]).then(([filieres, scheds]: [Filiere[], Schedule[]]) => {
       const f = filieres.find((f: Filiere) => f.id === filiereId);
       setFiliere(f ?? null);
       setSchedules(scheds);
     }).finally(() => setLoading(false));
-  }, [filiereId, year]);
+  }, [filiereId, year, weekStart]);
 
   const semFiltered = semester
     ? schedules.filter((s) => String(s.semester ?? "") === semester)
     : schedules;
   const filtered = mode === "examens"
     ? semFiltered.filter((s) => s.type === "EVALUATION")
+    : mode === "tpe"
+    ? semFiltered.filter((s) => s.type === "TPE")
     : semFiltered.filter((s) => s.type !== "EVALUATION");
 
   if (loading) return <div style={{ padding: "2rem", textAlign: "center", fontFamily: "sans-serif", color: "#888" }}>Chargement...</div>;
@@ -136,9 +147,7 @@ export default function PrintTimetablePage() {
       {/* Toolbar */}
       <div className="no-print" style={{ position: "sticky", top: 0, zIndex: 100, background: "#1A1A1A", padding: "9px 20px", display: "flex", alignItems: "center", gap: "12px" }}>
         <span style={{ color: "#aaa", fontFamily: "sans-serif", fontSize: "12px" }}>
-          {mode === "examens"
-            ? (en ? "Examination Schedule" : "Planning des Examens")
-            : (en ? "Timetable" : "Emploi du Temps")} : {filiere.name} | {year}
+          {modeTitle(mode, en)} : {filiere.name} | {year}
         </span>
         <button onClick={() => window.print()} style={{ marginLeft: "auto", background: "#B91C2F", color: "white", border: "none", padding: "7px 22px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold", fontSize: "12px", fontFamily: "sans-serif" }}>
           {en ? "Print / PDF" : "Imprimer / PDF"}
@@ -188,9 +197,7 @@ export default function PrintTimetablePage() {
 
         <div style={{ textAlign: "center", marginBottom: "8px", padding: "4px 0", position: "relative", zIndex: 1 }}>
           <div style={{ fontSize: "13px", fontWeight: "900", textTransform: "uppercase", letterSpacing: "2px" }}>
-            {mode === "examens"
-              ? (en ? "Examination Schedule" : "Planning des Examens")
-              : (en ? "Course Timetable" : "Emploi du Temps des Cours")}
+            {modeTitle(mode, en)}
           </div>
           <div style={{ fontSize: "10px", color: "#666", marginTop: "2px" }}>
             {en
@@ -201,7 +208,7 @@ export default function PrintTimetablePage() {
 
         {/* Legend */}
         <div style={{ display: "flex", gap: "10px", marginBottom: "6px", fontSize: "9px", flexWrap: "wrap", position: "relative", zIndex: 1 }}>
-          {["COURS", "TPE", "EVALUATION", "PAUSE", "FERIER", "EXCURSION"].map((t) => {
+          {["COURS", "TPE", "CC", "EVALUATION", "PAUSE", "FERIER", "EXCURSION"].map((t) => {
             const c = typeColor(t);
             return (
               <div key={t} style={{ display: "flex", alignItems: "center", gap: "4px" }}>

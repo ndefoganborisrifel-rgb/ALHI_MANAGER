@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Camera, Plus, Trash2, X, Loader2, ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
+import { Camera, Plus, Trash2, X, Loader2, ImageOff, ChevronLeft, ChevronRight, ImagePlus } from "lucide-react";
 import { useCanManage } from "@/components/providers/RoleProvider";
 import { PageHeader } from "@/components/ui/PageUI";
 
@@ -19,6 +19,7 @@ export default function MemoryPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [fileName, setFileName] = useState("");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -55,6 +56,7 @@ export default function MemoryPage() {
       if (!res.ok) throw new Error(data.error ?? `Erreur serveur (code ${res.status})`);
       setForm((f) => ({ ...f, caption: "" }));
       if (fileRef.current) fileRef.current.value = "";
+      setFileName("");
       setShowUpload(false);
       await load();
     } catch (err) {
@@ -103,7 +105,7 @@ export default function MemoryPage() {
       {canManage && (
         <div>
           <button
-            onClick={() => { setShowUpload((v) => !v); setUploadError(""); }}
+            onClick={() => { setShowUpload((v) => !v); setUploadError(""); setFileName(""); }}
             style={{
               display: "inline-flex", alignItems: "center", gap: "8px",
               padding: "9px 18px", background: showUpload ? "var(--bg-muted)" : "#B91C2F",
@@ -152,7 +154,33 @@ export default function MemoryPage() {
                 <label style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
                   Photo (JPG, PNG ou WebP, 8 Mo max)
                 </label>
-                <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" required style={{ fontSize: "13px", color: "var(--text)" }} />
+                <label
+                  htmlFor="memory-photo-input"
+                  style={{
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px",
+                    minHeight: "92px", padding: "16px", borderRadius: "10px",
+                    border: "2px dashed " + (fileName ? "#16a34a" : "#B91C2F"),
+                    background: fileName ? "#16a34a0d" : "#B91C2F0d",
+                    cursor: "pointer", textAlign: "center",
+                  }}
+                >
+                  <ImagePlus style={{ width: "24px", height: "24px", color: fileName ? "#16a34a" : "#B91C2F" }} />
+                  <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text)", wordBreak: "break-all" }}>
+                    {fileName || "Cliquez ici pour ajouter une photo"}
+                  </span>
+                  {!fileName && (
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>JPG, PNG ou WebP, 8 Mo max</span>
+                  )}
+                  <input
+                    id="memory-photo-input"
+                    ref={fileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    required
+                    onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
+                    style={{ position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap", border: 0 }}
+                  />
+                </label>
               </div>
               {uploadError && (
                 <p style={{ fontSize: "12px", color: "#B91C2F", fontWeight: "600" }}>{uploadError}</p>
